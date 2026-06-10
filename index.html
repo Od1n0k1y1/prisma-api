@@ -1,0 +1,891 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>PRISMA Premium UI</title>
+    <script src="https://telegram.org/js/telegram-web-app.js"></script>
+    <style>
+        :root {
+            --bg-dark: #000000;
+            --bg-main: #0a0a0c;
+            --bg-card: #151518;
+            --bg-input: #18181c;
+            --border-color: #222226;
+            --text-white: #ffffff;
+            --text-gray: #75757c;
+            --text-dim: #444448;
+            --accent-white: #f5f5f7;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            -webkit-tap-highlight-color: transparent;
+            user-select: none;
+        }
+
+        body {
+            background-color: var(--bg-dark);
+            color: var(--text-white);
+            height: 100vh;
+            overflow: hidden;
+            display: flex;
+        }
+
+        /* МЕНЮ СЛЕВА (SIDEBAR) */
+        .sidebar {
+            width: 290px;
+            background-color: var(--bg-main);
+            border-right: 1px solid var(--border-color);
+            display: flex;
+            flex-direction: column;
+            position: absolute;
+            top: 0;
+            left: 0;
+            bottom: 0;
+            z-index: 100;
+            transform: translateX(-100%);
+            transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .sidebar.active {
+            transform: translateX(0);
+        }
+
+        .sidebar-profile {
+            padding: 24px 20px;
+            display: flex;
+            align-items: center;
+            gap: 14px;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .sidebar-avatar {
+            width: 44px;
+            height: 44px;
+            border-radius: 50%;
+            background: #222;
+            object-fit: cover;
+            border: 1px solid var(--border-color);
+        }
+
+        .profile-meta {
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+        }
+
+        .profile-name {
+            font-size: 15px;
+            font-weight: 600;
+            color: var(--text-white);
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .profile-sub {
+            font-size: 12px;
+            color: var(--text-gray);
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            margin-top: 2px;
+        }
+
+        .sidebar-menu {
+            flex: 1;
+            overflow-y: auto;
+            padding: 15px 12px;
+        }
+
+        .menu-section-title {
+            font-size: 11px;
+            font-weight: 700;
+            text-transform: uppercase;
+            color: var(--text-gray);
+            letter-spacing: 0.8px;
+            margin: 18px 8px 8px 8px;
+        }
+
+        .chat-list-container {
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+        }
+
+        .sidebar-chat-item {
+            padding: 12px 14px;
+            border-radius: 14px;
+            font-size: 14px;
+            color: var(--text-white);
+            cursor: pointer;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            transition: background 0.2s;
+        }
+
+        .sidebar-chat-item:active, .sidebar-chat-item.active {
+            background-color: var(--bg-card);
+        }
+
+        .sidebar-chat-item.active {
+            font-weight: 500;
+        }
+
+        .sidebar-footer {
+            padding: 16px 20px;
+            border-top: 1px solid var(--border-color);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background-color: var(--bg-main);
+        }
+
+        .footer-icon-btn {
+            width: 42px;
+            height: 42px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 50%;
+            cursor: pointer;
+            color: var(--text-white);
+            font-size: 18px;
+            transition: background 0.2s;
+        }
+
+        .footer-icon-btn:active {
+            background-color: var(--bg-card);
+        }
+
+        /* ОСНОВНОЙ ПРОВИДЕР ЭКРАНОВ */
+        .app-content {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            height: 100vh;
+            position: relative;
+            background-color: var(--bg-dark);
+        }
+
+        .click-overlay {
+            position: absolute;
+            top: 0; left: 0; right: 0; bottom: 0;
+            background: rgba(0,0,0,0.6);
+            display: none;
+            z-index: 90;
+        }
+
+        .click-overlay.active {
+            display: block;
+        }
+
+        /* НАВБАР (HEADER) */
+        .navbar {
+            height: 60px;
+            border-bottom: 1px solid var(--border-color);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0 16px;
+            background-color: var(--bg-dark);
+            z-index: 10;
+        }
+
+        .navbar-left {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+        }
+
+        .burger-menu {
+            width: 24px;
+            height: 24px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            gap: 5px;
+            cursor: pointer;
+        }
+
+        .burger-menu span {
+            width: 20px;
+            height: 2px;
+            background-color: var(--text-white);
+            border-radius: 1px;
+            transition: 0.2s;
+        }
+
+        .navbar-title {
+            font-size: 18px;
+            font-weight: 600;
+            letter-spacing: -0.2px;
+        }
+
+        .navbar-right {
+            width: 40px;
+            height: 40px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            font-size: 18px;
+        }
+
+        /* ЭКРАНЫ ПРИЛОЖЕНИЯ */
+        .app-screen {
+            flex: 1;
+            display: none;
+            flex-direction: column;
+            overflow: hidden;
+        }
+
+        .app-screen.active {
+            display: flex;
+        }
+
+        /* ЭКРАН 1: ЧАТ */
+        .chat-body {
+            flex: 1;
+            overflow-y: auto;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            gap: 24px;
+            position: relative;
+        }
+
+        /* ФОНОВЫЙ ТРЕУГОЛЬНИК PRISMA */
+        .prisma-bg-watermark {
+            position: absolute;
+            top: 45%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 140px;
+            height: 140px;
+            opacity: 0.1;
+            pointer-events: none;
+            fill: var(--text-white);
+            transition: opacity 0.3s;
+        }
+
+        .chat-welcome-hint {
+            text-align: center;
+            color: var(--text-gray);
+            font-size: 14px;
+            margin-top: 160px;
+            z-index: 2;
+            font-weight: 400;
+        }
+
+        .message-block {
+            display: flex;
+            flex-direction: column;
+            width: 100%;
+        }
+
+        .message-bubble {
+            max-width: 85%;
+            padding: 14px 18px;
+            border-radius: 22px;
+            font-size: 15px;
+            line-height: 1.5;
+            word-wrap: break-word;
+            user-select: text;
+        }
+
+        .message-bubble.user {
+            background-color: var(--bg-card);
+            color: var(--text-white);
+            align-self: flex-end;
+            border-bottom-right-radius: 4px;
+        }
+
+        .message-bubble.bot {
+            background-color: transparent;
+            color: var(--text-white);
+            align-self: flex-start;
+            padding: 4px 0;
+            border-radius: 0;
+        }
+
+        /* АНИМАЦИЯ СФЕРЫ (РАЗМЫШЛЕНИЕ) */
+        .thinking-wrapper {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            color: var(--text-gray);
+            font-size: 14px;
+            align-self: flex-start;
+            margin-top: 4px;
+        }
+
+        .mono-sphere {
+            width: 14px;
+            height: 14px;
+            background: var(--text-white);
+            border-radius: 50%;
+            opacity: 0.3;
+            animation: spherePulse 1.4s infinite ease-in-out;
+        }
+
+        @keyframes spherePulse {
+            0%, 100% { transform: scale(0.8); opacity: 0.2; }
+            50% { transform: scale(1.25); opacity: 0.7; }
+        }
+
+        /* ЗОНА ВВОДА КАНУННАЯ */
+        .bottom-input-bar {
+            padding: 16px;
+            background-color: var(--bg-dark);
+        }
+
+        .input-container-box {
+            background-color: var(--bg-input);
+            border-radius: 28px;
+            padding: 8px 16px;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            border: 1px solid rgba(255,255,255,0.02);
+        }
+
+        .input-text-row {
+            display: flex;
+            align-items: center;
+            width: 100%;
+        }
+
+        .input-container-box input {
+            flex: 1;
+            background: none;
+            border: none;
+            color: var(--text-white);
+            font-size: 16px;
+            outline: none;
+            padding: 6px 2px;
+        }
+
+        .input-container-box input::placeholder {
+            color: var(--text-gray);
+        }
+
+        .input-actions-row {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            width: 100%;
+            padding-top: 2px;
+        }
+
+        .action-icons-left {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+            color: var(--text-gray);
+            font-size: 18px;
+        }
+
+        .action-icon-item {
+            cursor: pointer;
+            width: 30px;
+            height: 30px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 50%;
+        }
+
+        .action-buttons-right {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .grok-voice-btn {
+            background: var(--text-white);
+            color: var(--bg-dark);
+             Nestor-font-size: 13px;
+            font-size: 13px;
+            font-weight: 600;
+            padding: 6px 14px;
+            border-radius: 18px;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            cursor: pointer;
+        }
+
+        .grok-send-arrow {
+            width: 32px;
+            height: 32px;
+            background: var(--text-white);
+            color: var(--bg-dark);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            font-weight: bold;
+            font-size: 16px;
+        }
+
+        /* ЭКРАН 2: НАСТРОЙКИ (ANDROID STYLE) */
+        .settings-scroll-body {
+            flex: 1;
+            overflow-y: auto;
+            padding: 8px 0;
+        }
+
+        .settings-user-card {
+            background: var(--bg-card);
+            margin: 10px 16px 24px 16px;
+            padding: 18px;
+            border-radius: 24px;
+            display: flex;
+            align-items: center;
+            gap: 16px;
+        }
+
+        .settings-group-hdr {
+            font-size: 12px;
+            font-weight: 700;
+            color: var(--text-gray);
+            text-transform: uppercase;
+            letter-spacing: 0.6px;
+            margin: 16px 20px 8px 20px;
+        }
+
+        .settings-list-item {
+            padding: 16px 20px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            cursor: pointer;
+            background-color: var(--bg-dark);
+        }
+
+        .settings-list-item:active {
+            background: var(--bg-card);
+        }
+
+        .item-text-block {
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+        }
+
+        .item-main-title {
+            font-size: 15px;
+            font-weight: 500;
+            color: var(--text-white);
+        }
+
+        .item-sub-title {
+            font-size: 12px;
+            color: var(--text-gray);
+        }
+
+        .chevron-right {
+            color: var(--text-dim);
+            font-weight: bold;
+            font-size: 14px;
+        }
+
+        /* ЭКРАН 3: ПЕРСОНАЛИЗАЦИЯ И ИНСТРУКЦИИ */
+        .agents-wrapper {
+            padding: 16px;
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+        }
+
+        .agent-info-plate {
+            background: var(--bg-card);
+            border-radius: 20px;
+            padding: 16px;
+            display: flex;
+            align-items: center;
+            gap: 14px;
+        }
+
+        .agent-logo-placeholder {
+            width: 40px;
+            height: 40px;
+            background: var(--border-color);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 18px;
+        }
+
+        .textarea-container {
+            background: var(--bg-card);
+            border-radius: 20px;
+            padding: 16px;
+            border: 1px solid rgba(255,255,255,0.02);
+        }
+
+        textarea {
+            width: 100%;
+            height: 180px;
+            background: none;
+            border: none;
+            color: var(--text-white);
+            resize: none;
+            outline: none;
+            font-size: 15px;
+            line-height: 1.5;
+            user-select: text;
+        }
+
+        .agents-btn-row {
+            display: flex;
+            justify-content: flex-end;
+            gap: 12px;
+            margin-top: 10px;
+        }
+
+        .control-btn {
+            padding: 12px 24px;
+            border-radius: 22px;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: opacity 0.2s;
+        }
+
+        .control-btn:active {
+            opacity: 0.8;
+        }
+
+        .control-btn.primary {
+            background: var(--text-white);
+            color: var(--bg-dark);
+        }
+
+        .control-btn.secondary {
+            background: transparent;
+            color: var(--text-gray);
+        }
+    </style>
+</head>
+<body>
+
+    <div class="sidebar" id="sidebar">
+        <div class="sidebar-profile">
+            <img class="sidebar-avatar" src="2237.jpg" onerror="this.src='https://placehold.co/44/222/fff?text=💎'">
+            <div class="profile-meta">
+                <div class="profile-name">Илья Осипов</div>
+                <div class="profile-sub">maksimmihajlov8212@gmail.com</div>
+            </div>
+        </div>
+        <div class="sidebar-menu">
+            <div class="menu-section-title" onclick="startNewChat()" style="color:var(--accent-white); border: 1px dashed var(--border-color); padding: 10px; border-radius:12px; text-align:center; cursor:pointer; margin-bottom:15px;">＋ Новый чат</div>
+            <div class="menu-section-title">Закреплено</div>
+            <div id="pinnedChatsBlock" class="chat-list-container"></div>
+            <div class="menu-section-title">Разговоры</div>
+            <div id="recentChatsBlock" class="chat-list-container"></div>
+        </div>
+        <div class="sidebar-footer">
+            <div class="footer-icon-btn" onclick="handleSidebarTrigger(false); openTargetScreen('settings')">⚙️</div>
+            <div class="footer-icon-btn" onclick="startNewChat()">📝</div>
+        </div>
+    </div>
+
+    <div class="app-content">
+        <div class="click-overlay" id="clickOverlay" onclick="handleSidebarTrigger(false)"></div>
+
+        <div class="navbar">
+            <div class="navbar-left">
+                <div class="burger-menu" onclick="handleSidebarTrigger(true)">
+                    <span></span><span></span>
+                </div>
+                <div class="navbar-title" id="navbarTitle">Спросить</div>
+            </div>
+            <div class="navbar-right" id="navbarRightIcon" onclick="startNewChat()">🔄</div>
+        </div>
+
+        <div class="app-screen active" id="screenChat">
+            <div class="chat-body" id="chatWorkspace">
+                <svg class="prisma-bg-watermark" id="prismaWatermark" viewBox="0 0 100 100">
+                    <polygon points="50,85 15,25 85,25"/>
+                </svg>
+                <div class="chat-welcome-hint" id="welcomeHint">Задай любой вопрос</div>
+            </div>
+            <div class="bottom-input-bar" id="inputZoneBlock">
+                <div class="input-container-box">
+                    <div class="input-text-row">
+                        <input type="text" id="userIn" placeholder="Задай вопрос" onkeypress="if(event.key==='Enter') sendMessage()">
+                    </div>
+                    <div class="input-actions-row">
+                        <div class="action-icons-left">
+                            <span class="action-icon-item">＋</span>
+                            <span class="action-icon-item">⚡</span>
+                        </div>
+                        <div class="action-buttons-right">
+                            <div class="grok-voice-btn">
+                                <span>🎙️</span> Голосовой
+                            </div>
+                            <div class="grok-send-arrow" onclick="sendMessage()">↑</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="app-screen" id="screenSettings">
+            <div class="settings-scroll-body">
+                <div class="settings-user-card">
+                    <img class="sidebar-avatar" src="2237.jpg" onerror="this.src='https://placehold.co/44/222/fff?text=💎'">
+                    <div class="profile-meta">
+                        <div class="profile-name" style="font-size:16px;">Илья Осипов</div>
+                        <div class="profile-sub">maksimmihajlov8212@gmail.com</div>
+                    </div>
+                </div>
+                <div class="settings-group-hdr">Приложение</div>
+                <div class="settings-list-item"><div class="item-text-block"><div class="item-main-title">Внешний вид</div><div class="item-sub-title">Системный тёмный</div></div><span class="chevron-right">❯</span></div>
+                <div class="settings-list-item"><div class="item-text-block"><div class="item-main-title">Тактильный отклик</div><div class="item-sub-title">Включен на Vivo</div></div><span class="chevron-right">❯</span></div>
+                
+                <div class="settings-group-hdr">Prisma Core</div>
+                <div class="settings-list-item" onclick="openTargetScreen('agents')">
+                    <div class="item-text-block">
+                        <div class="item-main-title">Персонализировать Prisma</div>
+                        <div class="item-sub-title">Изменить инструкции поведения ИИ</div>
+                    </div>
+                    <span class="chevron-right">❯</span>
+                </div>
+            </div>
+        </div>
+
+        <div class="app-screen" id="screenAgents">
+            <div class="agents-wrapper">
+                <div class="settings-group-hdr" style="margin:0 4px 4px 4px;">Твои агенты</div>
+                <div class="agent-info-plate">
+                    <div class="agent-logo-placeholder">📐</div>
+                    <div>
+                        <div style="font-weight:600; font-size:15px;">Prisma Персональные Инструкции</div>
+                        <div style="font-size:12px; color:var(--text-gray); margin-top:2px;">Сюда зашивай свои промпты, характер и аниме-вайб</div>
+                    </div>
+                </div>
+                <div class="textarea-container">
+                    <textarea id="customPromptArea" placeholder="Впиши сюда свои кастомные инструкции (например: Общайся как резкий дерзкий пацан, шути про Поколение Чудес и Баскетбол Куроко)..."></textarea>
+                </div>
+                <div class="agents-btn-row">
+                    <div class="control-btn secondary" onclick="openTargetScreen('settings')">Назад</div>
+                    <div class="control-btn primary" onclick="commitCustomInstructions()">Сохранить</div>
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+    <script>
+        let tg = window.Telegram.WebApp;
+        tg.expand();
+        tg.ready();
+
+        // Инициализируем базу данных в памяти телефона
+        let appState = JSON.parse(localStorage.getItem('prisma_v4_storage')) || {
+            chats: {},
+            activeChatId: null,
+            systemPrompt: ""
+        };
+
+        function commitLocalStorage() {
+            localStorage.setItem('prisma_v4_storage', JSON.stringify(appState));
+        }
+
+        function handleSidebarTrigger(open) {
+            document.getElementById('sidebar').classList.toggle('active', open);
+            document.getElementById('clickOverlay').classList.toggle('active', open);
+        }
+
+        function openTargetScreen(screenName) {
+            document.getElementById('screenChat').classList.toggle('active', screenName === 'chat');
+            document.getElementById('screenSettings').classList.toggle('active', screenName === 'settings');
+            document.getElementById('screenAgents').classList.toggle('active', screenName === 'agents');
+            
+            let titleText = 'Спросить';
+            let rightIconText = '🔄';
+            
+            if(screenName === 'settings') { titleText = 'Настройки'; rightIconText = '✕'; }
+            if(screenName === 'agents') { titleText = 'Настроить'; rightIconText = '✕'; }
+            
+            document.getElementById('navbarTitle').innerText = titleText;
+            let rBtn = document.getElementById('navbarRightIcon');
+            rBtn.innerText = rightIconText;
+            
+            rBtn.onclick = (screenName === 'chat') ? startNewChat : () => openTargetScreen('chat');
+            handleSidebarTrigger(false);
+        }
+
+        function rebuildChatSidebarMenu() {
+            let recentBlock = document.getElementById('recentChatsBlock');
+            recentBlock.innerHTML = '';
+            
+            Object.keys(appState.chats).reverse().forEach(id => {
+                let item = document.createElement('div');
+                item.className = `sidebar-chat-item ${id === appState.activeChatId ? 'active' : ''}`;
+                item.innerText = appState.chats[id].title || 'Новый диалог';
+                item.onclick = () => { loadTargetChat(id); handleSidebarTrigger(false); };
+                recentBlock.appendChild(item);
+            });
+        }
+
+        function startNewChat() {
+            let newId = 'session_' + Date.now();
+            appState.chats[newId] = { title: '', messages: [] };
+            appState.activeChatId = newId;
+            commitLocalStorage();
+            rebuildChatSidebarMenu();
+            loadTargetChat(newId);
+            openTargetScreen('chat');
+        }
+
+        function loadTargetChat(chatId) {
+            appState.activeChatId = chatId;
+            commitLocalStorage();
+            rebuildChatSidebarMenu();
+            
+            let workspace = document.getElementById('chatWorkspace');
+            workspace.innerHTML = `
+                <svg class="prisma-bg-watermark" id="prismaWatermark" viewBox="0 0 100 100"><polygon points="50,85 15,25 85,25"/></svg>
+                <div class="chat-welcome-hint" id="welcomeHint">Задай любой вопрос</div>
+            `;
+            
+            let currentChat = appState.chats[chatId];
+            if(!currentChat || currentChat.messages.length === 0) return;
+
+            document.getElementById('prismaWatermark').style.opacity = '0';
+            document.getElementById('welcomeHint').style.display = 'none';
+
+            currentChat.messages.forEach(msg => {
+                let row = document.createElement('div');
+                row.className = 'message-block';
+                let bubble = document.createElement('div');
+                bubble.className = `message-bubble ${msg.role}`;
+                bubble.innerText = msg.text;
+                row.appendChild(bubble);
+                workspace.appendChild(row);
+            });
+            workspace.scrollTop = workspace.scrollHeight;
+        }
+
+        // ЭФФЕКТ ПЛАВНОГО ВЫВОДА ТЕКСТА ПО СТРОЧКАМ (КАК В ВИДЕО)
+        function typeBotResponseLineByLine(fullText) {
+            let workspace = document.getElementById('chatWorkspace');
+            
+            let row = document.createElement('div');
+            row.className = 'message-block';
+            let bubble = document.createElement('div');
+            bubble.className = 'message-bubble bot';
+            row.appendChild(bubble);
+            workspace.appendChild(row);
+            
+            let lines = fullText.split('\n');
+            let currentLineIndex = 0;
+            
+            function printNextLine() {
+                if(currentLineIndex < lines.length) {
+                    bubble.innerHTML += (currentLineIndex > 0 ? '<br>' : '') + lines[currentLineIndex];
+                    workspace.scrollTop = workspace.scrollHeight;
+                    currentLineIndex++;
+                    setTimeout(printNextLine, 120); // Скорость печати строк
+                } else {
+                    // Текст полностью напечатан, возвращаем инпут в работу
+                    document.getElementById('inputZoneBlock').style.opacity = '1';
+                    document.getElementById('inputZoneBlock').style.pointerEvents = 'auto';
+                }
+            }
+            printNextLine();
+        }
+
+        function sendMessage() {
+            let inputField = document.getElementById('userIn');
+            let txt = inputField.value.trim();
+            if(!txt) return;
+
+            if(!appState.activeChatId) startNewChat();
+            let currentChat = appState.chats[appState.activeChatId];
+            
+            if(currentChat.messages.length === 0) {
+                currentChat.title = txt.substring(0, 24);
+                document.getElementById('prismaWatermark').style.opacity = '0';
+                document.getElementById('welcomeHint').style.display = 'none';
+            }
+
+            // Добавляем сообщение юзера на экран
+            currentChat.messages.push({ role: 'user', text: txt });
+            inputField.value = '';
+            loadTargetChat(appState.activeChatId);
+
+            // Блокируем инпут на время размышления и анимации
+            document.getElementById('inputZoneBlock').style.opacity = '0.4';
+            document.getElementById('inputZoneBlock').style.pointerEvents = 'none';
+
+            // Рисуем СФЕРУ РАЗМЫШЛЕНИЯ
+            let workspace = document.getElementById('chatWorkspace');
+            let thinkingRow = document.createElement('div');
+            thinkingRow.className = 'message-block';
+            thinkingRow.id = 'sphere_loader_runtime';
+            thinkingRow.innerHTML = `
+                <div class="thinking-wrapper">
+                    <div class="mono-sphere"></div>
+                    <span>Thinking...</span>
+                </div>
+            `;
+            workspace.appendChild(thinkingRow);
+            workspace.scrollTop = workspace.scrollHeight;
+
+            // Собираем пакет данных на сервер Pydroid
+            let transactionPacket = {
+                prompt: appState.systemPrompt,
+                history: currentChat.messages,
+                text: txt
+            };
+
+            tg.sendData(JSON.stringify(transactionPacket));
+        }
+
+        // ЭТА ФУНКЦИЯ ВЫЗЫВАЕТСЯ АВТОМАТИЧЕСКИ, КОГДА ОТ СЕРВЕРА PYDROID СРАБАТЫВАЕТ sendMessage С ОТВЕТОМ
+        // ТГ Mini Apps возвращает ответ через новый getUpdates, бэкенд напечатает текст
+        window.addEventListener('message', function(event) {
+            // Для отладки внутри аппки
+        });
+
+        function commitCustomInstructions() {
+            appState.systemPrompt = document.getElementById('customPromptArea').value;
+            commitLocalStorage();
+            tg.showAlert("Твои кастомные инструкции успешно интегрированы в матрицу Prisma! 🧬📐");
+            openTargetScreen('chat');
+        }
+
+        // Функция внешней вставки ответа от Питона (чтобы обойти системные триггеры)
+        function insertExternalResponse(targetText) {
+            let loader = document.getElementById('sphere_loader_runtime');
+            if(loader) loader.remove();
+            
+            if(appState.activeChatId && appState.chats[appState.activeChatId]) {
+                appState.chats[appState.activeChatId].messages.push({ role: 'bot', text: targetText });
+                commitLocalStorage();
+            }
+            typeBotResponseLineByLine(targetText);
+        }
+
+        window.onload = () => {
+            document.getElementById('customPromptArea').value = appState.systemPrompt || "";
+            startNewChat();
+            
+            // Прослушка кастомных событий для дебага
+            window.PrismaInject = insertExternalResponse;
+        };
+    </script>
+</body>
+</html>
