@@ -18,588 +18,127 @@
         --text-absolute-white: #ffffff;
         --text-muted-gray: #777777;
         --text-dimmed-gray: #444444;
-        --accent-white-glow: rgba(255, 255, 255, 0.08);
     }
-    * {
-        box-sizing: border-box;
-        margin: 0;
-        padding: 0;
-        font-family: 'Ubuntu', 'Space Grotesk', sans-serif;
-        -webkit-tap-highlight-color: transparent;
-        user-select: none;
-    }
-    body {
-        background-color: var(--bg-pure-black);
-        color: var(--text-absolute-white);
-        height: 100vh;
-        overflow: hidden;
-        display: flex;
-    }
-    .sidebar-panel-root {
-        width: 295px;
-        background-color: var(--bg-main-dark);
-        border-right: 1px solid var(--border-monochrome);
-        display: flex;
-        flex-direction: column;
-        position: absolute;
-        top: 0; left: 0; bottom: 0;
-        z-index: 500;
-        transform: translateX(-100%);
-        transition: transform 0.25s cubic-bezier(0.4, 0, 0.2, 1);
-    }
-    .sidebar-panel-root.active {
-        transform: translateX(0);
-    }
-    .sidebar-user-section {
-        padding: 24px 20px;
-        display: flex;
-        align-items: center;
-        gap: 14px;
-        border-bottom: 1px solid var(--border-monochrome);
-    }
-    .sidebar-profile-logo-wrap {
-        width: 46px;
-        height: 46px;
-        border-radius: 50%;
-        border: 1px solid var(--text-absolute-white);
-        padding: 6px;
-        background: var(--bg-pure-black);
-        display: flex;
-        align-items: center;
-        justify-content: center;
-    }
-    .sidebar-profile-logo-wrap svg {
-        width: 100%;
-        height: 100%;
-    }
-    .user-meta-data {
-        display: flex;
-        flex-direction: column;
-        overflow: hidden;
-    }
-    .user-meta-title {
-        font-size: 15px;
-        font-weight: 700;
-        color: var(--text-absolute-white);
-        white-space: nowrap;
-        overflow: hidden;
-        text-overflow: ellipsis;
-    }
-    .user-meta-sub {
-        font-size: 12px;
-        color: var(--text-muted-gray);
-        white-space: nowrap;
-        overflow: hidden;
-        text-overflow: ellipsis;
-        margin-top: 2px;
-    }
-    .sidebar-scroll-menu {
-        flex: 1;
-        overflow-y: auto;
-        padding: 16px 12px;
-    }
-    .sidebar-action-btn-new {
-        border: 1px solid var(--border-monochrome);
-        padding: 12px;
-        border-radius: 14px;
-        text-align: center;
-        font-size: 13px;
-        font-weight: 700;
-        cursor: pointer;
-        text-transform: uppercase;
-        letter-spacing: 0.5px;
-        margin-bottom: 20px;
-        transition: background 0.2s;
-    }
-    .sidebar-action-btn-new:active {
-        background-color: var(--bg-card-dark);
-    }
-    .section-divider-hdr {
-        font-size: 11px;
-        font-weight: 700;
-        text-transform: uppercase;
-        color: var(--text-muted-gray);
-        letter-spacing: 0.8px;
-        margin: 14px 8px 6px 8px;
-    }
-    .chats-history-list-wrapper {
-        display: flex;
-        flex-direction: column;
-        gap: 4px;
-    }
-    .chat-session-row-item {
-        padding: 11px 14px;
-        border-radius: 12px;
-        font-size: 14px;
-        color: var(--text-absolute-white);
-        cursor: pointer;
-        display: flex;
-        align-items: center;
-        justify-content: space-between;
-        gap: 8px;
-    }
-    .chat-session-row-item span {
-        white-space: nowrap;
-        overflow: hidden;
-        text-overflow: ellipsis;
-        flex: 1;
-    }
-    .chat-session-row-item .delete-session-btn {
-        color: var(--text-dimmed-gray);
-        font-size: 16px;
-        padding: 2px 6px;
-        border-radius: 4px;
-        transition: color 0.2s;
-    }
-    .chat-session-row-item .delete-session-btn:hover {
-        color: #ff4444;
-    }
-    .chat-session-row-item:active, .chat-session-row-item.active {
-        background-color: var(--bg-card-dark);
-    }
-    .sidebar-bottom-bar {
-        padding: 16px 20px;
-        border-top: 1px solid var(--border-monochrome);
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-        background-color: var(--bg-main-dark);
-    }
-    .sidebar-bottom-btn {
-        width: 38px;
-        height: 38px;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        border-radius: 50%;
-        cursor: pointer;
-        color: var(--text-absolute-white);
-        transition: background 0.2s;
-    }
-    .sidebar-bottom-btn svg {
-        width: 22px !important;
-        height: 22px !important;
-    }
-    .sidebar-bottom-btn:active {
-        background-color: var(--bg-card-dark);
-    }
-    .main-app-viewport {
-        flex: 1;
-        display: flex;
-        flex-direction: column;
-        height: 100vh;
-        position: relative;
-        background-color: var(--bg-pure-black);
-    }
-    .dark-screen-overlay {
-        position: absolute;
-        top: 0; left: 0; right: 0; bottom: 0;
-        background: rgba(0,0,0,0.7);
-        display: none;
-        z-index: 450;
-    }
-    .dark-screen-overlay.active {
-        display: block;
-    }
-    .app-navigation-header {
-        height: 64px;
-        border-bottom: 1px solid var(--border-monochrome);
-        display: flex;
-        align-items: center;
-        justify-content: space-between;
-        padding: 0 16px;
-        background-color: var(--bg-pure-black);
-        z-index: 100;
-    }
-    .header-left-block {
-        display: flex;
-        align-items: center;
-        gap: 16px;
-    }
-    .ui-burger-button {
-        width: 24px;
-        height: 24px;
-        display: flex;
-        flex-direction: column;
-        justify-content: center;
-        gap: 6px;
-        cursor: pointer;
-    }
-    .ui-burger-button span {
-        width: 22px;
-        height: 2px;
-        background-color: var(--text-absolute-white);
-        border-radius: 1px;
-    }
-    .ui-navbar-title {
-        font-size: 17px;
-        font-weight: 700;
-        text-transform: uppercase;
-        letter-spacing: 0.5px;
-    }
-    .header-right-block {
-        width: 40px;
-        height: 40px;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        cursor: pointer;
-    }
-    .ui-tab-screen {
-        flex: 1;
-        display: none;
-        flex-direction: column;
-        overflow: hidden;
-    }
-    .ui-tab-screen.active {
-        display: flex;
-    }
-    .chat-scroll-area {
-        flex: 1;
-        overflow-y: auto;
-        padding: 20px;
-        display: flex;
-        flex-direction: column;
-        gap: 24px;
-        position: relative;
-    }
-    .central-logo-layout {
-        position: absolute;
-        top: 50%; left: 50%;
-        transform: translate(-50%, -50%);
-        display: flex;
-        flex-direction: column;
-        align-items: center;
-        justify-content: center;
-        pointer-events: none;
-        transition: opacity 0.25s ease-out;
-    }
-    .volt-vector-logo-body {
-        width: 130px;
-        height: 130px;
-        filter: drop-shadow(0 0 10px rgba(255, 255, 255, 0.05));
-    }
-    .msg-card-block {
-        display: flex;
-        flex-direction: column;
-        width: 100%;
-        position: relative;
-    }
-    .msg-card-block:hover .msg-action-bar {
-        opacity: 1;
-    }
-    .msg-bubble-layout {
-        max-width: 85%;
-        padding: 13px 18px;
-        border-radius: 20px;
-        font-size: 15px;
-        line-height: 1.5;
-        word-wrap: break-word;
-        user-select: text;
-    }
-    .msg-bubble-layout.user {
-        background-color: var(--bg-card-dark);
-        color: var(--text-absolute-white);
-        align-self: flex-end;
-        border-bottom-right-radius: 4px;
-        border: 1px solid rgba(255,255,255,0.02);
-    }
-    .msg-bubble-layout.bot {
-        background-color: transparent;
-        color: var(--text-absolute-white);
-        align-self: flex-start;
-        padding: 2px 0;
-        border-radius: 0;
-    }
-    .attached-media-preview {
-        max-width: 200px;
-        max-height: 150px;
-        border-radius: 12px;
-        margin-bottom: 8px;
-        border: 1px solid var(--border-monochrome);
-        display: block;
-    }
-    .msg-action-bar {
-        display: flex;
-        gap: 12px;
-        margin-top: 4px;
-        opacity: 0;
-        transition: opacity 0.2s;
-    }
-    .msg-card-block .msg-bubble-layout.user ~ .msg-action-bar {
-        justify-content: flex-end;
-        align-self: flex-end;
-    }
-    .msg-card-block .msg-bubble-layout.bot ~ .msg-action-bar {
-        justify-content: flex-start;
-        align-self: flex-start;
-    }
-    .msg-action-btn {
-        font-size: 12px;
-        color: var(--text-muted-gray);
-        cursor: pointer;
-        text-transform: uppercase;
-        font-weight: 700;
-        letter-spacing: 0.5px;
-    }
-    .msg-action-btn:hover {
-        color: var(--text-absolute-white);
-    }
-    .sphere-thinking-container {
-        display: flex;
-        align-items: center;
-        gap: 12px;
-        color: var(--text-muted-gray);
-        font-size: 14px;
-        align-self: flex-start;
-        margin-top: 4px;
-    }
-    .pulse-mono-sphere {
-        width: 14px;
-        height: 14px;
-        background: var(--text-absolute-white);
-        border-radius: 50%;
-        opacity: 0.3;
-        animation: monoSphereAnimation 1.3s infinite ease-in-out;
-    }
-    @keyframes monoSphereAnimation {
-        0%, 100% { transform: scale(0.85); opacity: 0.2; }
-        50% { transform: scale(1.2); opacity: 0.8; }
-    }
-    .bottom-input-zone-root {
-        padding: 16px;
-        background-color: var(--bg-pure-black);
-        border-top: 1px solid var(--border-monochrome);
-    }
-    .input-panel-wrapper {
-        background-color: var(--bg-input-dark);
-        border-radius: 24px;
-        padding: 10px 16px;
-        display: flex;
-        flex-direction: column;
-        gap: 12px;
-        border: 1px solid rgba(255,255,255,0.01);
-    }
-    .input-row-primary {
-        display: flex;
-        align-items: center;
-        width: 100%;
-    }
-    .input-panel-wrapper input {
-        flex: 1;
-        background: none;
-        border: none;
-        color: var(--text-absolute-white);
-        font-size: 16px;
-        outline: none;
-        padding: 4px 0;
-    }
-    .input-panel-wrapper input::placeholder {
-        color: var(--text-dimmed-gray);
-    }
-    .input-row-actions {
-        display: flex;
-        align-items: center;
-        justify-content: space-between;
-        width: 100%;
-    }
-    .action-group-left {
-        display: flex;
-        align-items: center;
-        gap: 16px;
-    }
-    .action-mono-icon-btn {
-        cursor: pointer;
-        width: 28px;
-        height: 28px;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        color: var(--text-muted-gray);
-    }
-    .action-mono-icon-btn svg {
-        width: 20px; height: 20px;
-    }
-    .action-group-right {
-        display: flex;
-        align-items: center;
-        gap: 12px;
-    }
-    .grok-voice-pill-btn {
-        background: var(--text-absolute-white);
-        color: var(--bg-pure-black);
-        font-size: 13px;
-        font-weight: 700;
-        padding: 6px 14px;
-        border-radius: 16px;
-        display: flex;
-        align-items: center;
-        gap: 6px;
-        cursor: pointer;
-    }
-    .grok-voice-pill-btn svg {
-        width: 14px;
-        height: 14px;
-    }
-    .grok-submit-arrow-btn {
-        width: 32px;
-        height: 32px;
-        background: var(--text-absolute-white);
-        color: var(--bg-pure-black);
-        border-radius: 50%;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        cursor: pointer;
-    }
-    .grok-submit-arrow-btn svg {
-        width: 16px;
-        height: 16px;
-    }
-    .media-attachment-status-bar {
-        display: none;
-        align-items: center;
-        justify-content: space-between;
-        background: rgba(255,255,255,0.03);
-        padding: 6px 12px;
-        border-radius: 10px;
-        font-size: 12px;
-        color: var(--text-muted-gray);
-        border: 1px dashed var(--border-monochrome);
-    }
-    .media-attachment-status-bar span {
-        overflow: hidden;
-        text-overflow: ellipsis;
-        white-space: nowrap;
-        max-width: 80%;
-    }
-    .settings-panel-scroll-view {
-        flex: 1;
-        overflow-y: auto;
-        padding: 8px 0;
-    }
-    .settings-profile-card-node {
-        background: var(--bg-card-dark);
-        margin: 10px 16px 24px 16px;
-        padding: 18px;
-        border-radius: 20px;
-        display: flex;
-        align-items: center;
-        gap: 16px;
-        border: 1px solid var(--border-monochrome);
-    }
-    .settings-row-option-item {
-        padding: 16px 20px;
-        display: flex;
-        align-items: center;
-        justify-content: space-between;
-        cursor: pointer;
-        background-color: var(--bg-pure-black);
-        border-bottom: 1px solid rgba(255,255,255,0.01);
-    }
-    .settings-row-option-item:active {
-        background: var(--bg-card-dark);
-    }
-    .settings-row-option-item svg {
-        width: 18px;
-        height: 18px;
-    }
-    .option-text-group {
-        display: flex;
-        flex-direction: column;
-        gap: 4px;
-    }
-    .option-main-label {
-        font-size: 15px;
-        font-weight: 500;
-        color: var(--text-absolute-white);
-    }
-    .option-sub-label {
-        font-size: 12px;
-        color: var(--text-muted-gray);
-    }
-    .chevron-vector-arrow {
-        color: var(--text-dimmed-gray);
-    }
-    .agents-editor-layout-root {
-        padding: 16px;
-        display: flex;
-        flex-direction: column;
-        gap: 16px;
-    }
-    .agent-plate-container {
-        background: var(--bg-card-dark);
-        border-radius: 16px;
-        padding: 16px;
-        display: flex;
-        align-items: center;
-        gap: 14px;
-        border: 1px solid var(--border-monochrome);
-    }
-    .agent-mini-logo-box {
-        width: 40px;
-        height: 40px;
-        border-radius: 50%;
-        border: 1px solid var(--text-absolute-white);
-        padding: 6px;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-    }
-    .textarea-mono-input-box {
-        background: var(--bg-card-dark);
-        border-radius: 16px;
-        padding: 16px;
-        border: 1px solid var(--border-monochrome);
-    }
-    .textarea-mono-input-box textarea {
-        width: 100%;
-        height: 180px;
-        background: none;
-        border: none;
-        color: var(--text-absolute-white);
-        resize: none;
-        outline: none;
-        font-size: 15px;
-        line-height: 1.5;
-        user-select: text;
-    }
-    .action-buttons-flex-row {
-        display: flex;
-        justify-content: flex-end;
-        gap: 12px;
-        margin-top: 10px;
-    }
-    .control-mono-btn {
-        padding: 12px 24px;
-        border-radius: 20px;
-        font-size: 14px;
-        font-weight: 700;
-        cursor: pointer;
-    }
-    .control-mono-btn.primary {
-        background: var(--text-absolute-white);
-        color: var(--bg-pure-black);
-        border: none;
-    }
-    .control-mono-btn.secondary {
-        background: transparent;
-        color: var(--text-muted-gray);
-        border: 1px solid var(--border-monochrome);
-    }
+    * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Ubuntu', 'Space Grotesk', sans-serif; -webkit-tap-highlight-color: transparent; user-select: none; }
+    body { background-color: var(--bg-pure-black); color: var(--text-absolute-white); height: 100vh; overflow: hidden; display: flex; }
+    
+    /* Сайдбар */
+    .sidebar-panel-root { width: 295px; background-color: var(--bg-main-dark); border-right: 1px solid var(--border-monochrome); display: flex; flex-direction: column; position: absolute; top: 0; left: 0; bottom: 0; z-index: 500; transform: translateX(-100%); transition: transform 0.25s cubic-bezier(0.4, 0, 0.2, 1); }
+    .sidebar-panel-root.active { transform: translateX(0); }
+    .sidebar-user-section { padding: 24px 20px; display: flex; align-items: center; gap: 14px; border-bottom: 1px solid var(--border-monochrome); }
+    .sidebar-profile-logo-wrap { width: 46px; height: 46px; border-radius: 50%; border: 1px solid var(--text-absolute-white); padding: 6px; background: var(--bg-pure-black); display: flex; align-items: center; justify-content: center; }
+    .sidebar-profile-logo-wrap svg { width: 100%; height: 100%; }
+    .user-meta-data { display: flex; flex-direction: column; overflow: hidden; }
+    .user-meta-title { font-size: 15px; font-weight: 700; color: var(--text-absolute-white); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    .user-meta-sub { font-size: 12px; color: var(--text-muted-gray); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; margin-top: 2px; }
+    .sidebar-scroll-menu { flex: 1; overflow-y: auto; padding: 16px 12px; }
+    .sidebar-action-btn-new { border: 1px solid var(--border-monochrome); padding: 12px; border-radius: 14px; text-align: center; font-size: 13px; font-weight: 700; cursor: pointer; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 20px; transition: background 0.2s; }
+    .sidebar-action-btn-new:active { background-color: var(--bg-card-dark); }
+    .section-divider-hdr { font-size: 11px; font-weight: 700; text-transform: uppercase; color: var(--text-muted-gray); letter-spacing: 0.8px; margin: 14px 8px 6px 8px; }
+    .chats-history-list-wrapper { display: flex; flex-direction: column; gap: 4px; }
+    .chat-session-row-item { padding: 11px 14px; border-radius: 12px; font-size: 14px; color: var(--text-absolute-white); cursor: pointer; display: flex; align-items: center; justify-content: space-between; gap: 8px; }
+    .chat-session-row-item span { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; flex: 1; }
+    .chat-session-row-item .delete-session-btn { color: var(--text-dimmed-gray); font-size: 16px; padding: 2px 6px; border-radius: 4px; transition: color 0.2s; }
+    .chat-session-row-item .delete-session-btn:hover { color: #ff4444; }
+    .chat-session-row-item:active, .chat-session-row-item.active { background-color: var(--bg-card-dark); }
+    .sidebar-bottom-bar { padding: 16px 20px; border-top: 1px solid var(--border-monochrome); display: flex; justify-content: space-between; align-items: center; background-color: var(--bg-main-dark); }
+    .sidebar-bottom-btn { width: 38px; height: 38px; display: flex; align-items: center; justify-content: center; border-radius: 50%; cursor: pointer; color: var(--text-absolute-white); transition: background 0.2s; }
+    .sidebar-bottom-btn svg { width: 22px !important; height: 22px !important; }
+    
+    /* Основной экран */
+    .main-app-viewport { flex: 1; display: flex; flex-direction: column; height: 100vh; position: relative; background-color: var(--bg-pure-black); }
+    .dark-screen-overlay { position: absolute; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0,0,0,0.7); display: none; z-index: 450; }
+    .dark-screen-overlay.active { display: block; }
+    
+    /* Хедер и селектор модели */
+    .app-navigation-header { height: 64px; border-bottom: 1px solid var(--border-monochrome); display: flex; align-items: center; justify-content: space-between; padding: 0 16px; background-color: var(--bg-pure-black); z-index: 100; }
+    .header-left-block { display: flex; align-items: center; gap: 16px; flex: 1; }
+    .ui-burger-button { width: 24px; height: 24px; display: flex; flex-direction: column; justify-content: center; gap: 6px; cursor: pointer; }
+    .ui-burger-button span { width: 22px; height: 2px; background-color: var(--text-absolute-white); border-radius: 1px; }
+    
+    .header-center-selector { display: flex; align-items: center; gap: 8px; cursor: pointer; padding: 8px 12px; border-radius: 12px; transition: background 0.2s; }
+    .header-center-selector:active { background: var(--bg-card-dark); }
+    .header-center-selector span { font-size: 16px; font-weight: 700; letter-spacing: 0.5px; }
+    .header-center-selector svg { width: 16px; height: 16px; color: var(--text-muted-gray); }
+    
+    .header-right-block { width: 40px; height: 40px; display: flex; align-items: center; justify-content: flex-end; cursor: pointer; flex: 1; }
+    
+    /* Табы */
+    .ui-tab-screen { flex: 1; display: none; flex-direction: column; overflow: hidden; }
+    .ui-tab-screen.active { display: flex; }
+    
+    /* Чат */
+    .chat-scroll-area { flex: 1; overflow-y: auto; padding: 20px; display: flex; flex-direction: column; gap: 24px; position: relative; }
+    .central-logo-layout { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); display: flex; flex-direction: column; align-items: center; justify-content: center; pointer-events: none; transition: opacity 0.25s ease-out; }
+    .volt-vector-logo-body { width: 130px; height: 130px; filter: drop-shadow(0 0 10px rgba(255, 255, 255, 0.05)); }
+    .msg-card-block { display: flex; flex-direction: column; width: 100%; position: relative; }
+    .msg-card-block:hover .msg-action-bar { opacity: 1; }
+    .msg-bubble-layout { max-width: 85%; padding: 13px 18px; border-radius: 20px; font-size: 15px; line-height: 1.5; word-wrap: break-word; user-select: text; }
+    .msg-bubble-layout.user { background-color: var(--bg-card-dark); color: var(--text-absolute-white); align-self: flex-end; border-bottom-right-radius: 4px; border: 1px solid rgba(255,255,255,0.02); }
+    .msg-bubble-layout.bot { background-color: transparent; color: var(--text-absolute-white); align-self: flex-start; padding: 2px 0; border-radius: 0; }
+    .attached-media-preview { max-width: 200px; max-height: 150px; border-radius: 12px; margin-bottom: 8px; border: 1px solid var(--border-monochrome); display: block; object-fit: cover; }
+    .msg-action-bar { display: flex; gap: 12px; margin-top: 4px; opacity: 0; transition: opacity 0.2s; }
+    .msg-card-block .msg-bubble-layout.user ~ .msg-action-bar { justify-content: flex-end; align-self: flex-end; }
+    .msg-card-block .msg-bubble-layout.bot ~ .msg-action-bar { justify-content: flex-start; align-self: flex-start; }
+    .msg-action-btn { font-size: 12px; color: var(--text-muted-gray); cursor: pointer; text-transform: uppercase; font-weight: 700; letter-spacing: 0.5px; }
+    
+    .sphere-thinking-container { display: flex; align-items: center; gap: 12px; color: var(--text-muted-gray); font-size: 14px; align-self: flex-start; margin-top: 4px; }
+    .pulse-mono-sphere { width: 14px; height: 14px; background: var(--text-absolute-white); border-radius: 50%; opacity: 0.3; animation: monoSphereAnimation 1.3s infinite ease-in-out; }
+    @keyframes monoSphereAnimation { 0%, 100% { transform: scale(0.85); opacity: 0.2; } 50% { transform: scale(1.2); opacity: 0.8; } }
+    
+    /* Инпут зона */
+    .bottom-input-zone-root { padding: 16px; background-color: var(--bg-pure-black); border-top: 1px solid var(--border-monochrome); }
+    .input-panel-wrapper { background-color: var(--bg-input-dark); border-radius: 24px; padding: 10px 16px; display: flex; flex-direction: column; gap: 12px; border: 1px solid rgba(255,255,255,0.01); }
+    .input-row-primary { display: flex; align-items: center; width: 100%; }
+    .input-panel-wrapper input { flex: 1; background: none; border: none; color: var(--text-absolute-white); font-size: 16px; outline: none; padding: 4px 0; }
+    .input-row-actions { display: flex; align-items: center; justify-content: space-between; width: 100%; }
+    .action-group-left { display: flex; align-items: center; gap: 16px; }
+    .action-mono-icon-btn { cursor: pointer; width: 28px; height: 28px; display: flex; align-items: center; justify-content: center; color: var(--text-muted-gray); }
+    .action-mono-icon-btn svg { width: 20px; height: 20px; }
+    .action-group-right { display: flex; align-items: center; gap: 12px; }
+    .grok-voice-pill-btn { background: var(--text-absolute-white); color: var(--bg-pure-black); font-size: 13px; font-weight: 700; padding: 6px 14px; border-radius: 16px; display: flex; align-items: center; gap: 6px; cursor: pointer; }
+    .grok-submit-arrow-btn { width: 32px; height: 32px; background: var(--text-absolute-white); color: var(--bg-pure-black); border-radius: 50%; display: flex; align-items: center; justify-content: center; cursor: pointer; }
+    
+    .media-attachment-status-bar { display: none; align-items: center; justify-content: space-between; background: rgba(255,255,255,0.03); padding: 6px 12px; border-radius: 10px; font-size: 12px; color: var(--text-muted-gray); border: 1px dashed var(--border-monochrome); }
+    
+    /* Шторки (Bottom Sheets) */
+    .sheet-overlay { position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0,0,0,0.6); z-index: 600; display: none; opacity: 0; transition: opacity 0.3s; }
+    .sheet-overlay.active { display: block; opacity: 1; }
+    .bottom-sheet-modal { position: fixed; bottom: 0; left: 0; right: 0; background: var(--bg-card-dark); border-top-left-radius: 24px; border-top-right-radius: 24px; z-index: 601; transform: translateY(100%); transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1); padding: 24px 16px; border-top: 1px solid var(--border-monochrome); display: flex; flex-direction: column; gap: 16px; }
+    .bottom-sheet-modal.active { transform: translateY(0); }
+    .sheet-handle-bar { width: 40px; height: 4px; background: var(--border-monochrome); border-radius: 2px; align-self: center; margin-bottom: 8px; }
+    
+    /* Стили списка моделей */
+    .model-option-row { display: flex; align-items: center; justify-content: space-between; padding: 16px; border-radius: 16px; cursor: pointer; transition: background 0.2s; }
+    .model-option-row:active { background: var(--bg-main-dark); }
+    .model-option-row.selected { background: var(--bg-input-dark); }
+    .model-opt-left { display: flex; align-items: center; gap: 16px; }
+    .model-opt-icon { width: 24px; height: 24px; color: var(--text-muted-gray); }
+    .model-opt-text { display: flex; flex-direction: column; gap: 2px; }
+    .model-opt-title { font-size: 16px; font-weight: 700; color: var(--text-absolute-white); }
+    .model-opt-sub { font-size: 13px; color: var(--text-muted-gray); }
+    .model-opt-check { width: 20px; height: 20px; color: var(--text-absolute-white); display: none; }
+    .model-option-row.selected .model-opt-check { display: block; }
+    
+    /* Стили кнопок аттача */
+    .attach-grid { display: flex; gap: 12px; justify-content: space-between; }
+    .attach-grid-item { flex: 1; aspect-ratio: 1; background: var(--bg-input-dark); border-radius: 24px; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 12px; cursor: pointer; border: 1px solid rgba(255,255,255,0.02); transition: background 0.2s; }
+    .attach-grid-item:active { background: var(--bg-main-dark); }
+    .attach-grid-item svg { width: 32px; height: 32px; color: var(--text-absolute-white); stroke-width: 1.5; }
+    .attach-grid-item span { font-size: 14px; font-weight: 700; }
+
     </style>
 </head>
 <body>
 
-    <input type="file" id="prismaFileInputNode" style="display:none" accept="image/*,text/plain">
+    <!-- Скрытые инпуты для загрузки -->
+    <input type="file" id="sysInputGallery" accept="image/*" style="display:none">
+    <input type="file" id="sysInputCamera" accept="image/*" capture="environment" style="display:none">
+    <input type="file" id="sysInputFiles" accept="*/*" style="display:none">
 
     <div class="sidebar-panel-root" id="sidebarNode">
         <div class="sidebar-user-section">
-            <div class="sidebar-profile-logo-wrap">
-                <svg viewBox="0 0 24 24" fill="none" stroke="#ffffff" stroke-width="2.5">
-                    <path d="M3 5l4 14 5-10 5 10 4-14"/>
-                </svg>
-            </div>
+            <div class="sidebar-profile-logo-wrap"><svg viewBox="0 0 24 24" fill="none" stroke="#ffffff" stroke-width="2.5"><path d="M3 5l4 14 5-10 5 10 4-14"/></svg></div>
             <div class="user-meta-data">
                 <div class="user-meta-title">Илья Осипов</div>
                 <div class="user-meta-sub">maksimmihajlov8212@gmail.com</div>
@@ -610,12 +149,64 @@
             <div class="section-divider-hdr">Разговоры</div>
             <div id="recentBlock" class="chats-history-list-wrapper"></div>
         </div>
-        <div class="sidebar-bottom-bar">
-            <div class="sidebar-bottom-btn" onclick="toggleSidebarMenuDrawer(false); navigateToTargetTabScreen('settings')">
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"></circle><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"></path></svg>
+    </div>
+
+    <!-- Общий оверлей для шторок -->
+    <div class="sheet-overlay" id="globalSheetOverlay" onclick="closeAllSheets()"></div>
+
+    <!-- Шторка выбора модели -->
+    <div class="bottom-sheet-modal" id="modelSelectionSheet">
+        <div class="sheet-handle-bar"></div>
+        
+        <div class="model-option-row" id="mod_fast" onclick="setActiveModel('fast', 'Быстрый')">
+            <div class="model-opt-left">
+                <svg class="model-opt-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"></polygon></svg>
+                <div class="model-opt-text">
+                    <div class="model-opt-title">Быстрый</div>
+                    <div class="model-opt-sub">На базе Gemini 2.5</div>
+                </div>
             </div>
-            <div class="sidebar-bottom-btn" onclick="triggerNewSessionCreation()">
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path></svg>
+            <svg class="model-opt-check" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><polyline points="20 6 9 17 4 12"></polyline></svg>
+        </div>
+
+        <div class="model-option-row" id="mod_casual" onclick="setActiveModel('casual', 'Повседневный')">
+            <div class="model-opt-left">
+                <svg class="model-opt-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"></path></svg>
+                <div class="model-opt-text">
+                    <div class="model-opt-title">Повседневный</div>
+                    <div class="model-opt-sub">На базе Gemini 3.5 Flash</div>
+                </div>
+            </div>
+            <svg class="model-opt-check" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><polyline points="20 6 9 17 4 12"></polyline></svg>
+        </div>
+
+        <div class="model-option-row" id="mod_expert" onclick="setActiveModel('expert', 'Эксперт')">
+            <div class="model-opt-left">
+                <svg class="model-opt-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"></circle><path d="M12 2a14.5 14.5 0 0 0 0 20 14.5 14.5 0 0 0 0-20"></path><path d="M2 12h20"></path></svg>
+                <div class="model-opt-text">
+                    <div class="model-opt-title">Эксперт</div>
+                    <div class="model-opt-sub">На базе Gemini 3.1 Pro</div>
+                </div>
+            </div>
+            <svg class="model-opt-check" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><polyline points="20 6 9 17 4 12"></polyline></svg>
+        </div>
+    </div>
+
+    <!-- Шторка аттачей (+) -->
+    <div class="bottom-sheet-modal" id="attachmentSheet">
+        <div class="sheet-handle-bar"></div>
+        <div class="attach-grid">
+            <div class="attach-grid-item" onclick="triggerFileInput('sysInputGallery')">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect><circle cx="8.5" cy="8.5" r="1.5"></circle><polyline points="21 15 16 10 5 21"></polyline></svg>
+                <span>Фото</span>
+            </div>
+            <div class="attach-grid-item" onclick="triggerFileInput('sysInputCamera')">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"></path><circle cx="12" cy="13" r="4"></circle></svg>
+                <span>Камера</span>
+            </div>
+            <div class="attach-grid-item" onclick="triggerFileInput('sysInputFiles')">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M21.44 11.05l-9.19 9.19a6 6 0 0 1-8.49-8.49l9.19-9.19a4 4 0 0 1 5.66 5.66l-9.2 9.19a2 2 0 0 1-2.83-2.83l8.49-8.48"></path></svg>
+                <span>Файлы</span>
             </div>
         </div>
     </div>
@@ -625,12 +216,17 @@
 
         <div class="app-navigation-header">
             <div class="header-left-block">
-                <div class="ui-burger-button" onclick="toggleSidebarMenuDrawer(true)">
-                    <span></span><span></span><span></span>
-                </div>
-                <div class="ui-navbar-title" id="screenHeaderTitle">Спросить</div>
+                <div class="ui-burger-button" onclick="toggleSidebarMenuDrawer(true)"><span></span><span></span><span></span></div>
             </div>
-            <div class="header-right-block" id="headerRightActionNode" onclick="triggerNewSessionCreation()">
+            
+            <!-- Центральный селектор модели -->
+            <div class="header-center-selector" onclick="openSheet('modelSelectionSheet')">
+                <svg viewBox="0 0 24 24" fill="none" stroke="#ffffff" stroke-width="2"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"></polygon></svg>
+                <span id="headerModelName">Быстрый</span>
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"></polyline></svg>
+            </div>
+
+            <div class="header-right-block" onclick="triggerNewSessionCreation()">
                 <svg viewBox="0 0 24 24" fill="none" stroke="#ffffff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="width:20px;height:20px;"><polyline points="23 4 23 10 17 10"></polyline><polyline points="1 20 1 14 7 14"></polyline><path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15"></path></svg>
             </div>
         </div>
@@ -638,16 +234,14 @@
         <div class="ui-tab-screen active" id="tabChatScreen">
             <div class="chat-scroll-area" id="chatRenderLayout">
                 <div class="central-logo-layout" id="centralLogoContainer">
-                    <svg class="volt-vector-logo-body" viewBox="0 0 24 24" fill="none" stroke="#ffffff" stroke-width="2.5">
-                        <path d="M3 5l4 14 5-10 5 10 4-14"/>
-                    </svg>
+                    <svg class="volt-vector-logo-body" viewBox="0 0 24 24" fill="none" stroke="#ffffff" stroke-width="2.5"><path d="M3 5l4 14 5-10 5 10 4-14"/></svg>
                 </div>
             </div>
             
             <div class="bottom-input-zone-root" id="inputZoneContainer">
                 <div class="media-attachment-status-bar" id="mediaStatusBarNode">
                     <span id="mediaStatusText">Файл прикреплен</span>
-                    <div style="cursor:pointer; font-weight:700" onclick="clearAttachedFileBuffer()">✕</div>
+                    <div style="cursor:pointer; font-weight:700; padding: 4px;" onclick="clearAttachedFileBuffer()">✕</div>
                 </div>
                 
                 <div class="input-panel-wrapper" style="margin-top: 8px;">
@@ -656,83 +250,21 @@
                     </div>
                     <div class="input-row-actions">
                         <div class="action-group-left">
-                            <div class="action-mono-icon-btn" onclick="document.getElementById('prismaFileInputNode').click()">
+                            <!-- Кнопка плюсика, открывающая шторку аттачей -->
+                            <div class="action-mono-icon-btn" onclick="openSheet('attachmentSheet')">
                                 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>
-                            </div>
-                            <div class="action-mono-icon-btn">
-                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="12 2 2 7 12 12 22 7 12 2"></polygon><polyline points="2 17 12 22 22 17"></polyline><polyline points="2 12 12 17 22 12"></polyline></svg>
                             </div>
                         </div>
                         <div class="action-group-right">
                             <div class="grok-voice-pill-btn">
                                 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 1a3 3 0 0 0-3 3v8a3 3 0 0 0 6 0V4a3 3 0 0 0-3-3z"></path><path d="M19 10v1a7 7 0 0 1-14 0v-1"></path><line x1="12" y1="19" x2="12" y2="23"></line><line x1="8" y1="23" x2="16" y2="23"></line></svg>
-                                <span>Голосовой</span>
+                                <span>Голос</span>
                             </div>
                             <div class="grok-submit-arrow-btn" onclick="executeMessageCommit()">
                                 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><line x1="12" y1="19" x2="12" y2="5"></line><polyline points="5 12 12 5 19 12"></polyline></svg>
                             </div>
                         </div>
                     </div>
-                </div>
-            </div>
-        </div>
-
-        <div class="ui-tab-screen" id="tabSettingsScreen">
-            <div class="settings-panel-scroll-view">
-                <div class="settings-profile-card-node">
-                    <div class="sidebar-profile-logo-wrap" style="width:52px;height:52px;padding:8px;">
-                        <svg viewBox="0 0 24 24" fill="none" stroke="#ffffff" stroke-width="2.5">
-                            <path d="M3 5l4 14 5-10 5 10 4-14"/>
-                        </svg>
-                    </div>
-                    <div class="user-meta-data">
-                        <div class="user-meta-title" style="font-size:16px;">Илья Осипов</div>
-                        <div class="user-meta-sub">maksimmihajlov8212@gmail.com</div>
-                    </div>
-                </div>
-                <div class="section-divider-hdr" style="margin-left:20px;">Конфигурация UI</div>
-                <div class="settings-row-option-item">
-                    <div class="option-text-group">
-                        <div class="option-main-label">Тема оформления</div>
-                        <div class="option-sub-label">Монохромный черный OLED</div>
-                    </div>
-                    <span class="chevron-vector-arrow">❯</span>
-                </div>
-                <div class="settings-row-option-item">
-                    <div class="option-text-group">
-                        <div class="option-main-label">Haptic Feedback</div>
-                        <div class="option-sub-label">Виброотклик клавиш Vivo</div>
-                    </div>
-                    <span class="chevron-vector-arrow">❯</span>
-                </div>
-                <div class="section-divider-hdr" style="margin-left:20px; margin-top:16px;">Матрица Prisma</div>
-                <div class="settings-row-option-item" onclick="navigateToTargetTabScreen('agents')">
-                    <div class="option-text-group">
-                        <div class="option-main-label">Персонализировать Prisma</div>
-                        <div class="option-sub-label">Промпты, системный характер, аниме-инструкции</div>
-                    </div>
-                    <span class="chevron-vector-arrow">❯</span>
-                </div>
-            </div>
-        </div>
-
-        <div class="ui-tab-screen" id="tabAgentsScreen">
-            <div class="agents-editor-layout-root">
-                <div class="agent-plate-container">
-                    <div class="agent-mini-logo-box">
-                        <svg viewBox="0 0 24 24" fill="none" stroke="#ffffff" stroke-width="2"><polygon points="12 2 2 7 12 12 22 7 12 2"></polygon><polyline points="2 17 12 22 22 17"></polyline><polyline points="2 12 12 17 22 12"></polyline></svg>
-                    </div>
-                    <div>
-                        <div style="font-weight:700; font-size:15px; text-transform:uppercase; letter-spacing:0.5px;">Prisma Core Customizer</div>
-                        <div style="font-size:12px; color:var(--text-muted-gray); margin-top:2px;">Редактирование ментальных триггеров модели</div>
-                    </div>
-                </div>
-                <div class="textarea-mono-input-box">
-                    <textarea id="systemPromptEditorField" placeholder="Впиши сюда свои инструкции (Характер, правила сленга, аниме-вайб)..."></textarea>
-                </div>
-                <div class="action-buttons-flex-row">
-                    <button class="control-mono-btn secondary" onclick="navigateToTargetTabScreen('settings')">Назад</button>
-                    <button class="control-mono-btn primary" onclick="saveCustomPromptToStorage()">Сохранить</button>
                 </div>
             </div>
         </div>
@@ -745,40 +277,79 @@
 
     let attachedFileBuffer = null;
 
-    let internalAppState = JSON.parse(localStorage.getItem('prisma_core_v5_storage')) || {
+    let internalAppState = JSON.parse(localStorage.getItem('prisma_core_v6_storage')) || {
         sessions: {},
         currentActiveSessionId: null,
-        customSystemInstruction: ""
+        activeModelId: 'fast',
+        activeModelName: 'Быстрый'
     };
 
     function pushStateToLocalStorage() {
-        localStorage.setItem('prisma_core_v5_storage', JSON.stringify(internalAppState));
+        localStorage.setItem('prisma_core_v6_storage', JSON.stringify(internalAppState));
     }
 
+    // --- Логика Шторок ---
+    function openSheet(sheetId) {
+        document.getElementById('globalSheetOverlay').classList.add('active');
+        document.getElementById(sheetId).classList.add('active');
+    }
+
+    function closeAllSheets() {
+        document.getElementById('globalSheetOverlay').classList.remove('active');
+        document.querySelectorAll('.bottom-sheet-modal').forEach(el => el.classList.remove('active'));
+    }
+
+    // --- Логика Выбора Модели ---
+    function setActiveModel(modelId, modelName) {
+        internalAppState.activeModelId = modelId;
+        internalAppState.activeModelName = modelName;
+        pushStateToLocalStorage();
+        
+        document.querySelectorAll('.model-option-row').forEach(el => el.classList.remove('selected'));
+        document.getElementById('mod_' + modelId).classList.add('selected');
+        document.getElementById('headerModelName').innerText = modelName;
+        
+        closeAllSheets();
+    }
+    
+    // --- Логика Аттачей ---
+    function triggerFileInput(inputId) {
+        closeAllSheets();
+        document.getElementById(inputId).click();
+    }
+
+    function handleFileSelection(e) {
+        let file = e.target.files[0];
+        if (!file) return;
+        
+        let reader = new FileReader();
+        reader.onloadend = function() {
+            let b64 = reader.result.split(',')[1];
+            attachedFileBuffer = {
+                base64: b64,
+                mime: file.type,
+                name: file.name
+            };
+            document.getElementById('mediaStatusText').innerText = `📎 Прикреплено: ${file.name}`;
+            document.getElementById('mediaStatusBarNode').style.display = 'flex';
+        };
+        reader.readAsDataURL(file);
+        e.target.value = ''; // Сброс инпута
+    }
+
+    document.getElementById('sysInputGallery').addEventListener('change', handleFileSelection);
+    document.getElementById('sysInputCamera').addEventListener('change', handleFileSelection);
+    document.getElementById('sysInputFiles').addEventListener('change', handleFileSelection);
+
+    function clearAttachedFileBuffer() {
+        attachedFileBuffer = null;
+        document.getElementById('mediaStatusBarNode').style.display = 'none';
+    }
+
+    // --- Базовая логика чата ---
     function toggleSidebarMenuDrawer(open) {
         document.getElementById('sidebarNode').classList.toggle('active', open);
         document.getElementById('uiOverlay').classList.toggle('active', open);
-    }
-
-    function navigateToTargetTabScreen(screenKey) {
-        document.getElementById('tabChatScreen').classList.toggle('active', screenKey === 'chat');
-        document.getElementById('tabSettingsScreen').classList.toggle('active', screenKey === 'settings');
-        document.getElementById('tabAgentsScreen').classList.toggle('active', screenKey === 'agents');
-        
-        let titleText = 'Спросить';
-        if(screenKey === 'settings') titleText = 'Настройки';
-        if(screenKey === 'agents') titleText = 'Инструкции';
-        document.getElementById('screenHeaderTitle').innerText = titleText;
-        
-        let rActionBtn = document.getElementById('headerRightActionNode');
-        if(screenKey === 'chat') {
-            rActionBtn.innerHTML = `<svg viewBox="0 0 24 24" fill="none" stroke="#ffffff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="width:20px;height:20px;"><polyline points="23 4 23 10 17 10"></polyline><polyline points="1 20 1 14 7 14"></polyline><path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15"></path></svg>`;
-            rActionBtn.onclick = triggerNewSessionCreation;
-        } else {
-            rActionBtn.innerHTML = `<svg viewBox="0 0 24 24" fill="none" stroke="#ffffff" stroke-width="2" style="width:18px;height:18px;"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>`;
-            rActionBtn.onclick = () => navigateToTargetTabScreen('chat');
-        }
-        toggleSidebarMenuDrawer(false);
     }
 
     function rebuildSessionSidebarMenu() {
@@ -795,10 +366,7 @@
             let delBtn = document.createElement('div');
             delBtn.className = 'delete-session-btn';
             delBtn.innerText = '✕';
-            delBtn.onclick = (e) => {
-                e.stopPropagation();
-                deleteSessionDataNode(sid);
-            };
+            delBtn.onclick = (e) => { e.stopPropagation(); deleteSessionDataNode(sid); };
             
             node.appendChild(titleSpan);
             node.appendChild(delBtn);
@@ -808,26 +376,20 @@
 
     function deleteSessionDataNode(sid) {
         delete internalAppState.sessions[sid];
-        if(internalAppState.currentActiveSessionId === sid) {
-            internalAppState.currentActiveSessionId = null;
-        }
+        if(internalAppState.currentActiveSessionId === sid) internalAppState.currentActiveSessionId = null;
         pushStateToLocalStorage();
         rebuildSessionSidebarMenu();
-        if(Object.keys(internalAppState.sessions).length > 0) {
-            syncAndLoadSession(Object.keys(internalAppState.sessions).pop());
-        } else {
-            triggerNewSessionCreation();
-        }
+        if(Object.keys(internalAppState.sessions).length > 0) syncAndLoadSession(Object.keys(internalAppState.sessions).pop());
+        else triggerNewSessionCreation();
     }
 
     function triggerNewSessionCreation() {
-        let newSid = 'session_token_' + Date.now();
+        let newSid = 'session_' + Date.now();
         internalAppState.sessions[newSid] = { title: '', logs: [] };
         internalAppState.currentActiveSessionId = newSid;
         pushStateToLocalStorage();
         rebuildSessionSidebarMenu();
         syncAndLoadSession(newSid);
-        navigateToTargetTabScreen('chat');
     }
 
     function syncAndLoadSession(sid) {
@@ -838,9 +400,7 @@
         let workspace = document.getElementById('chatRenderLayout');
         workspace.innerHTML = `
             <div class="central-logo-layout" id="centralLogoContainer">
-                <svg class="volt-vector-logo-body" viewBox="0 0 24 24" fill="none" stroke="#ffffff" stroke-width="2.5">
-                    <path d="M3 5l4 14 5-10 5 10 4-14"/>
-                </svg>
+                <svg class="volt-vector-logo-body" viewBox="0 0 24 24" fill="none" stroke="#ffffff" stroke-width="2.5"><path d="M3 5l4 14 5-10 5 10 4-14"/></svg>
             </div>
         `;
         let activeSession = internalAppState.sessions[sid];
@@ -857,7 +417,6 @@
         let workspace = document.getElementById('chatRenderLayout');
         let block = document.createElement('div');
         block.className = 'msg-card-block';
-        
         let bubble = document.createElement('div');
         bubble.className = `msg-bubble-layout ${role}`;
         
@@ -872,95 +431,7 @@
         txtNode.innerText = text;
         bubble.appendChild(txtNode);
         block.appendChild(bubble);
-        
-        // Панель управления сообщением (Редактировать, Переотправить)
-        let actionBar = document.createElement('div');
-        actionBar.className = 'msg-action-bar';
-        
-        if (role === 'user') {
-            let editBtn = document.createElement('div');
-            editBtn.className = 'msg-action-btn';
-            editBtn.innerText = 'Изменить';
-            editBtn.onclick = () => triggerEditMessageTransaction(index);
-            actionBar.appendChild(editBtn);
-        } else {
-            let retryBtn = document.createElement('div');
-            retryBtn.className = 'msg-action-btn';
-            retryBtn.innerText = 'Переотправить';
-            retryBtn.onclick = () => triggerRetryGenerationSequence(index);
-            actionBar.appendChild(retryBtn);
-        }
-        
-        block.appendChild(actionBar);
         workspace.appendChild(block);
-    }
-
-    function triggerEditMessageTransaction(index) {
-        let currentSession = internalAppState.sessions[internalAppState.currentActiveSessionId];
-        let oldText = currentSession.logs[index].text;
-        let newText = prompt("Редактирование сообщения:", oldText);
-        if (newText === null || newText.trim() === "") return;
-        
-        // Срезаем хвост истории после отредактированного сообщения
-        currentSession.logs = currentSession.logs.slice(0, index + 1);
-        currentSession.logs[index].text = newText.trim();
-        
-        // Если это была первая строка, меняем авто-заголовок
-        if (index === 0) {
-            let title = newText.trim();
-            currentSession.title = title.length > 20 ? title.substring(0, 18) + "..." : title;
-        }
-        
-        pushStateToLocalStorage();
-        syncAndLoadSession(internalAppState.currentActiveSessionId);
-        dispatchOutboundNetworkPacket(currentSession.logs);
-    }
-
-    function triggerRetryGenerationSequence(index) {
-        let currentSession = internalAppState.sessions[internalAppState.currentActiveSessionId];
-        // Срезаем лог до пользовательского запроса перед этим бот-ответом
-        currentSession.logs = currentSession.logs.slice(0, index);
-        pushStateToLocalStorage();
-        syncAndLoadSession(internalAppState.currentActiveSessionId);
-        dispatchOutboundNetworkPacket(currentSession.logs);
-    }
-
-    function triggerLineByLineTeletypePrint(fullResponseString) {
-        let workspace = document.getElementById('chatRenderLayout');
-        let block = document.createElement('div');
-        block.className = 'msg-card-block';
-        let bubble = document.createElement('div');
-        bubble.className = 'msg-bubble-layout bot';
-        block.appendChild(bubble);
-        workspace.appendChild(block);
-        
-        let segmentedLines = fullResponseString.split('\n');
-        let lineIter = 0;
-                
-        function streamEngine() {
-            if(lineIter < segmentedLines.length) {
-                bubble.innerHTML += (lineIter > 0 ? '<br>' : '') + segmentedLines[lineIter];
-                workspace.scrollTop = workspace.scrollHeight;
-                lineIter++;
-                setTimeout(streamEngine, 70);
-            } else {
-                document.getElementById('inputZoneContainer').style.opacity = '1';
-                document.getElementById('inputZoneContainer').style.pointerEvents = 'auto';
-                
-                // Добавляем кнопки под финализированный ответ бота
-                let currentSession = internalAppState.sessions[internalAppState.currentActiveSessionId];
-                let bIdx = currentSession.logs.length - 1;
-                let actionBar = document.createElement('div');
-                actionBar.className = 'msg-action-bar';
-                let retryBtn = document.createElement('div');
-                retryBtn.className = 'msg-action-btn';
-                retryBtn.innerText = 'Переотправить';
-                retryBtn.onclick = () => triggerRetryGenerationSequence(bIdx);
-                actionBar.appendChild(retryBtn);
-                block.appendChild(actionBar);
-            }
-        }
-        streamEngine();
     }
 
     function executeMessageCommit() {
@@ -971,9 +442,8 @@
         if(!internalAppState.currentActiveSessionId) triggerNewSessionCreation();
         let currentSession = internalAppState.sessions[internalAppState.currentActiveSessionId];
         
-        // Умный авто-заголовок чата по первому сообщению
         if(currentSession.logs.length === 0) {
-            let title = value || "Файл / Изображение";
+            let title = value || "Медиафайл";
             currentSession.title = title.length > 20 ? title.substring(0, 18) + "..." : title;
             document.getElementById('centralLogoContainer').style.opacity = '0';
         }
@@ -999,90 +469,39 @@
         let workspace = document.getElementById('chatRenderLayout');
         let loaderRow = document.createElement('div');
         loaderRow.className = 'msg-card-block';
-        loaderRow.id = 'runtime_sphere_loader';
-        loaderRow.innerHTML = `
-            <div class="sphere-thinking-container">
-                <div class="pulse-mono-sphere"></div>
-                <span>Thinking...</span>
-            </div>
-        `;
+        loaderRow.id = 'runtime_loader';
+        loaderRow.innerHTML = `<div class="sphere-thinking-container"><div class="pulse-mono-sphere"></div><span>Thinking...</span></div>`;
         workspace.appendChild(loaderRow);
         workspace.scrollTop = workspace.scrollHeight;
 
-        let networkTransactionPacket = {
-            prompt: internalAppState.customSystemInstruction,
+        let networkData = {
+            model: internalAppState.activeModelId, // Бэкенд должен ловить этот параметр
             history: historyLogs
         };
-        
-        // Передача пакета в ядро бэкенда через нативную шину
-        tgInstance.sendData(JSON.stringify(networkTransactionPacket));
+        tgInstance.sendData(JSON.stringify(networkData));
     }
 
-    // Обработчик системного плюсика для медиафайлов
-    document.getElementById('prismaFileInputNode').addEventListener('change', function(e) {
-        let file = e.target.files[0];
-        if (!file) return;
-        
-        let reader = new FileReader();
-        reader.onloadend = function() {
-            let b64 = reader.result.split(',')[1];
-            attachedFileBuffer = {
-                base64: b64,
-                mime: file.type,
-                name: file.name
-            };
-            let bar = document.getElementById('mediaStatusBarNode');
-            document.getElementById('mediaStatusText').innerText = `📎 Клип: ${file.name}`;
-            bar.style.display = 'flex';
-        };
-        reader.readAsDataURL(file);
-    });
-
-    function clearAttachedFileBuffer() {
-        attachedFileBuffer = null;
-        document.getElementById('prismaFileInputNode').value = '';
-        document.getElementById('mediaStatusBarNode').style.display = 'none';
-    }
-
-    function injectExternalServerPayload(payloadText) {
-        let loader = document.getElementById('runtime_sphere_loader');
-        if(loader) loader.remove();
-        if(internalAppState.currentActiveSessionId && internalAppState.sessions[internalAppState.currentActiveSessionId]) {
-            internalAppState.sessions[internalAppState.currentActiveSessionId].logs.push({ role: 'bot', text: payloadText });
-            pushStateToLocalStorage();
-        }
-        triggerLineByLineTeletypePrint(payloadText);
-    }
-
-    function saveCustomPromptToStorage() {
-        internalAppState.customSystemInstruction = document.getElementById('systemPromptEditorField').value;
-        pushStateToLocalStorage();
-        tgInstance.showAlert("Инструкции Prisma успешно залиты в кэш процессора! 🧬🦾");
-        navigateToTargetTabScreen('chat');
-    }
-
-    // Слушатель входящих сообщений от Telegram-бота для синхронизации без перезагрузок
-    tgInstance.onEvent('mainButtonClicked', function() {}); 
-    
-    // Перехват текстовых пакетов от сервера, чтобы предотвратить мёртвый лоадер
     window.addEventListener('message', function(event) {
         try {
             let data = JSON.parse(event.data);
             if (data && data.action === 'inject') {
-                injectExternalServerPayload(data.text);
+                document.getElementById('runtime_loader')?.remove();
+                document.getElementById('inputZoneContainer').style.opacity = '1';
+                document.getElementById('inputZoneContainer').style.pointerEvents = 'auto';
+                if(internalAppState.currentActiveSessionId) {
+                    internalAppState.sessions[internalAppState.currentActiveSessionId].logs.push({ role: 'bot', text: data.text });
+                    pushStateToLocalStorage();
+                    syncAndLoadSession(internalAppState.currentActiveSessionId);
+                }
             }
         } catch(e){}
     });
 
     window.onload = () => {
-        document.getElementById('systemPromptEditorField').value = internalAppState.customSystemInstruction || "";
+        setActiveModel(internalAppState.activeModelId || 'fast', internalAppState.activeModelName || 'Быстрый');
         rebuildSessionSidebarMenu();
-        if(Object.keys(internalAppState.sessions).length > 0) {
-            syncAndLoadSession(Object.keys(internalAppState.sessions).pop());
-        } else {
-            triggerNewSessionCreation();
-        }
-        window.PrismaInject = injectExternalServerPayload;
+        if(Object.keys(internalAppState.sessions).length > 0) syncAndLoadSession(Object.keys(internalAppState.sessions).pop());
+        else triggerNewSessionCreation();
     };
     </script>
 </body>
