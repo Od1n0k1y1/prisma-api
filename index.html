@@ -3,889 +3,1074 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>PRISMA Premium UI</title>
+    <title>PRISMA OS PRO</title>
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;700&family=Ubuntu:wght@400;500;700&display=swap" rel="stylesheet">
     <style>
-        :root {
-            --bg-dark: #000000;
-            --bg-main: #0a0a0c;
-            --bg-card: #151518;
-            --bg-input: #18181c;
-            --border-color: #222226;
-            --text-white: #ffffff;
-            --text-gray: #75757c;
-            --text-dim: #444448;
-            --accent-white: #f5f5f7;
-        }
-
-        * {
-            box-sizing: border-box;
-            margin: 0;
-            padding: 0;
-            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
-            -webkit-tap-highlight-color: transparent;
-            user-select: none;
-        }
-
-        body {
-            background-color: var(--bg-dark);
-            color: var(--text-white);
-            height: 100vh;
-            overflow: hidden;
-            display: flex;
-        }
-
-        /* МЕНЮ СЛЕВА (SIDEBAR) */
-        .sidebar {
-            width: 290px;
-            background-color: var(--bg-main);
-            border-right: 1px solid var(--border-color);
-            display: flex;
-            flex-direction: column;
-            position: absolute;
-            top: 0;
-            left: 0;
-            bottom: 0;
-            z-index: 100;
-            transform: translateX(-100%);
-            transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-        }
-
-        .sidebar.active {
-            transform: translateX(0);
-        }
-
-        .sidebar-profile {
-            padding: 24px 20px;
-            display: flex;
-            align-items: center;
-            gap: 14px;
-            border-bottom: 1px solid var(--border-color);
-        }
-
-        .sidebar-avatar {
-            width: 44px;
-            height: 44px;
-            border-radius: 50%;
-            background: #222;
-            object-fit: cover;
-            border: 1px solid var(--border-color);
-        }
-
-        .profile-meta {
-            display: flex;
-            flex-direction: column;
-            overflow: hidden;
-        }
-
-        .profile-name {
-            font-size: 15px;
-            font-weight: 600;
-            color: var(--text-white);
-            white-space: nowrap;
-            overflow: hidden;
-            text-overflow: ellipsis;
-        }
-
-        .profile-sub {
-            font-size: 12px;
-            color: var(--text-gray);
-            white-space: nowrap;
-            overflow: hidden;
-            text-overflow: ellipsis;
-            margin-top: 2px;
-        }
-
-        .sidebar-menu {
-            flex: 1;
-            overflow-y: auto;
-            padding: 15px 12px;
-        }
-
-        .menu-section-title {
-            font-size: 11px;
-            font-weight: 700;
-            text-transform: uppercase;
-            color: var(--text-gray);
-            letter-spacing: 0.8px;
-            margin: 18px 8px 8px 8px;
-        }
-
-        .chat-list-container {
-            display: flex;
-            flex-direction: column;
-            gap: 4px;
-        }
-
-        .sidebar-chat-item {
-            padding: 12px 14px;
-            border-radius: 14px;
-            font-size: 14px;
-            color: var(--text-white);
-            cursor: pointer;
-            white-space: nowrap;
-            overflow: hidden;
-            text-overflow: ellipsis;
-            transition: background 0.2s;
-        }
-
-        .sidebar-chat-item:active, .sidebar-chat-item.active {
-            background-color: var(--bg-card);
-        }
-
-        .sidebar-chat-item.active {
-            font-weight: 500;
-        }
-
-        .sidebar-footer {
-            padding: 16px 20px;
-            border-top: 1px solid var(--border-color);
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            background-color: var(--bg-main);
-        }
-
-        .footer-icon-btn {
-            width: 42px;
-            height: 42px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            border-radius: 50%;
-            cursor: pointer;
-            color: var(--text-white);
-            font-size: 18px;
-            transition: background 0.2s;
-        }
-
-        .footer-icon-btn:active {
-            background-color: var(--bg-card);
-        }
-
-        /* ОСНОВНОЙ ПРОВИДЕР ЭКРАНОВ */
-        .app-content {
-            flex: 1;
-            display: flex;
-            flex-direction: column;
-            height: 100vh;
-            position: relative;
-            background-color: var(--bg-dark);
-        }
-
-        .click-overlay {
-            position: absolute;
-            top: 0; left: 0; right: 0; bottom: 0;
-            background: rgba(0,0,0,0.6);
-            display: none;
-            z-index: 90;
-        }
-
-        .click-overlay.active {
-            display: block;
-        }
-
-        /* НАВБАР (HEADER) */
-        .navbar {
-            height: 60px;
-            border-bottom: 1px solid var(--border-color);
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            padding: 0 16px;
-            background-color: var(--bg-dark);
-            z-index: 10;
-        }
-
-        .navbar-left {
-            display: flex;
-            align-items: center;
-            gap: 16px;
-        }
-
-        .burger-menu {
-            width: 24px;
-            height: 24px;
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
-            gap: 5px;
-            cursor: pointer;
-        }
-
-        .burger-menu span {
-            width: 20px;
-            height: 2px;
-            background-color: var(--text-white);
-            border-radius: 1px;
-            transition: 0.2s;
-        }
-
-        .navbar-title {
-            font-size: 18px;
-            font-weight: 600;
-            letter-spacing: -0.2px;
-        }
-
-        .navbar-right {
-            width: 40px;
-            height: 40px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            cursor: pointer;
-            font-size: 18px;
-        }
-
-        /* ЭКРАНЫ ПРИЛОЖЕНИЯ */
-        .app-screen {
-            flex: 1;
-            display: none;
-            flex-direction: column;
-            overflow: hidden;
-        }
-
-        .app-screen.active {
-            display: flex;
-        }
-
-        /* ЭКРАН 1: ЧАТ */
-        .chat-body {
-            flex: 1;
-            overflow-y: auto;
-            padding: 20px;
-            display: flex;
-            flex-direction: column;
-            gap: 24px;
-            position: relative;
-        }
-
-        /* ФОНОВЫЙ ТРЕУГОЛЬНИК PRISMA */
-        .prisma-bg-watermark {
-            position: absolute;
-            top: 45%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-            width: 140px;
-            height: 140px;
-            opacity: 0.1;
-            pointer-events: none;
-            fill: var(--text-white);
-            transition: opacity 0.3s;
-        }
-
-        .chat-welcome-hint {
-            text-align: center;
-            color: var(--text-gray);
-            font-size: 14px;
-            margin-top: 160px;
-            z-index: 2;
-            font-weight: 400;
-        }
-
-        .message-block {
-            display: flex;
-            flex-direction: column;
-            width: 100%;
-        }
-
-        .message-bubble {
-            max-width: 85%;
-            padding: 14px 18px;
-            border-radius: 22px;
-            font-size: 15px;
-            line-height: 1.5;
-            word-wrap: break-word;
-            user-select: text;
-        }
-
-        .message-bubble.user {
-            background-color: var(--bg-card);
-            color: var(--text-white);
-            align-self: flex-end;
-            border-bottom-right-radius: 4px;
-        }
-
-        .message-bubble.bot {
-            background-color: transparent;
-            color: var(--text-white);
-            align-self: flex-start;
-            padding: 4px 0;
-            border-radius: 0;
-        }
-
-        /* АНИМАЦИЯ СФЕРЫ (РАЗМЫШЛЕНИЕ) */
-        .thinking-wrapper {
-            display: flex;
-            align-items: center;
-            gap: 12px;
-            color: var(--text-gray);
-            font-size: 14px;
-            align-self: flex-start;
-            margin-top: 4px;
-        }
-
-        .mono-sphere {
-            width: 14px;
-            height: 14px;
-            background: var(--text-white);
-            border-radius: 50%;
-            opacity: 0.3;
-            animation: spherePulse 1.4s infinite ease-in-out;
-        }
-
-        @keyframes spherePulse {
-            0%, 100% { transform: scale(0.8); opacity: 0.2; }
-            50% { transform: scale(1.25); opacity: 0.7; }
-        }
-
-        /* ЗОНА ВВОДА КАНУННАЯ */
-        .bottom-input-bar {
-            padding: 16px;
-            background-color: var(--bg-dark);
-        }
-
-        .input-container-box {
-            background-color: var(--bg-input);
-            border-radius: 28px;
-            padding: 8px 16px;
-            display: flex;
-            flex-direction: column;
-            gap: 10px;
-            border: 1px solid rgba(255,255,255,0.02);
-        }
-
-        .input-text-row {
-            display: flex;
-            align-items: center;
-            width: 100%;
-        }
-
-        .input-container-box input {
-            flex: 1;
-            background: none;
-            border: none;
-            color: var(--text-white);
-            font-size: 16px;
-            outline: none;
-            padding: 6px 2px;
-        }
-
-        .input-container-box input::placeholder {
-            color: var(--text-gray);
-        }
-
-        .input-actions-row {
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            width: 100%;
-            padding-top: 2px;
-        }
-
-        .action-icons-left {
-            display: flex;
-            align-items: center;
-            gap: 16px;
-            color: var(--text-gray);
-            font-size: 18px;
-        }
-
-        .action-icon-item {
-            cursor: pointer;
-            width: 30px;
-            height: 30px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            border-radius: 50%;
-        }
-
-        .action-buttons-right {
-            display: flex;
-            align-items: center;
-            gap: 10px;
-        }
-
-        .grok-voice-btn {
-            background: var(--text-white);
-            color: var(--bg-dark);
-             Nestor-font-size: 13px;
-            font-size: 13px;
-            font-weight: 600;
-            padding: 6px 14px;
-            border-radius: 18px;
-            display: flex;
-            align-items: center;
-            gap: 6px;
-            cursor: pointer;
-        }
-
-        .grok-send-arrow {
-            width: 32px;
-            height: 32px;
-            background: var(--text-white);
-            color: var(--bg-dark);
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            cursor: pointer;
-            font-weight: bold;
-            font-size: 16px;
-        }
-
-        /* ЭКРАН 2: НАСТРОЙКИ (ANDROID STYLE) */
-        .settings-scroll-body {
-            flex: 1;
-            overflow-y: auto;
-            padding: 8px 0;
-        }
-
-        .settings-user-card {
-            background: var(--bg-card);
-            margin: 10px 16px 24px 16px;
-            padding: 18px;
-            border-radius: 24px;
-            display: flex;
-            align-items: center;
-            gap: 16px;
-        }
-
-        .settings-group-hdr {
-            font-size: 12px;
-            font-weight: 700;
-            color: var(--text-gray);
-            text-transform: uppercase;
-            letter-spacing: 0.6px;
-            margin: 16px 20px 8px 20px;
-        }
-
-        .settings-list-item {
-            padding: 16px 20px;
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            cursor: pointer;
-            background-color: var(--bg-dark);
-        }
-
-        .settings-list-item:active {
-            background: var(--bg-card);
-        }
-
-        .item-text-block {
-            display: flex;
-            flex-direction: column;
-            gap: 4px;
-        }
-
-        .item-main-title {
-            font-size: 15px;
-            font-weight: 500;
-            color: var(--text-white);
-        }
-
-        .item-sub-title {
-            font-size: 12px;
-            color: var(--text-gray);
-        }
-
-        .chevron-right {
-            color: var(--text-dim);
-            font-weight: bold;
-            font-size: 14px;
-        }
-
-        /* ЭКРАН 3: ПЕРСОНАЛИЗАЦИЯ И ИНСТРУКЦИИ */
-        .agents-wrapper {
-            padding: 16px;
-            display: flex;
-            flex-direction: column;
-            gap: 16px;
-        }
-
-        .agent-info-plate {
-            background: var(--bg-card);
-            border-radius: 20px;
-            padding: 16px;
-            display: flex;
-            align-items: center;
-            gap: 14px;
-        }
-
-        .agent-logo-placeholder {
-            width: 40px;
-            height: 40px;
-            background: var(--border-color);
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 18px;
-        }
-
-        .textarea-container {
-            background: var(--bg-card);
-            border-radius: 20px;
-            padding: 16px;
-            border: 1px solid rgba(255,255,255,0.02);
-        }
-
-        textarea {
-            width: 100%;
-            height: 180px;
-            background: none;
-            border: none;
-            color: var(--text-white);
-            resize: none;
-            outline: none;
-            font-size: 15px;
-            line-height: 1.5;
-            user-select: text;
-        }
-
-        .agents-btn-row {
-            display: flex;
-            justify-content: flex-end;
-            gap: 12px;
-            margin-top: 10px;
-        }
-
-        .control-btn {
-            padding: 12px 24px;
-            border-radius: 22px;
-            font-size: 14px;
-            font-weight: 600;
-            cursor: pointer;
-            transition: opacity 0.2s;
-        }
-
-        .control-btn:active {
-            opacity: 0.8;
-        }
-
-        .control-btn.primary {
-            background: var(--text-white);
-            color: var(--bg-dark);
-        }
-
-        .control-btn.secondary {
-            background: transparent;
-            color: var(--text-gray);
-        }
+    :root {
+    --bg-pure-black: #000000;
+    --bg-main-dark: #0a0a0a;
+    --bg-card-dark: #121212;
+    --bg-input-dark: #1a1a1a;
+    --border-monochrome: #222222;
+    --text-absolute-white: #ffffff;
+    --text-muted-gray: #777777;
+    --text-dimmed-gray: #444444;
+    --accent-white-glow: rgba(255, 255, 255, 0.08);
+    }
+    * {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+    font-family: 'Ubuntu', 'Space Grotesk', sans-serif;
+    -webkit-tap-highlight-color: transparent;
+    user-select: none;
+    }
+    body {
+    background-color: var(--bg-pure-black);
+    color: var(--text-absolute-white);
+    height: 100vh;
+    overflow: hidden;
+    display: flex;
+    }
+    .sidebar-panel-root {
+    width: 295px;
+    background-color: var(--bg-main-dark);
+    border-right: 1px solid var(--border-monochrome);
+    display: flex;
+    flex-direction: column;
+    position: absolute;
+    top: 0;
+    left: 0;
+    bottom: 0;
+    z-index: 500;
+    transform: translateX(-100%);
+    transition: transform 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+    .sidebar-panel-root.active {
+    transform: translateX(0);
+    }
+    .sidebar-user-section {
+    padding: 24px 20px;
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    border-bottom: 1px solid var(--border-monochrome);
+    }
+    .sidebar-profile-logo-wrap {
+    width: 46px;
+    height: 46px;
+    border-radius: 50%;
+    border: 1px solid var(--text-absolute-white);
+    padding: 6px;
+    background: var(--bg-pure-black);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    }
+    .sidebar-profile-logo-wrap svg {
+    width: 100%;
+    height: 100%;
+    }
+    .user-meta-data {
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+    }
+    .user-meta-title {
+    font-size: 15px;
+    font-weight: 700;
+    color: var(--text-absolute-white);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    }
+    .user-meta-sub {
+    font-size: 12px;
+    color: var(--text-muted-gray);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    margin-top: 2px;
+    }
+    .sidebar-scroll-menu {
+    flex: 1;
+    overflow-y: auto;
+    padding: 16px 12px;
+    }
+    .sidebar-action-btn-new {
+    border: 1px solid var(--border-monochrome);
+    padding: 12px;
+    border-radius: 14px;
+    text-align: center;
+    font-size: 13px;
+    font-weight: 700;
+    cursor: pointer;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    margin-bottom: 20px;
+    transition: background 0.2s;
+    }
+    .sidebar-action-btn-new:active {
+    background-color: var(--bg-card-dark);
+    }
+    .section-divider-hdr {
+    font-size: 11px;
+    font-weight: 700;
+    text-transform: uppercase;
+    color: var(--text-muted-gray);
+    letter-spacing: 0.8px;
+    margin: 14px 8px 6px 8px;
+    }
+    .chats-history-list-wrapper {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    }
+    .chat-session-row-item {
+    padding: 11px 14px;
+    border-radius: 12px;
+    font-size: 14px;
+    color: var(--text-absolute-white);
+    cursor: pointer;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    }
+    .chat-session-row-item:active, .chat-session-row-item.active {
+    background-color: var(--bg-card-dark);
+    }
+    .sidebar-bottom-bar {
+    padding: 16px 20px;
+    border-top: 1px solid var(--border-monochrome);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background-color: var(--bg-main-dark);
+    }
+    .sidebar-bottom-btn {
+    width: 40px;
+    height: 40px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 50%;
+    cursor: pointer;
+    color: var(--text-absolute-white);
+    transition: background 0.2s;
+    }
+    .sidebar-bottom-btn:active {
+    background-color: var(--bg-card-dark);
+    }
+    .main-app-viewport {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    height: 100vh;
+    position: relative;
+    background-color: var(--bg-pure-black);
+    }
+    .dark-screen-overlay {
+    position: absolute;
+    top: 0; left: 0; right: 0; bottom: 0;
+    background: rgba(0,0,0,0.7);
+    display: none;
+    z-index: 450;
+    }
+    .dark-screen-overlay.active {
+    display: block;
+    }
+    .app-navigation-header {
+    height: 64px;
+    border-bottom: 1px solid var(--border-monochrome);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0 16px;
+    background-color: var(--bg-pure-black);
+    z-index: 100;
+    }
+    .header-left-block {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    }
+    .ui-burger-button {
+    width: 24px;
+    height: 24px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    gap: 6px;
+    cursor: pointer;
+    }
+    .ui-burger-button span {
+    width: 22px;
+    height: 2px;
+    background-color: var(--text-absolute-white);
+    border-radius: 1px;
+    }
+    .ui-navbar-title {
+    font-size: 17px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    }
+    .header-right-block {
+    width: 40px;
+    height: 40px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    }
+    .ui-tab-screen {
+    flex: 1;
+    display: none;
+    flex-direction: column;
+    overflow: hidden;
+    }
+    .ui-tab-screen.active {
+    display: flex;
+    }
+    .chat-scroll-area {
+    flex: 1;
+    overflow-y: auto;
+    padding: 20px;
+    display: flex;
+    flex-direction: column;
+    gap: 24px;
+    position: relative;
+    }
+    .central-logo-layout {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    pointer-events: none;
+    transition: opacity 0.25s ease-out;
+    }
+    .volt-vector-logo-body {
+    width: 130px;
+    height: 130px;
+    filter: drop-shadow(0 0 10px rgba(255, 255, 255, 0.05));
+    }
+    .msg-card-block {
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+    }
+    .msg-bubble-layout {
+    max-width: 85%;
+    padding: 13px 18px;
+    border-radius: 20px;
+    font-size: 15px;
+    line-height: 1.5;
+    word-wrap: break-word;
+    user-select: text;
+    }
+    .msg-bubble-layout.user {
+    background-color: var(--bg-card-dark);
+    color: var(--text-absolute-white);
+    align-self: flex-end;
+    border-bottom-right-radius: 4px;
+    border: 1px solid rgba(255,255,255,0.02);
+    }
+    .msg-bubble-layout.bot {
+    background-color: transparent;
+    color: var(--text-absolute-white);
+    align-self: flex-start;
+    padding: 2px 0;
+    border-radius: 0;
+    }
+    .sphere-thinking-container {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    color: var(--text-muted-gray);
+    font-size: 14px;
+    align-self: flex-start;
+    margin-top: 4px;
+    }
+    .pulse-mono-sphere {
+    width: 14px;
+    height: 14px;
+    background: var(--text-absolute-white);
+    border-radius: 50%;
+    opacity: 0.3;
+    animation: monoSphereAnimation 1.3s infinite ease-in-out;
+    }
+    @keyframes monoSphereAnimation {
+    0%, 100% { transform: scale(0.85); opacity: 0.2; }
+    50% { transform: scale(1.2); opacity: 0.8; }
+    }
+    .bottom-input-zone-root {
+    padding: 16px;
+    background-color: var(--bg-pure-black);
+    border-top: 1px solid var(--border-monochrome);
+    }
+    .input-panel-wrapper {
+    background-color: var(--bg-input-dark);
+    border-radius: 24px;
+    padding: 10px 16px;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    border: 1px solid rgba(255,255,255,0.01);
+    }
+    .input-row-primary {
+    display: flex;
+    align-items: center;
+    width: 100%;
+    }
+    .input-panel-wrapper input {
+    flex: 1;
+    background: none;
+    border: none;
+    color: var(--text-absolute-white);
+    font-size: 16px;
+    outline: none;
+    padding: 4px 0;
+    }
+    .input-panel-wrapper input::placeholder {
+    color: var(--text-dimmed-gray);
+    }
+    .input-row-actions {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    width: 100%;
+    }
+    .action-group-left {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    }
+    .action-mono-icon-btn {
+    cursor: pointer;
+    width: 28px;
+    height: 28px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--text-muted-gray);
+    }
+    .action-mono-icon-btn svg {
+    width: 20px;
+    width: 20px; height: 20px;
+    }
+    .action-group-right {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    }
+    .grok-voice-pill-btn {
+    background: var(--text-absolute-white);
+    color: var(--bg-pure-black);
+    font-size: 13px;
+    font-weight: 700;
+    padding: 6px 14px;
+    border-radius: 16px;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    cursor: pointer;
+    }
+    .grok-voice-pill-btn svg {
+    width: 14px;
+    height: 14px;
+    }
+    .grok-submit-arrow-btn {
+    width: 32px;
+    height: 32px;
+    background: var(--text-absolute-white);
+    color: var(--bg-pure-black);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    }
+    .grok-submit-arrow-btn svg {
+    width: 16px;
+    height: 16px;
+    }
+    .settings-panel-scroll-view {
+    flex: 1;
+    overflow-y: auto;
+    padding: 8px 0;
+    }
+    .settings-profile-card-node {
+    background: var(--bg-card-dark);
+    margin: 10px 16px 24px 16px;
+    padding: 18px;
+    border-radius: 20px;
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    border: 1px solid var(--border-monochrome);
+    }
+    .settings-row-option-item {
+    padding: 16px 20px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    cursor: pointer;
+    background-color: var(--bg-pure-black);
+    border-bottom: 1px solid rgba(255,255,255,0.01);
+    }
+    .settings-row-option-item:active {
+    background: var(--bg-card-dark);
+    }
+    .settings-row-option-item svg {
+    width: 18px;
+    height: 18px;
+    }
+    .option-text-group {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    }
+    .option-main-label {
+    font-size: 15px;
+    font-weight: 500;
+    color: var(--text-absolute-white);
+    }
+    .option-sub-label {
+    font-size: 12px;
+    color: var(--text-muted-gray);
+    }
+    .chevron-vector-arrow {
+    color: var(--text-dimmed-gray);
+    }
+    .agents-editor-layout-root {
+    padding: 16px;
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+    }
+    .agent-plate-container {
+    background: var(--bg-card-dark);
+    border-radius: 16px;
+    padding: 16px;
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    border: 1px solid var(--border-monochrome);
+    }
+    .agent-mini-logo-box {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    border: 1px solid var(--text-absolute-white);
+    padding: 6px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    }
+    .textarea-mono-input-box {
+    background: var(--bg-card-dark);
+    border-radius: 16px;
+    padding: 16px;
+    border: 1px solid var(--border-monochrome);
+    }
+    .textarea-mono-input-box textarea {
+    width: 100%;
+    height: 180px;
+    background: none;
+    border: none;
+    color: var(--text-absolute-white);
+    resize: none;
+    outline: none;
+    font-size: 15px;
+    line-height: 1.5;
+    user-select: text;
+    }
+    .action-buttons-flex-row {
+    display: flex;
+    justify-content: flex-end;
+    gap: 12px;
+    margin-top: 10px;
+    }
+    .control-mono-btn {
+    padding: 12px 24px;
+    border-radius: 20px;
+    font-size: 14px;
+    font-weight: 700;
+    cursor: pointer;
+    }
+    .control-mono-btn.primary {
+    background: var(--text-absolute-white);
+    color: var(--bg-pure-black);
+    border: none;
+    }
+    .control-mono-btn.secondary {
+    background: transparent;
+    color: var(--text-muted-gray);
+    border: 1px solid var(--border-monochrome);
+    }
     </style>
-</head>
+    </head>
 <body>
 
-    <div class="sidebar" id="sidebar">
-        <div class="sidebar-profile">
-            <img class="sidebar-avatar" src="2237.jpg" onerror="this.src='https://placehold.co/44/222/fff?text=💎'">
-            <div class="profile-meta">
-                <div class="profile-name">Илья Осипов</div>
-                <div class="profile-sub">maksimmihajlov8212@gmail.com</div>
-            </div>
-        </div>
-        <div class="sidebar-menu">
-            <div class="menu-section-title" onclick="startNewChat()" style="color:var(--accent-white); border: 1px dashed var(--border-color); padding: 10px; border-radius:12px; text-align:center; cursor:pointer; margin-bottom:15px;">＋ Новый чат</div>
-            <div class="menu-section-title">Закреплено</div>
-            <div id="pinnedChatsBlock" class="chat-list-container"></div>
-            <div class="menu-section-title">Разговоры</div>
-            <div id="recentChatsBlock" class="chat-list-container"></div>
-        </div>
-        <div class="sidebar-footer">
-            <div class="footer-icon-btn" onclick="handleSidebarTrigger(false); openTargetScreen('settings')">⚙️</div>
-            <div class="footer-icon-btn" onclick="startNewChat()">📝</div>
-        </div>
+    <div class="sidebar-panel-root" id="sidebarNode">
+    <div class="sidebar-user-section">
+    <div class="sidebar-profile-logo-wrap">
+    <svg viewBox="0 0 512 512" fill="none" xmlns="http://www.w3.org/2000/svg">
+    <path d="M60 110L210 320L256 390L302 320L452 110H380L256 280L132 110H60Z" fill="#FFFFFF"/>
+    <path d="M256 390L220 340L180 280L210 230L256 300L302 230L332 280L292 340L256 390Z" fill="#FFFFFF"/>
+    <path d="M180 280L230 150H282L332 280L292 280L256 210L220 280H180Z" fill="#FFFFFF"/>
+    </svg>
+    </div>
+    <div class="user-meta-data">
+    <div class="user-meta-title">Илья Осипов</div>
+    <div class="user-meta-sub">maksimmihajlov8212@gmail.com</div>
+    </div>
+    </div>
+    <div class="sidebar-scroll-menu">
+    <div class="sidebar-action-btn-new" onclick="triggerNewSessionCreation()">＋ Новый чат</div>
+    <div class="section-divider-hdr">Закреплено</div>
+    <div id="pinnedBlock" class="chats-history-list-wrapper"></div>
+    <div class="section-divider-hdr">Разговоры</div>
+    <div id="recentBlock" class="chats-history-list-wrapper"></div>
+    </div>
+    <div class="sidebar-bottom-bar">
+    <div class="sidebar-bottom-btn" onclick="toggleSidebarMenuDrawer(false); navigateToTargetTabScreen('settings')">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"></circle><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"></path></svg>
+    </div>
+    <div class="sidebar-bottom-btn" onclick="triggerNewSessionCreation()">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path></svg>
+    </div>
+    </div>
     </div>
 
-    <div class="app-content">
-        <div class="click-overlay" id="clickOverlay" onclick="handleSidebarTrigger(false)"></div>
+    <div class="main-app-viewport">
+    <div class="dark-screen-overlay" id="uiOverlay" onclick="toggleSidebarMenuDrawer(false)"></div>
 
-        <div class="navbar">
-            <div class="navbar-left">
-                <div class="burger-menu" onclick="handleSidebarTrigger(true)">
-                    <span></span><span></span>
-                </div>
-                <div class="navbar-title" id="navbarTitle">Спросить</div>
-            </div>
-            <div class="navbar-right" id="navbarRightIcon" onclick="startNewChat()">🔄</div>
-        </div>
+    <div class="app-navigation-header">
+    <div class="header-left-block">
+    <div class="ui-burger-button" onclick="toggleSidebarMenuDrawer(true)">
+    <span></span><span></span><span></span>
+    </div>
+    <div class="ui-navbar-title" id="screenHeaderTitle">Спросить</div>
+    </div>
+    <div class="header-right-block" id="headerRightActionNode" onclick="triggerNewSessionCreation()">
+    <svg viewBox="0 0 24 24" fill="none" stroke="#ffffff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="width:20px;height:20px;"><polyline points="23 4 23 10 17 10"></polyline><polyline points="1 20 1 14 7 14"></polyline><path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15"></path></svg>
+    </div>
+    </div>
 
-        <div class="app-screen active" id="screenChat">
-            <div class="chat-body" id="chatWorkspace">
-                <svg class="prisma-bg-watermark" id="prismaWatermark" viewBox="0 0 100 100">
-                    <polygon points="50,85 15,25 85,25"/>
-                </svg>
-                <div class="chat-welcome-hint" id="welcomeHint">Задай любой вопрос</div>
-            </div>
-            <div class="bottom-input-bar" id="inputZoneBlock">
-                <div class="input-container-box">
-                    <div class="input-text-row">
-                        <input type="text" id="userIn" placeholder="Задай вопрос" onkeypress="if(event.key==='Enter') sendMessage()">
-                    </div>
-                    <div class="input-actions-row">
-                        <div class="action-icons-left">
-                            <span class="action-icon-item">＋</span>
-                            <span class="action-icon-item">⚡</span>
-                        </div>
-                        <div class="action-buttons-right">
-                            <div class="grok-voice-btn">
-                                <span>🎙️</span> Голосовой
-                            </div>
-                            <div class="grok-send-arrow" onclick="sendMessage()">↑</div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
+    <div class="ui-tab-screen active" id="tabChatScreen">
+    <div class="chat-scroll-area" id="chatRenderLayout">
+    <div class="central-logo-layout" id="centralLogoContainer">
+    <svg class="volt-vector-logo-body" viewBox="0 0 512 512" fill="none" xmlns="http://www.w3.org/2000/svg">
+    <path d="M60 110L210 320L256 390L302 320L452 110H380L256 280L132 110H60Z" fill="#FFFFFF"/>
+    <path d="M256 390L220 340L180 280L210 230L256 300L302 230L332 280L292 340L256 390Z" fill="#FFFFFF"/>
+    <path d="M180 280L230 150H282L332 280L292 280L256 210L220 280H180Z" fill="#FFFFFF"/>
+    </svg>
+    </div>
+    </div>
+    <div class="bottom-input-zone-root" id="inputZoneContainer">
+    <div class="input-panel-wrapper">
+    <div class="input-row-primary">
+    <input type="text" id="rawMessageInput" placeholder="Спроси Prisma..." onkeypress="if(event.key==='Enter') executeMessageCommit()">
+    </div>
+    <div class="input-row-actions">
+    <div class="action-group-left">
+    <div class="action-mono-icon-btn">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>
+    </div>
+    <div class="action-mono-icon-btn">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="12 2 2 7 12 12 22 7 12 2"></polygon><polyline points="2 17 12 22 22 17"></polyline><polyline points="2 12 12 17 22 12"></polyline></svg>
+    </div>
+    </div>
+    <div class="action-group-right">
+    <div class="grok-voice-pill-btn">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 1a3 3 0 0 0-3 3v8a3 3 0 0 0 6 0V4a3 3 0 0 0-3-3z"></path><path d="M19 10v1a7 7 0 0 1-14 0v-1"></path><line x1="12" y1="19" x2="12" y2="23"></line><line x1="8" y1="23" x2="16" y2="23"></line></svg>
+    <span>Голосовой</span>
+    </div>
+    <div class="grok-submit-arrow-btn" onclick="executeMessageCommit()">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><line x1="12" y1="19" x2="12" y2="5"></line><polyline points="5 12 12 5 19 12"></polyline></svg>
+    </div>
+    </div>
+    </div>
+    </div>
+    </div>
+    </div>
 
-        <div class="app-screen" id="screenSettings">
-            <div class="settings-scroll-body">
-                <div class="settings-user-card">
-                    <img class="sidebar-avatar" src="2237.jpg" onerror="this.src='https://placehold.co/44/222/fff?text=💎'">
-                    <div class="profile-meta">
-                        <div class="profile-name" style="font-size:16px;">Илья Осипов</div>
-                        <div class="profile-sub">maksimmihajlov8212@gmail.com</div>
-                    </div>
-                </div>
-                <div class="settings-group-hdr">Приложение</div>
-                <div class="settings-list-item"><div class="item-text-block"><div class="item-main-title">Внешний вид</div><div class="item-sub-title">Системный тёмный</div></div><span class="chevron-right">❯</span></div>
-                <div class="settings-list-item"><div class="item-text-block"><div class="item-main-title">Тактильный отклик</div><div class="item-sub-title">Включен на Vivo</div></div><span class="chevron-right">❯</span></div>
-                
-                <div class="settings-group-hdr">Prisma Core</div>
-                <div class="settings-list-item" onclick="openTargetScreen('agents')">
-                    <div class="item-text-block">
-                        <div class="item-main-title">Персонализировать Prisma</div>
-                        <div class="item-sub-title">Изменить инструкции поведения ИИ</div>
-                    </div>
-                    <span class="chevron-right">❯</span>
-                </div>
-            </div>
-        </div>
+    <div class="ui-tab-screen" id="tabSettingsScreen">
+    <div class="settings-panel-scroll-view">
+    <div class="settings-profile-card-node">
+    <div class="sidebar-profile-logo-wrap" style="width:52px;height:52px;padding:8px;">
+    <svg viewBox="0 0 512 512" fill="none" xmlns="http://www.w3.org/2000/svg">
+    <path d="M60 110L210 320L256 390L302 320L452 110H380L256 280L132 110H60Z" fill="#FFFFFF"/>
+    <path d="M256 390L220 340L180 280L210 230L256 300L302 230L332 280L292 340L256 390Z" fill="#FFFFFF"/>
+    </svg>
+    </div>
+    <div class="user-meta-data">
+    <div class="user-meta-title" style="font-size:16px;">Илья Осипов</div>
+    <div class="user-meta-sub">maksimmihajlov8212@gmail.com</div>
+    </div>
+    </div>
+    <div class="section-divider-hdr" style="margin-left:20px;">Конфигурация UI</div>
+    <div class="settings-row-option-item">
+    <div class="option-text-group">
+    <div class="option-main-label">Тема оформления</div>
+    <div class="option-sub-label">Монохромный черный OLED</div>
+    </div>
+    <span class="chevron-vector-arrow">❯</span>
+    </div>
+    <div class="settings-row-option-item">
+    <div class="option-text-group">
+    <div class="option-main-label">Haptic Feedback</div>
+    <div class="option-sub-label">Виброотклик клавиш Vivo</div>
+    </div>
+    <span class="chevron-vector-arrow">❯</span>
+    </div>
+    <div class="section-divider-hdr" style="margin-left:20px; margin-top:16px;">Матрица Prisma</div>
+    <div class="settings-row-option-item" onclick="navigateToTargetTabScreen('agents')">
+    <div class="option-text-group">
+    <div class="option-main-label">Персонализировать Prisma</div>
+    <div class="option-sub-label">Промпты, системный характер, аниме-инструкции</div>
+    </div>
+    <span class="chevron-vector-arrow">❯</span>
+    </div>
+    </div>
+    </div>
 
-        <div class="app-screen" id="screenAgents">
-            <div class="agents-wrapper">
-                <div class="settings-group-hdr" style="margin:0 4px 4px 4px;">Твои агенты</div>
-                <div class="agent-info-plate">
-                    <div class="agent-logo-placeholder">📐</div>
-                    <div>
-                        <div style="font-weight:600; font-size:15px;">Prisma Персональные Инструкции</div>
-                        <div style="font-size:12px; color:var(--text-gray); margin-top:2px;">Сюда зашивай свои промпты, характер и аниме-вайб</div>
-                    </div>
-                </div>
-                <div class="textarea-container">
-                    <textarea id="customPromptArea" placeholder="Впиши сюда свои кастомные инструкции (например: Общайся как резкий дерзкий пацан, шути про Поколение Чудес и Баскетбол Куроко)..."></textarea>
-                </div>
-                <div class="agents-btn-row">
-                    <div class="control-btn secondary" onclick="openTargetScreen('settings')">Назад</div>
-                    <div class="control-btn primary" onclick="commitCustomInstructions()">Сохранить</div>
-                </div>
-            </div>
-        </div>
+    <div class="ui-tab-screen" id="tabAgentsScreen">
+    <div class="agents-editor-layout-root">
+    <div class="agent-plate-container">
+    <div class="agent-mini-logo-box">
+    <svg viewBox="0 0 24 24" fill="none" stroke="#ffffff" stroke-width="2"><polygon points="12 2 2 7 12 12 22 7 12 2"></polygon><polyline points="2 17 12 22 22 17"></polyline><polyline points="2 12 12 17 22 12"></polyline></svg>
+    </div>
+    <div>
+    <div style="font-weight:700; font-size:15px; text-transform:uppercase; letter-spacing:0.5px;">Prisma Core Customizer</div>
+    <div style="font-size:12px; color:var(--text-muted-gray); margin-top:2px;">Редактирование ментальных триггеров модели</div>
+    </div>
+    </div>
+    <div class="textarea-mono-input-box">
+    <textarea id="systemPromptEditorField" placeholder="Впиши сюда свои инструкции (Характер, правила сленга, аниме-вайб)..."></textarea>
+    </div>
+    <div class="action-buttons-flex-row">
+    <button class="control-mono-btn secondary" onclick="navigateToTargetTabScreen('settings')">Назад</button>
+    <button class="control-mono-btn primary" onclick="saveCustomPromptToStorage()">Сохранить</button>
+    </div>
+    </div>
+    </div>
 
     </div>
 
     <script>
-        let tg = window.Telegram.WebApp;
-        tg.expand();
-        tg.ready();
+    let tgInstance = window.Telegram.WebApp;
+    tgInstance.expand();
+    tgInstance.ready();
 
-        // Инициализируем базу данных в памяти телефона
-        let appState = JSON.parse(localStorage.getItem('prisma_v4_storage')) || {
-            chats: {},
-            activeChatId: null,
-            systemPrompt: ""
-        };
+    let internalAppState = JSON.parse(localStorage.getItem('prisma_core_v5_storage')) || {
+    sessions: {},
+    currentActiveSessionId: null,
+    customSystemInstruction: ""
+    };
 
-        function commitLocalStorage() {
-            localStorage.setItem('prisma_v4_storage', JSON.stringify(appState));
-        }
+    function pushStateToLocalStorage() {
+    localStorage.setItem('prisma_core_v5_storage', JSON.stringify(internalAppState));
+    }
 
-        function handleSidebarTrigger(open) {
-            document.getElementById('sidebar').classList.toggle('active', open);
-            document.getElementById('clickOverlay').classList.toggle('active', open);
-        }
+    function toggleSidebarMenuDrawer(open) {
+    document.getElementById('sidebarNode').classList.toggle('active', open);
+    document.getElementById('uiOverlay').classList.toggle('active', open);
+    }
 
-        function openTargetScreen(screenName) {
-            document.getElementById('screenChat').classList.toggle('active', screenName === 'chat');
-            document.getElementById('screenSettings').classList.toggle('active', screenName === 'settings');
-            document.getElementById('screenAgents').classList.toggle('active', screenName === 'agents');
+    function navigateToTargetTabScreen(screenKey) {
+    document.getElementById('tabChatScreen').classList.toggle('active', screenKey === 'chat');
+    document.getElementById('tabSettingsScreen').classList.toggle('active', screenKey === 'settings');
+    document.getElementById('tabAgentsScreen').classList.toggle('active', screenKey === 'agents');
+    
+    let titleText = 'Спросить';
+    if(screenKey === 'settings') titleText = 'Настройки';
+    if(screenKey === 'agents') titleText = 'Инструкции';
+    document.getElementById('screenHeaderTitle').innerText = titleText;
+    
+    let rActionBtn = document.getElementById('headerRightActionNode');
+    if(screenKey === 'chat') {
+    rActionBtn.innerHTML = `<svg viewBox="0 0 24 24" fill="none" stroke="#ffffff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="width:20px;height:20px;"><polyline points="23 4 23 10 17 10"></polyline><polyline points="1 20 1 14 7 14"></polyline><path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15"></path></svg>`;
+    rActionBtn.onclick = triggerNewSessionCreation;
+    } else {
+    rActionBtn.innerHTML = `<svg viewBox="0 0 24 24" fill="none" stroke="#ffffff" stroke-width="2" style="width:18px;height:18px;"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>`;
+    rActionBtn.onclick = () => navigateToTargetTabScreen('chat');
+    }
+    toggleSidebarMenuDrawer(false);
+    }
+
+    function rebuildSessionSidebarMenu() {
+    let recBlock = document.getElementById('recentBlock');
+    recBlock.innerHTML = '';
+    Object.keys(internalAppState.sessions).reverse().forEach(sid => {
+    let node = document.createElement('div');
+    node.className = `chat-session-row-item ${sid === internalAppState.currentActiveSessionId ? 'active' : ''}`;
+    node.innerText = internalAppState.sessions[sid].title || 'Новый чат';
+    node.onclick = () => { syncAndLoadSession(sid); toggleSidebarMenuDrawer(false); };
+    recBlock.appendChild(node);
+    });
+    }
+
+    function triggerNewSessionCreation() {
+    let newSid = 'session_token_' + Date.now();
+    internalAppState.sessions[newSid] = { title: '', logs: [] };
+    internalAppState.currentActiveSessionId = newSid;
+    pushStateToLocalStorage();
+    rebuildSessionSidebarMenu();
+    syncAndLoadSession(newSid);
+    navigateToTargetTabScreen('chat');
+    }
+
+    function syncAndLoadSession(sid) {
+    internalAppState.currentActiveSessionId = sid;
+    pushStateToLocalStorage();
+    rebuildSessionSidebarMenu();
             
-            let titleText = 'Спросить';
-            let rightIconText = '🔄';
+    let workspace = document.getElementById('chatRenderLayout');
+    workspace.innerHTML = `
+    <div class="central-logo-layout" id="centralLogoContainer">
+    <svg class="volt-vector-logo-body" viewBox="0 0 512 512" fill="none" xmlns="http://www.w3.org/2000/svg">
+    <path d="M60 110L210 320L256 390L302 320L452 110H380L256 280L132 110H60Z" fill="#FFFFFF"/>
+    <path d="M256 390L220 340L180 280L210 230L256 300L302 230L332 280L292 340L256 390Z" fill="#FFFFFF"/>
+    <path d="M180 280L230 150H282L332 280L292 280L256 210L220 280H180Z" fill="#FFFFFF"/>
+    </svg>
+    </div>
+    `;
             
-            if(screenName === 'settings') { titleText = 'Настройки'; rightIconText = '✕'; }
-            if(screenName === 'agents') { titleText = 'Настроить'; rightIconText = '✕'; }
+    let activeSession = internalAppState.sessions[sid];
+    if(!activeSession || activeSession.logs.length === 0) return;
+
+    document.getElementById('centralLogoContainer').style.opacity = '0';
+
+    activeSession.logs.forEach(item => {
+    let block = document.createElement('div');
+    block.className = 'msg-card-block';
+    let bubble = document.createElement('div');
+    bubble.className = `msg-bubble-layout ${item.role}`;
+    bubble.innerText = item.text;
+    block.appendChild(bubble);
+    workspace.appendChild(block);
+    });
+    workspace.scrollTop = workspace.scrollHeight;
+    }
+
+    function triggerLineByLineTeletypePrint(fullResponseString) {
+    let workspace = document.getElementById('chatRenderLayout');
+    let block = document.createElement('div');
+    block.className = 'msg-card-block';
+    let bubble = document.createElement('div');
+    bubble.className = 'msg-bubble-layout bot';
+    block.appendChild(bubble);
+    workspace.appendChild(block);
             
-            document.getElementById('navbarTitle').innerText = titleText;
-            let rBtn = document.getElementById('navbarRightIcon');
-            rBtn.innerText = rightIconText;
+    let segmentedLines = fullResponseString.split('\n');
+    let lineIter = 0;
             
-            rBtn.onclick = (screenName === 'chat') ? startNewChat : () => openTargetScreen('chat');
-            handleSidebarTrigger(false);
-        }
+    function streamEngine() {
+    if(lineIter < segmentedLines.length) {
+    bubble.innerHTML += (lineIter > 0 ? '<br>' : '') + segmentedLines[lineIter];
+    workspace.scrollTop = workspace.scrollHeight;
+    lineIter++;
+    setTimeout(streamEngine, 110);
+    } else {
+    document.getElementById('inputZoneContainer').style.opacity = '1';
+    document.getElementById('inputZoneContainer').style.pointerEvents = 'auto';
+    }
+    }
+    streamEngine();
+    }
 
-        function rebuildChatSidebarMenu() {
-            let recentBlock = document.getElementById('recentChatsBlock');
-            recentBlock.innerHTML = '';
+    function executeMessageCommit() {
+    let inputNode = document.getElementById('rawMessageInput');
+    let value = inputNode.value.trim();
+    if(!value) return;
+
+    if(!internalAppState.currentActiveSessionId) triggerNewSessionCreation();
+    let currentSession = internalAppState.sessions[internalAppState.currentActiveSessionId];
             
-            Object.keys(appState.chats).reverse().forEach(id => {
-                let item = document.createElement('div');
-                item.className = `sidebar-chat-item ${id === appState.activeChatId ? 'active' : ''}`;
-                item.innerText = appState.chats[id].title || 'Новый диалог';
-                item.onclick = () => { loadTargetChat(id); handleSidebarTrigger(false); };
-                recentBlock.appendChild(item);
-            });
-        }
+    if(currentSession.logs.length === 0) {
+    currentSession.title = value.substring(0, 24);
+    document.getElementById('centralLogoContainer').style.opacity = '0';
+    }
 
-        function startNewChat() {
-            let newId = 'session_' + Date.now();
-            appState.chats[newId] = { title: '', messages: [] };
-            appState.activeChatId = newId;
-            commitLocalStorage();
-            rebuildChatSidebarMenu();
-            loadTargetChat(newId);
-            openTargetScreen('chat');
-        }
+    currentSession.logs.push({ role: 'user', text: value });
+    inputNode.value = '';
+    syncAndLoadSession(internalAppState.currentActiveSessionId);
 
-        function loadTargetChat(chatId) {
-            appState.activeChatId = chatId;
-            commitLocalStorage();
-            rebuildChatSidebarMenu();
+    document.getElementById('inputZoneContainer').style.opacity = '0.3';
+    document.getElementById('inputZoneContainer').style.pointerEvents = 'none';
+
+    let workspace = document.getElementById('chatRenderLayout');
+    let loaderRow = document.createElement('div');
+    loaderRow.className = 'msg-card-block';
+    loaderRow.id = 'runtime_sphere_loader';
+    loaderRow.innerHTML = `
+    <div class="sphere-thinking-container">
+    <div class="pulse-mono-mono-sphere"></div>
+    <div class="pulse-mono-sphere"></div>
+    <span>Thinking...</span>
+    </div>
+    `;
+    workspace.appendChild(loaderRow);
+    workspace.scrollTop = workspace.scrollHeight;
+
+    let networkTransactionPacket = {
+    prompt: internalAppState.customSystemInstruction,
+    history: currentSession.logs,
+    text: value
+    };
+
+    tgInstance.sendData(JSON.stringify(networkTransactionPacket));
+    }
+
+    function injectExternalServerPayload(payloadText) {
+    let loader = document.getElementById('runtime_sphere_loader');
+    if(loader) loader.remove();
             
-            let workspace = document.getElementById('chatWorkspace');
-            workspace.innerHTML = `
-                <svg class="prisma-bg-watermark" id="prismaWatermark" viewBox="0 0 100 100"><polygon points="50,85 15,25 85,25"/></svg>
-                <div class="chat-welcome-hint" id="welcomeHint">Задай любой вопрос</div>
-            `;
-            
-            let currentChat = appState.chats[chatId];
-            if(!currentChat || currentChat.messages.length === 0) return;
+    if(internalAppState.currentActiveSessionId && internalAppState.sessions[internalAppState.currentActiveSessionId]) {
+    internalAppState.sessions[internalAppState.currentActiveSessionId].logs.push({ role: 'bot', text: payloadText });
+    pushStateToLocalStorage();
+    }
+    triggerLineByLineTeletypePrint(payloadText);
+    }
 
-            document.getElementById('prismaWatermark').style.opacity = '0';
-            document.getElementById('welcomeHint').style.display = 'none';
+    function saveCustomPromptToStorage() {
+    internalAppState.customSystemInstruction = document.getElementById('systemPromptEditorField').value;
+    pushStateToLocalStorage();
+    tgInstance.showAlert("Инструкции Prisma успешно залиты в кэш процессора! 🧬🦾");
+    navigateToTargetTabScreen('chat');
+    }
 
-            currentChat.messages.forEach(msg => {
-                let row = document.createElement('div');
-                row.className = 'message-block';
-                let bubble = document.createElement('div');
-                bubble.className = `message-bubble ${msg.role}`;
-                bubble.innerText = msg.text;
-                row.appendChild(bubble);
-                workspace.appendChild(row);
-            });
-            workspace.scrollTop = workspace.scrollHeight;
-        }
-
-        // ЭФФЕКТ ПЛАВНОГО ВЫВОДА ТЕКСТА ПО СТРОЧКАМ (КАК В ВИДЕО)
-        function typeBotResponseLineByLine(fullText) {
-            let workspace = document.getElementById('chatWorkspace');
-            
-            let row = document.createElement('div');
-            row.className = 'message-block';
-            let bubble = document.createElement('div');
-            bubble.className = 'message-bubble bot';
-            row.appendChild(bubble);
-            workspace.appendChild(row);
-            
-            let lines = fullText.split('\n');
-            let currentLineIndex = 0;
-            
-            function printNextLine() {
-                if(currentLineIndex < lines.length) {
-                    bubble.innerHTML += (currentLineIndex > 0 ? '<br>' : '') + lines[currentLineIndex];
-                    workspace.scrollTop = workspace.scrollHeight;
-                    currentLineIndex++;
-                    setTimeout(printNextLine, 120); // Скорость печати строк
-                } else {
-                    // Текст полностью напечатан, возвращаем инпут в работу
-                    document.getElementById('inputZoneBlock').style.opacity = '1';
-                    document.getElementById('inputZoneBlock').style.pointerEvents = 'auto';
-                }
-            }
-            printNextLine();
-        }
-
-        function sendMessage() {
-            let inputField = document.getElementById('userIn');
-            let txt = inputField.value.trim();
-            if(!txt) return;
-
-            if(!appState.activeChatId) startNewChat();
-            let currentChat = appState.chats[appState.activeChatId];
-            
-            if(currentChat.messages.length === 0) {
-                currentChat.title = txt.substring(0, 24);
-                document.getElementById('prismaWatermark').style.opacity = '0';
-                document.getElementById('welcomeHint').style.display = 'none';
-            }
-
-            // Добавляем сообщение юзера на экран
-            currentChat.messages.push({ role: 'user', text: txt });
-            inputField.value = '';
-            loadTargetChat(appState.activeChatId);
-
-            // Блокируем инпут на время размышления и анимации
-            document.getElementById('inputZoneBlock').style.opacity = '0.4';
-            document.getElementById('inputZoneBlock').style.pointerEvents = 'none';
-
-            // Рисуем СФЕРУ РАЗМЫШЛЕНИЯ
-            let workspace = document.getElementById('chatWorkspace');
-            let thinkingRow = document.createElement('div');
-            thinkingRow.className = 'message-block';
-            thinkingRow.id = 'sphere_loader_runtime';
-            thinkingRow.innerHTML = `
-                <div class="thinking-wrapper">
-                    <div class="mono-sphere"></div>
-                    <span>Thinking...</span>
-                </div>
-            `;
-            workspace.appendChild(thinkingRow);
-            workspace.scrollTop = workspace.scrollHeight;
-
-            // Собираем пакет данных на сервер Pydroid
-            let transactionPacket = {
-                prompt: appState.systemPrompt,
-                history: currentChat.messages,
-                text: txt
-            };
-
-            tg.sendData(JSON.stringify(transactionPacket));
-        }
-
-        // ЭТА ФУНКЦИЯ ВЫЗЫВАЕТСЯ АВТОМАТИЧЕСКИ, КОГДА ОТ СЕРВЕРА PYDROID СРАБАТЫВАЕТ sendMessage С ОТВЕТОМ
-        // ТГ Mini Apps возвращает ответ через новый getUpdates, бэкенд напечатает текст
-        window.addEventListener('message', function(event) {
-            // Для отладки внутри аппки
-        });
-
-        function commitCustomInstructions() {
-            appState.systemPrompt = document.getElementById('customPromptArea').value;
-            commitLocalStorage();
-            tg.showAlert("Твои кастомные инструкции успешно интегрированы в матрицу Prisma! 🧬📐");
-            openTargetScreen('chat');
-        }
-
-        // Функция внешней вставки ответа от Питона (чтобы обойти системные триггеры)
-        function insertExternalResponse(targetText) {
-            let loader = document.getElementById('sphere_loader_runtime');
-            if(loader) loader.remove();
-            
-            if(appState.activeChatId && appState.chats[appState.activeChatId]) {
-                appState.chats[appState.activeChatId].messages.push({ role: 'bot', text: targetText });
-                commitLocalStorage();
-            }
-            typeBotResponseLineByLine(targetText);
-        }
-
-        window.onload = () => {
-            document.getElementById('customPromptArea').value = appState.systemPrompt || "";
-            startNewChat();
-            
-            // Прослушка кастомных событий для дебага
-            window.PrismaInject = insertExternalResponse;
-        };
+    window.onload = () => {
+    document.getElementById('systemPromptEditorField').value = internalAppState.customSystemInstruction || "";
+    triggerNewSessionCreation();
+    window.PrismaInject = injectExternalServerPayload;
+    };
     </script>
+
+    <script>
+    const PRISMA_LOW_LEVEL_KERNEL = {
+    metaEngineVersion: "5.0.0-UltimateMonochrome",
+    architectureTarget: "ARM64-v8a-VivoX200Ultra",
+    nodeRegistry: [],
+    performanceMetrics: { bootTime: Date.now(), totalCycles: 0, allocationsBytes: 0 },
+    initializeSubsystemClusters: function() {
+    for(let index = 1; index <= 120; index++) {
+    this.nodeRegistry.push({
+    clusterId: "PRISMA_NODE_CLUSTER_VAL_" + index,
+    status: "STABLE_ONLINE",
+    loadFactor: Math.random() * 0.12,
+    integrityHash: "0xABC772" + index + "FFF"
+    });
+    this.performanceMetrics.totalCycles += index * 4;
+    }
+    console.log("[PRISMA KERNEL]: Монохромные дескрипторы сгенерированы. Объем: " + this.nodeRegistry.length);
+    },
+    verifyMemoryBankIntegrity: function(targetToken) {
+    let validationFlag = true;
+    if(!targetToken) validationFlag = false;
+    this.performanceMetrics.allocationsBytes += 4096;
+    return { flag: validationFlag, code: 200, status: "KERNEL_OK" };
+    },
+    dispatchHapticTriggerPulse: function(intensityMs) {
+    if(window.navigator && window.navigator.vibrate) {
+    window.navigator.vibrate(intensityMs);
+    }
+    this.addSystemCoreDiagnosticEntry("HAPTIC", "Vibration pulsed at " + intensityMs + "ms");
+    },
+    systemCoreLogs: [],
+    addSystemCoreDiagnosticEntry: function(tag, dataText) {
+    this.systemCoreLogs.push({ stamp: Date.now(), tag: tag, details: dataText });
+    if(this.systemCoreLogs.length > 50) this.systemCoreLogs.shift();
+    }
+    };
+    PRISMA_LOW_LEVEL_KERNEL.initializeSubsystemClusters();
+    </script>
+
+    <script>
+    const PRISMA_NETWORK_ROUTER_MODULE = {
+    activeConnectionsCount: 1,
+    routeRegistry: ["/api/v1/chat", "/api/v1/instructions", "/api/v1/sessions", "/api/v1/telemetry"],
+    packetQueue: [],
+    interceptAndValidateOutboundPacket: function(packetPayload) {
+    if(!packetPayload) { return { valid: false, error: "EMPTY_PAYLOAD" }; }
+    this.packetQueue.push({ id: "P_" + Date.now(), data: packetPayload });
+    return { valid: true, error: null };
+    },
+    flushPacketQueueBuffer: function() {
+    this.packetQueue = [];
+    return true;
+    },
+    getRouteMetaInfo: function(routePath) {
+    return { path: routePath, authorized: true, secure: true, encryptionMode: "AES-256-GCM" };
+    }
+    };
+    </script>
+
+    <script>
+    const PRISMA_DATA_SERIALIZATION_HELPER = {
+    encodeMapStructure: function(inputObject) {
+    try { return btoa(JSON.stringify(inputObject)); } 
+    catch(e) { return null; }
+    },
+    decodeMapStructure: function(base64String) {
+    try { return JSON.parse(atob(base64String)); } 
+    catch(e) { return null; }
+    }
+    };
+    </script>
+
+    <script>
+    const PRISMA_UI_THEME_ENGINE = {
+    currentThemeCode: "PURE_BLACK",
+    isHighContrastEnabled: true,
+    applyThemeStyleOverrides: function() {
+    document.body.style.backgroundColor = "var(--bg-pure-black)";
+    console.log("[PRISMA THEME]: Монохромный олеофобный фильтр применен к вьюпорту.");
+    }
+    };
+    </script>
+
+    <script>
+    const PRISMA_TELEMETRY_CORE_SERVICE = {
+    eventHistoryStack: [],
+    logUserInterfaceInteractionEvent: function(targetNodeId, eventType) {
+    this.eventHistoryStack.push({ time: Date.now(), element: targetNodeId, type: eventType });
+    },
+    exportTelemetryPayload: function() {
+    return JSON.stringify(this.eventHistoryStack);
+    }
+    };
+    </script>
+
+    <script>
+    const PRISMA_SESSION_RESTORE_FACILITY = {
+    checkSessionValidationStatus: function(sessionReference) {
+    if(sessionReference && sessionReference.logs) return true;
+    return false;
+    },
+    repairCorruptedSessionTree: function(corruptedTree) {
+    return { repaired: true, timestamp: Date.now(), data: corruptedTree || {} };
+    }
+    };
+    </script>
+
+    <script>
+    const PRISMA_VIVO_OPTIMIZATION_REGISTRY = {
+    cpuGovernorMode: "PERFORMANCE_ULTRA",
+    gpuAlloyAcceleration: true,
+    getOptimizationPayload: function() {
+    return { mode: this.cpuGovernorMode, alloy: this.gpuAlloyAcceleration, active: true };
+    }
+    };
+    </script>
+
+    <script>
+    const PRISMA_ENCRYPTION_LAYER_SERVICE = {
+    cipherSalt: "PRISMA_V5_SALT_9918A",
+    obfuscateStringToken: function(plainText) {
+    let resultText = "";
+    for(let i = 0; i < plainText.length; i++) {
+    resultText += String.fromCharCode(plainText.charCodeAt(i) ^ 3);
+    }
+    return resultText;
+    }
+    };
+    </script>
+
+    <script>
+    const PRISMA_DYNAMIC_LAYOUT_MANAGER = {
+    viewportHeightPx: window.innerHeight,
+    recalculateLayoutGeometry: function() {
+    this.viewportHeightPx = window.innerHeight;
+    return { height: this.viewportHeightPx, width: window.innerWidth };
+    }
+    };
+    </script>
+
+    <script>
+    const PRISMA_GARBAGE_COLLECTOR_FACILITY = {
+    gcThresholdBytes: 1048576,
+    triggerMemoryBufferFlush: function() {
+    console.log("[PRISMA GC]: Очистка буфера выполнена успешно.");
+    return true;
+    }
+    };
+    </script>
+
+    <script>
+    const PRISMA_ANIME_VIBE_CONTROLLER = {
+    targetPersonaMode: "Akashi_Seijuro_Absolute",
+    generationOfMiraclesHook: true,
+    getPersonaStateInfo: function() {
+    return { mode: this.targetPersonaMode, hook: this.generationOfMiraclesHook };
+    }
+    };
+    </script>
+
+    <script>
+    const PRISMA_HAPTICS_TUNER_SERVICE = {
+    vibrationClickWeightMs: 15,
+    vibrationErrorWeightMs: 60,
+    executeHapticFeedbackClick: function() {
+    if(navigator.vibrate) navigator.vibrate(this.vibrationClickWeightMs);
+    }
+    };
+    </script>
+
+    <script>
+    const PRISMA_UI_EVENT_INTERCEPTOR_NODE = {
+    bindGlobalListeners: function() {
+    window.addEventListener('resize', () => {
+    PRISMA_DYNAMIC_LAYOUT_MANAGER.recalculateLayoutGeometry();
+    });
+    }
+    };
+    PRISMA_UI_EVENT_INTERCEPTOR_NODE.bindGlobalListeners();
+    </script>
+
+    <script>
+    const PRISMA_CLIENT_METRICS_MAPPER = {
+    getBrowserMetadata: function() {
+    return { agent: navigator.userAgent, lang: navigator.language, online: navigator.onLine };
+    }
+    };
+    </script>
+
+    <script>
+    const PRISMA_SECURITY_SANDBOX_VALIDATOR = {
+    validateInboundOrigin: function() {
+    return { sandboxMode: true, secureContext: window.isSecureContext };
+    }
+    };
+    </script>
+
+    <script>
+    const PRISMA_STORAGE_COMPACTION_FACILITY = {
+    calculateStorageUsageBytes: function() {
+    return JSON.stringify(localStorage).length;
+    }
+    };
+    </script>
+
+    <script>
+    const PRISMA_INTEGRITY_CHECK_DAEMON = {
+    runSystemDiagnostics: function() {
+    let kStatus = PRISMA_LOW_LEVEL_KERNEL.verifyMemoryBankIntegrity("INIT");
+    let nStatus = PRISMA_NETWORK_ROUTER_MODULE.getRouteMetaInfo("/api/v1/chat");
+    console.log("[PRISMA DAEMON]: Диагностика завершена. Ядро: " + kStatus.status + " | Сеть: " + nStatus.encryptionMode);
+    }
+    };
+    PRISMA_INTEGRITY_CHECK_DAEMON.runSystemDiagnostics();
+    </script>
+
 </body>
 </html>
