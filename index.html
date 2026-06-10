@@ -6,13 +6,11 @@
   <title>Prisma</title>
   <style>
     :root {
-      --bg: #050505;
-      --sidebar: #0a0a0a;
-      --chat-bg: #0f0f0f;
-      --accent: #00f5ff;
+      --bg: #000000;
+      --surface: #0a0a0a;
+      --card: #111111;
       --text: #e0e0e0;
-      --prisma: #1a1a1a;
-      --user: #1f2a44;
+      --accent: #aaaaaa;
     }
 
     * { margin: 0; padding: 0; box-sizing: border-box; }
@@ -22,49 +20,35 @@
       color: var(--text);
       height: 100vh;
       overflow: hidden;
-      touch-action: manipulation;
     }
 
-    .app { display: flex; height: 100vh; }
+    .app { display: flex; height: 100vh; position: relative; }
 
-    /* ==================== SIDEBAR ==================== */
+    /* Sidebar */
     .sidebar {
-      width: 300px;
-      background: var(--sidebar);
+      position: fixed;
+      left: -320px;
+      top: 0;
+      width: 320px;
+      height: 100%;
+      background: var(--surface);
       border-right: 1px solid #1a1a1a;
-      display: flex;
-      flex-direction: column;
-      transition: transform 0.4s ease;
-      z-index: 100;
+      transition: left 0.4s ease;
+      z-index: 300;
+      padding-top: 70px;
     }
+
+    .sidebar.open { left: 0; }
 
     .logo-container {
-      padding: 24px 20px 16px;
+      position: absolute;
+      top: 0; left: 0; right: 0;
+      padding: 18px;
       text-align: center;
       border-bottom: 1px solid #1a1a1a;
     }
 
-    .logo {
-      width: 82px;
-      height: 82px;
-      margin: 0 auto 10px;
-      background: white;
-      clip-path: polygon(50% 0%, 100% 25%, 100% 75%, 50% 100%, 0% 75%, 0% 25%);
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-size: 46px;
-      font-weight: 900;
-      color: #050505;
-      box-shadow: 0 0 35px rgba(0, 245, 255, 0.7);
-    }
-
-    .logo-text {
-      font-size: 29px;
-      font-weight: 800;
-      letter-spacing: -1.5px;
-      color: var(--accent);
-    }
+    .logo { font-size: 32px; font-weight: 900; color: var(--accent); letter-spacing: -2px; }
 
     .new-chat-btn {
       margin: 16px 20px;
@@ -74,98 +58,121 @@
       border-radius: 14px;
       color: white;
       font-weight: 600;
-      font-size: 16px;
       cursor: pointer;
     }
 
+    .search-input {
+      margin: 10px 20px;
+      padding: 10px 14px;
+      background: #1a1a1a;
+      border: none;
+      border-radius: 10px;
+      color: white;
+      width: calc(100% - 40px);
+    }
+
     .chat-list {
-      flex: 1;
+      height: calc(100vh - 280px);
       overflow-y: auto;
       padding: 8px;
     }
 
     .chat-item {
-      padding: 13px 20px;
+      padding: 14px 20px;
       border-radius: 12px;
       margin: 4px 8px;
       cursor: pointer;
-      transition: 0.2s;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
     }
 
     .chat-item:hover, .chat-item.active {
       background: #1f1f1f;
     }
 
-    /* ==================== MAIN ==================== */
+    .delete-btn {
+      color: #ff4444;
+      font-size: 18px;
+      padding: 0 8px;
+    }
+
+    /* Main */
     .main {
       flex: 1;
       display: flex;
       flex-direction: column;
-      background: var(--chat-bg);
     }
 
     .header {
-      padding: 16px 24px;
+      height: 56px;
+      background: var(--surface);
       border-bottom: 1px solid #1a1a1a;
       display: flex;
       align-items: center;
-      justify-content: space-between;
+      padding: 0 16px;
+      font-size: 18px;
+      font-weight: 600;
     }
 
     .chat-container {
       flex: 1;
       overflow-y: auto;
-      padding: 20px 16px;
+      padding: 16px 12px 100px;
       display: flex;
       flex-direction: column;
-      gap: 16px;
+      gap: 14px;
+      background: var(--bg);
     }
 
     .message {
+      max-width: 85%;
       display: flex;
-      gap: 10px;
-      max-width: 82%;
+      gap: 8px;
     }
 
-    .prisma-message { align-self: flex-start; }
-    .user-message { align-self: flex-end; flex-direction: row-reverse; }
+    .prisma-msg { align-self: flex-start; }
+    .user-msg { align-self: flex-end; flex-direction: row-reverse; }
 
     .bubble {
-      padding: 14px 18px;
-      border-radius: 20px;
-      line-height: 1.48;
+      padding: 13px 17px;
+      border-radius: 18px;
+      line-height: 1.45;
       font-size: 16px;
     }
 
-    .prisma-bubble { background: var(--prisma); border-bottom-left-radius: 6px; }
-    .user-bubble { background: var(--user); border-bottom-right-radius: 6px; }
+    .prisma-bubble { background: var(--card); border-bottom-left-radius: 6px; }
+    .user-bubble { background: #1f1f1f; border-bottom-right-radius: 6px; }
 
-    /* ==================== INPUT ==================== */
+    /* Input */
     .input-area {
-      padding: 16px 20px 26px;
-      background: var(--chat-bg);
+      position: fixed;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      background: var(--surface);
       border-top: 1px solid #1a1a1a;
+      padding: 12px 12px 22px;
+      z-index: 200;
     }
 
     .input-wrapper {
       display: flex;
       align-items: center;
-      background: #1a1a1a;
+      background: var(--card);
       border-radius: 9999px;
-      padding: 6px 10px;
-      gap: 6px;
+      padding: 6px 8px;
     }
 
     .action-btn {
-      width: 46px;
-      height: 46px;
+      width: 44px;
+      height: 44px;
       display: flex;
       align-items: center;
       justify-content: center;
-      font-size: 23px;
-      color: #aaa;
+      font-size: 22px;
+      color: #888;
       border-radius: 50%;
-      cursor: pointer;
     }
 
     #message-input {
@@ -173,49 +180,38 @@
       background: none;
       border: none;
       outline: none;
-      color: white;
+      color: var(--text);
       font-size: 16.5px;
-      padding: 10px;
+      padding: 8px 10px;
     }
 
-    .send-button {
-      width: 52px;
-      height: 52px;
-      background: var(--accent);
+    .send-btn {
+      width: 48px;
+      height: 48px;
+      background: #ffffff;
       color: #000;
       border: none;
       border-radius: 50%;
-      font-size: 26px;
-      display: flex;
+      font-size: 24px;
+    }
+
+    /* Modal */
+    .modal {
+      position: fixed;
+      top: 0; left: 0; right: 0; bottom: 0;
+      background: rgba(0,0,0,0.95);
+      display: none;
       align-items: center;
       justify-content: center;
-      box-shadow: 0 4px 20px rgba(0, 245, 255, 0.5);
+      z-index: 400;
     }
 
-    /* Typing */
-    .typing {
-      padding: 12px 18px;
-      background: var(--prisma);
-      border-radius: 20px;
-      width: fit-content;
-      display: flex;
-      gap: 5px;
-    }
-
-    .dot {
-      width: 7px;
-      height: 7px;
-      background: #888;
-      border-radius: 50%;
-      animation: typingAnim 1.4s infinite;
-    }
-
-    .dot:nth-child(2) { animation-delay: 0.2s; }
-    .dot:nth-child(3) { animation-delay: 0.4s; }
-
-    @keyframes typingAnim {
-      0%, 100% { transform: translateY(0); }
-      50% { transform: translateY(-6px); }
+    .modal-content {
+      background: #111;
+      padding: 24px;
+      border-radius: 16px;
+      width: 90%;
+      max-width: 380px;
     }
   </style>
 </head>
@@ -224,31 +220,32 @@
     <!-- Sidebar -->
     <div class="sidebar" id="sidebar">
       <div class="logo-container">
-        <div class="logo">▲</div>
-        <div class="logo-text">PRISMA</div>
+        <div class="logo">PRISMA</div>
       </div>
 
       <button class="new-chat-btn" onclick="newChat()">+ Новый чат</button>
+      <input type="text" class="search-input" id="search-input" placeholder="Поиск чатов..." onkeyup="searchChats()">
 
       <div class="chat-list" id="chat-list"></div>
 
-      <div class="model-selector">
+      <div style="padding: 20px; border-top: 1px solid #1a1a1a;">
         <strong>Модель:</strong><br>
-        <select id="model-select" onchange="changeModel()">
-          <option value="gemini-2.5-flash">Gemini 2.5 Flash</option>
-          <option value="gemini-2.5-pro">Gemini 2.5 Pro</option>
+        <select id="model-select" style="width:100%; padding:12px; background:#1a1a1a; color:white; border:none; border-radius:10px; margin-top:8px;">
+          <option value="flash">Gemini 2.5 Flash</option>
+          <option value="pro">Gemini 2.5 Pro</option>
         </select>
       </div>
     </div>
 
-    <!-- Main Chat -->
+    <!-- Main -->
     <div class="main">
       <div class="header">
-        <div class="chat-title" id="chat-title">Prisma</div>
-        <div onclick="toggleSidebar()" style="font-size: 32px; cursor: pointer; padding: 0 8px;">≡</div>
+        <div onclick="toggleSidebar()" style="font-size:28px; cursor:pointer;">≡</div>
+        <div id="chat-title">Prisma</div>
+        <div onclick="showMenu()" style="font-size:28px; cursor:pointer;">⋮</div>
       </div>
 
-      <div class="chat-container" id="chat-container"></div>
+      <div class="chat-container" id="chat"></div>
 
       <div class="input-area">
         <div class="input-wrapper">
@@ -258,53 +255,121 @@
           
           <input type="text" id="message-input" placeholder="Сообщение Prisma..." autocomplete="off">
           
-          <button class="send-button" id="send-btn">↑</button>
+          <button class="send-btn" id="send-btn">↑</button>
         </div>
       </div>
     </div>
   </div>
 
+  <!-- Modal Settings -->
+  <div class="modal" id="modal">
+    <div class="modal-content">
+      <h3 style="margin-bottom:20px;">Настройки Prisma</h3>
+      <p>Персонализация</p>
+      <p>Очистить все чаты</p>
+      <p>Экспорт истории</p>
+      <button onclick="closeModal()" style="margin-top:30px; padding:12px 24px; background:#333; color:white; border:none; border-radius:10px; width:100%;">Закрыть</button>
+    </div>
+  </div>
+
   <script>
-    const chatContainer = document.getElementById('chat-container');
+    let currentChatId = null;
+    let chats = JSON.parse(localStorage.getItem('prisma_chats')) || {};
+
+    const chatContainer = document.getElementById('chat');
     const input = document.getElementById('message-input');
     const sendBtn = document.getElementById('send-btn');
+    const sidebar = document.getElementById('sidebar');
+    const chatList = document.getElementById('chat-list');
+    const chatTitle = document.getElementById('chat-title');
+    const modal = document.getElementById('modal');
 
-    function addMessage(text, isUser = false) {
-      const msg = document.createElement('div');
-      msg.className = `message ${isUser ? 'user-message' : 'prisma-message'}`;
-      
-      msg.innerHTML = `
-        ${!isUser ? `<div class="avatar" style="background: linear-gradient(135deg, #00f5ff, #0099cc);">P</div>` : ''}
-        <div class="bubble \( {isUser ? 'user-bubble' : 'prisma-bubble'}"> \){text}</div>
-      `;
-      
-      chatContainer.appendChild(msg);
-      chatContainer.scrollTop = chatContainer.scrollHeight;
+    function saveChats() {
+      localStorage.setItem('prisma_chats', JSON.stringify(chats));
     }
 
-    function simulateTyping(callback) {
-      const typing = document.createElement('div');
-      typing.className = 'typing';
-      typing.innerHTML = `<div class="dot"></div><div class="dot"></div><div class="dot"></div>`;
-      chatContainer.appendChild(typing);
+    function renderChatList(filteredChats = chats) {
+      chatList.innerHTML = '';
+      Object.keys(filteredChats).reverse().forEach(id => {
+        const chat = filteredChats[id];
+        const div = document.createElement('div');
+        div.className = `chat-item ${id === currentChatId ? 'active' : ''}`;
+        div.innerHTML = `
+          <span>${chat.title || 'Новый чат'}</span>
+          <span class="delete-btn" onclick="event.stopImmediatePropagation(); deleteChat('${id}')">🗑</span>
+        `;
+        div.onclick = () => loadChat(id);
+        chatList.appendChild(div);
+      });
+    }
+
+    function searchChats() {
+      const query = document.getElementById('search-input').value.toLowerCase();
+      const filtered = {};
+      Object.keys(chats).forEach(id => {
+        if (chats[id].title && chats[id].title.toLowerCase().includes(query)) {
+          filtered[id] = chats[id];
+        }
+      });
+      renderChatList(filtered);
+    }
+
+    function newChat() {
+      const id = Date.now().toString();
+      chats[id] = { title: "Новый чат", messages: [] };
+      currentChatId = id;
+      saveChats();
+      renderChatList();
+      loadChat(id);
+      toggleSidebar();
+    }
+
+    function loadChat(id) {
+      currentChatId = id;
+      chatContainer.innerHTML = '';
+      chatTitle.textContent = chats[id].title || "Prisma";
+
+      chats[id].messages.forEach(msg => {
+        addMessage(msg.text, msg.isUser);
+      });
+
+      renderChatList();
+    }
+
+    function deleteChat(id) {
+      if (confirm("Удалить этот чат?")) {
+        delete chats[id];
+        saveChats();
+        if (currentChatId === id) {
+          const keys = Object.keys(chats);
+          currentChatId = keys.length ? keys[0] : null;
+        }
+        renderChatList();
+        if (currentChatId) loadChat(currentChatId);
+      }
+    }
+
+    function addMessage(text, isUser = false) {
+      if (!currentChatId) newChat();
+
+      const msg = document.createElement('div');
+      msg.className = `message ${isUser ? 'user-msg' : 'prisma-msg'}`;
+      msg.innerHTML = `<div class="bubble \( {isUser ? 'user-bubble' : 'prisma-bubble'}"> \){text}</div>`;
+      chatContainer.appendChild(msg);
       chatContainer.scrollTop = chatContainer.scrollHeight;
 
-      setTimeout(() => {
-        typing.remove();
-        if (callback) callback();
-      }, 1400);
+      chats[currentChatId].messages.push({ text, isUser });
+      saveChats();
     }
 
     function sendMessage() {
       if (input.value.trim() === '') return;
-
       addMessage(input.value, true);
-      const userText = input.value;
       input.value = '';
 
-      simulateTyping(() => {
-        addMessage("Принял, братан. Что дальше?", false);
-      });
+      setTimeout(() => {
+        addMessage("Принял, брат.", false);
+      }, 800);
     }
 
     sendBtn.addEventListener('click', sendMessage);
@@ -312,20 +377,32 @@
       if (e.key === 'Enter') sendMessage();
     });
 
-    // Приветствие
-    window.onload = () => {
-      setTimeout(() => {
-        addMessage("Здарова, брат. Prisma на связи. Чем будем ебать мозг сегодня?", false);
-      }, 700);
-    };
+    function toggleSidebar() {
+      sidebar.classList.toggle('open');
+    }
 
-    // Функции-заглушки
-    function newChat() { alert("Новый чат создан"); }
-    function toggleSidebar() { alert("Боковая панель (в Telegram Mini App обычно скрывается)"); }
+    function showMenu() {
+      modal.style.display = 'flex';
+    }
+
+    function closeModal() {
+      modal.style.display = 'none';
+    }
+
+    // Заглушки
     function attachFile() { alert("Прикрепить файл"); }
-    function openGallery() { alert("Открыть галерею"); }
-    function openCamera() { alert("Открыть камеру"); }
-    function changeModel() { alert("Модель изменена"); }
+    function openGallery() { alert("Галерея"); }
+    function openCamera() { alert("Камера"); }
+
+    // Инициализация
+    window.onload = () => {
+      if (Object.keys(chats).length === 0) {
+        newChat();
+      } else {
+        currentChatId = Object.keys(chats)[0];
+        loadChat(currentChatId);
+      }
+    };
   </script>
 </body>
 </html>
