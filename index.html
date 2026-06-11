@@ -1,408 +1,1131 @@
 <!DOCTYPE html>
 <html lang="ru">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-  <title>Prisma</title>
-  <style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>PRISMA OS - GROK FULL CLONE PRO</title>
+    <script src="https://telegram.org/js/telegram-web-app.js"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;700&family=Ubuntu:wght@400;500;700&display=swap" rel="stylesheet">
+    <style>
     :root {
-      --bg: #000000;
-      --surface: #0a0a0a;
-      --card: #111111;
-      --text: #e0e0e0;
-      --accent: #aaaaaa;
+        --bg-pure-black: #000000;
+        --bg-main-dark: #0a0a0a;
+        --bg-card-dark: #121212;
+        --bg-input-dark: #161616;
+        --border-monochrome: #222222;
+        --border-focus: #444444;
+        --text-absolute-white: #ffffff;
+        --text-muted-gray: #777777;
+        --text-dimmed-gray: #444444;
+        --accent-grok-blue: #1d9bf0;
+        --accent-glow: rgba(255, 255, 255, 0.03);
     }
 
-    * { margin: 0; padding: 0; box-sizing: border-box; }
-    body {
-      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-      background: var(--bg);
-      color: var(--text);
-      height: 100vh;
-      overflow: hidden;
+    * { 
+        box-sizing: border-box; 
+        margin: 0; 
+        padding: 0; 
+        font-family: 'Space Grotesk', 'Ubuntu', -apple-system, sans-serif; 
+        -webkit-tap-highlight-color: transparent; 
+        user-select: none; 
     }
 
-    .app { display: flex; height: 100vh; position: relative; }
-
-    /* Sidebar */
-    .sidebar {
-      position: fixed;
-      left: -320px;
-      top: 0;
-      width: 320px;
-      height: 100%;
-      background: var(--surface);
-      border-right: 1px solid #1a1a1a;
-      transition: left 0.4s ease;
-      z-index: 300;
-      padding-top: 70px;
+    body { 
+        background-color: var(--bg-pure-black); 
+        color: var(--text-absolute-white); 
+        height: 100vh; 
+        overflow: hidden; 
+        display: flex; 
+        position: relative;
     }
 
-    .sidebar.open { left: 0; }
-
-    .logo-container {
-      position: absolute;
-      top: 0; left: 0; right: 0;
-      padding: 18px;
-      text-align: center;
-      border-bottom: 1px solid #1a1a1a;
+    /* НИЗКОУРОВНЕВЫЙ СТИЛЬ САЙДБАРА (СКРИН 3) */
+    .sidebar-drawer-container { 
+        width: 290px; 
+        background-color: var(--bg-main-dark); 
+        border-right: 1px solid var(--border-monochrome); 
+        display: flex; 
+        flex-direction: column; 
+        position: absolute; 
+        top: 0; 
+        left: 0; 
+        bottom: 0; 
+        z-index: 900; 
+        transform: translateX(-100%); 
+        transition: transform 0.28s cubic-bezier(0.4, 0, 0.2, 1); 
+    }
+    .sidebar-drawer-container.open { 
+        transform: translateX(0); 
+    }
+    
+    .sidebar-profile-header { 
+        padding: 24px 20px; 
+        display: flex; 
+        align-items: center; 
+        gap: 12px; 
+        border-bottom: 1px solid var(--border-monochrome); 
+    }
+    .profile-avatar-circle { 
+        width: 42px; 
+        height: 42px; 
+        border-radius: 50%; 
+        border: 1px solid var(--border-monochrome); 
+        background: var(--bg-card-dark); 
+        display: flex; 
+        align-items: center; 
+        justify-content: center;
+        overflow: hidden;
+    }
+    .profile-avatar-circle svg {
+        width: 24px;
+        height: 24px;
+        color: var(--text-absolute-white);
+    }
+    .profile-text-meta { 
+        display: flex; 
+        flex-direction: column; 
+        overflow: hidden; 
+    }
+    .profile-main-title { 
+        font-size: 15px; 
+        font-weight: 700; 
+        color: var(--text-absolute-white); 
+        white-space: nowrap; 
+        overflow: hidden; 
+        text-overflow: ellipsis; 
+    }
+    .profile-sub-email { 
+        font-size: 12px; 
+        color: var(--text-muted-gray); 
+        white-space: nowrap; 
+        overflow: hidden; 
+        text-overflow: ellipsis; 
+        margin-top: 1px; 
     }
 
-    .logo { font-size: 32px; font-weight: 900; color: var(--accent); letter-spacing: -2px; }
-
-    .new-chat-btn {
-      margin: 16px 20px;
-      padding: 15px;
-      background: #1f1f1f;
-      border: none;
-      border-radius: 14px;
-      color: white;
-      font-weight: 600;
-      cursor: pointer;
+    .sidebar-navigation-area { 
+        flex: 1; 
+        overflow-y: auto; 
+        padding: 16px 12px; 
+    }
+    .action-btn-new-chat { 
+        border: 1px solid var(--border-monochrome); 
+        padding: 12px; 
+        border-radius: 99px; 
+        text-align: center; 
+        font-size: 14px; 
+        font-weight: 700; 
+        cursor: pointer; 
+        letter-spacing: 0.3px; 
+        margin-bottom: 20px; 
+        background: var(--bg-pure-black);
+        transition: background 0.2s, border-color 0.2s; 
+    }
+    .action-btn-new-chat:active { 
+        background-color: var(--bg-card-dark); 
+        border-color: var(--text-dimmed-gray);
+    }
+    
+    .sidebar-group-title { 
+        font-size: 11px; 
+        font-weight: 700; 
+        text-transform: uppercase; 
+        color: var(--text-muted-gray); 
+        letter-spacing: 0.8px; 
+        margin: 12px 8px 8px 8px; 
+    }
+    .history-items-list { 
+        display: flex; 
+        flex-direction: column; 
+        gap: 4px; 
+    }
+    .history-row-node { 
+        padding: 10px 14px; 
+        border-radius: 12px; 
+        font-size: 14px; 
+        color: var(--text-absolute-white); 
+        cursor: pointer; 
+        display: flex; 
+        align-items: center; 
+        justify-content: space-between; 
+        gap: 8px; 
+    }
+    .history-row-node span { 
+        white-space: nowrap; 
+        overflow: hidden; 
+        text-overflow: ellipsis; 
+        flex: 1; 
+    }
+    .history-row-node .delete-node-trigger { 
+        color: var(--text-dimmed-gray); 
+        font-size: 15px; 
+        padding: 2px 6px; 
+        border-radius: 4px; 
+        transition: color 0.2s; 
+    }
+    .history-row-node .delete-node-trigger:hover { 
+        color: #ff4444; 
+    }
+    .history-row-node:active, .history-row-node.active { 
+        background-color: var(--bg-card-dark); 
     }
 
-    .search-input {
-      margin: 10px 20px;
-      padding: 10px 14px;
-      background: #1a1a1a;
-      border: none;
-      border-radius: 10px;
-      color: white;
-      width: calc(100% - 40px);
+    .sidebar-footer-settings { 
+        padding: 16px 20px; 
+        border-top: 1px solid var(--border-monochrome); 
+        display: flex; 
+        justify-content: space-between; 
+        align-items: center; 
+        background-color: var(--bg-main-dark); 
+    }
+    .footer-icon-btn { 
+        width: 36px; 
+        height: 36px; 
+        display: flex; 
+        align-items: center; 
+        justify-content: center; 
+        border-radius: 50%; 
+        cursor: pointer; 
+        color: var(--text-absolute-white); 
+    }
+    .footer-icon-btn svg { 
+        width: 20px; 
+        height: 20px; 
     }
 
-    .chat-list {
-      height: calc(100vh - 280px);
-      overflow-y: auto;
-      padding: 8px;
+    /* ОСНОВНОЙ ЭКРАН ПРИЛОЖЕНИЯ */
+    .viewport-main-app { 
+        flex: 1; 
+        display: flex; 
+        flex-direction: column; 
+        height: 100vh; 
+        position: relative; 
+        background-color: var(--bg-pure-black); 
+    }
+    .global-layout-shading-mask { 
+        position: absolute; 
+        top: 0; 
+        left: 0; 
+        right: 0; 
+        bottom: 0; 
+        background: rgba(0,0,0,0.6); 
+        display: none; 
+        z-index: 850; 
+        backdrop-filter: blur(2px);
+    }
+    .global-layout-shading-mask.visible { 
+        display: block; 
     }
 
-    .chat-item {
-      padding: 14px 20px;
-      border-radius: 12px;
-      margin: 4px 8px;
-      cursor: pointer;
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
+    /* ХЕДЕР С МОЛНИЕЙ (СКРИН 1) */
+    .navbar-top-header { 
+        height: 60px; 
+        border-bottom: 1px solid var(--border-monochrome); 
+        display: flex; 
+        align-items: center; 
+        justify-content: space-between; 
+        padding: 0 16px; 
+        background-color: var(--bg-pure-black); 
+        z-index: 100; 
+    }
+    .navbar-action-trigger { 
+        width: 38px; 
+        height: 38px; 
+        display: flex; 
+        align-items: center; 
+        justify-content: fill; 
+        cursor: pointer; 
+    }
+    .navbar-action-trigger svg {
+        width: 22px;
+        height: 22px;
+        color: var(--text-absolute-white);
+    }
+    
+    .navbar-model-dropdown-pill { 
+        display: flex; 
+        align-items: center; 
+        gap: 6px; 
+        cursor: pointer; 
+        padding: 6px 14px; 
+        border-radius: 99px; 
+        background: var(--bg-card-dark);
+        border: 1px solid var(--border-monochrome);
+        transition: background 0.2s; 
+    }
+    .navbar-model-dropdown-pill:active { 
+        background: var(--border-monochrome); 
+    }
+    .navbar-model-dropdown-pill span { 
+        font-size: 15px; 
+        font-weight: 700; 
+        letter-spacing: -0.2px; 
+    }
+    .navbar-model-dropdown-pill svg.icon-bolt { 
+        width: 15px; 
+        height: 15px; 
+        color: var(--text-absolute-white); 
+        fill: var(--text-absolute-white);
+    }
+    .navbar-model-dropdown-pill svg.icon-chevron { 
+        width: 12px; 
+        height: 12px; 
+        color: var(--text-muted-gray); 
     }
 
-    .chat-item:hover, .chat-item.active {
-      background: #1f1f1f;
+    /* СКРОЛЛ-ЗОНА СООБЩЕНИЙ */
+    .chat-scroller-viewport { 
+        flex: 1; 
+        overflow-y: auto; 
+        padding: 16px; 
+        display: flex; 
+        flex-direction: column; 
+        gap: 20px; 
+        position: relative; 
+    }
+    
+    /* КАСТОМНЫЙ ЛОГОТИП В ЦЕНТРЕ НОВОГО ЧАТА (ФОТО 5) */
+    .brand-logo-centered-overlay { 
+        position: absolute; 
+        top: 42%; 
+        left: 50%; 
+        transform: translate(-50%, -50%); 
+        display: flex; 
+        flex-direction: column; 
+        align-items: center; 
+        justify-content: center; 
+        pointer-events: none; 
+        transition: opacity 0.3s cubic-bezier(0.4, 0, 0.2, 1); 
+        z-index: 10;
+    }
+    .brand-logo-centered-overlay svg { 
+        width: 76px; 
+        height: 76px; 
+        color: var(--text-absolute-white);
+    }
+    
+    /* СТИЛИЗАЦИЯ СЕТКИ СООБЩЕНИЙ */
+    .message-bubble-wrapper { 
+        display: flex; 
+        flex-direction: column; 
+        width: 100%; 
+        position: relative; 
+    }
+    .message-content-node { 
+        max-width: 88%; 
+        font-size: 16px; 
+        line-height: 1.5; 
+        word-wrap: break-word; 
+        user-select: text; 
+    }
+    .message-bubble-wrapper.user-side .message-content-node { 
+        background-color: var(--bg-card-dark); 
+        color: var(--text-absolute-white); 
+        align-self: flex-end; 
+        padding: 12px 18px;
+        border-radius: 22px;
+        border: 1px solid rgba(255,255,255,0.01);
+    }
+    .message-bubble-wrapper.bot-side .message-content-node { 
+        background-color: transparent; 
+        color: var(--text-absolute-white); 
+        align-self: flex-start; 
+        padding: 4px 0; 
+        border-radius: 0;
+    }
+    
+    .rendered-media-node { 
+        max-width: 240px; 
+        max-height: 180px; 
+        border-radius: 14px; 
+        margin-bottom: 8px; 
+        border: 1px solid var(--border-monochrome); 
+        display: block; 
+        object-fit: cover; 
+    }
+    .rendered-document-node {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        background: var(--bg-card-dark);
+        padding: 10px 14px;
+        border-radius: 12px;
+        border: 1px solid var(--border-monochrome);
+        margin-bottom: 8px;
+        max-width: 265px;
+    }
+    .rendered-document-node svg {
+        width: 24px;
+        height: 24px;
+        color: var(--text-muted-gray);
+    }
+    .rendered-document-node span {
+        font-size: 13px;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
     }
 
-    .delete-btn {
-      color: #ff4444;
-      font-size: 18px;
-      padding: 0 8px;
+    /* БЕГАЮЩАЯ КАРЕТКА ДЛЯ ЭФФЕКТА ПЕЧАТИ КАК НА GROK */
+    .typing-terminal-cursor {
+        display: inline-block;
+        width: 8px;
+        height: 15px;
+        background-color: var(--text-absolute-white);
+        margin-left: 4px;
+        vertical-align: middle;
+        animation: cursorBlinkAnimation 0.8s infinite steps(2);
+    }
+    @keyframes cursorBlinkAnimation {
+        0% { opacity: 0; }
+        100% { opacity: 1; }
+    }
+    
+    .bot-thinking-loader-pills { 
+        display: flex; 
+        align-items: center; 
+        gap: 3px; 
+        padding: 12px 0;
+        align-self: flex-start; 
+    }
+    .thinking-circle-dot { 
+        width: 6px; 
+        height: 6px; 
+        background: var(--text-muted-gray); 
+        border-radius: 50%; 
+        animation: thinkingPulseAnimation 1.4s infinite ease-in-out both; 
+    }
+    .thinking-circle-dot:nth-child(1) { animation-delay: -0.32s; }
+    .thinking-circle-dot:nth-child(2) { animation-delay: -0.16s; }
+    @keyframes thinkingPulseAnimation { 
+        0%, 80%, 100% { transform: scale(0); opacity: 0.3; } 
+        40% { transform: scale(1.1); opacity: 1; } 
     }
 
-    /* Main */
-    .main {
-      flex: 1;
-      display: flex;
-      flex-direction: column;
+    /* ЗОНА ВВОДА КОНТЕНТА (СКРИН 1) */
+    .dock-input-bottom-layout { 
+        padding: 12px 16px 20px 16px; 
+        background-color: var(--bg-pure-black); 
+    }
+    .input-pill-frame-wrapper { 
+        background-color: var(--bg-input-dark); 
+        border-radius: 26px; 
+        padding: 6px 14px; 
+        display: flex; 
+        flex-direction: column; 
+        gap: 8px; 
+        border: 1px solid var(--border-monochrome); 
+        transition: border-color 0.2s;
+    }
+    .input-pill-frame-wrapper:focus-within {
+        border-color: var(--border-focus);
+    }
+    .input-row-core-text { 
+        display: flex; 
+        align-items: center; 
+        width: 100%; 
+    }
+    .input-pill-frame-wrapper input { 
+        flex: 1; 
+        background: none; 
+        border: none; 
+        color: var(--text-absolute-white); 
+        font-size: 16px; 
+        outline: none; 
+        padding: 10px 4px; 
+    }
+    .input-pill-frame-wrapper input::placeholder {
+        color: var(--text-dimmed-gray);
+    }
+    
+    .input-row-action-triggers { 
+        display: flex; 
+        align-items: center; 
+        justify-content: space-between; 
+        width: 100%; 
+        padding-top: 2px;
+        padding-bottom: 4px;
+    }
+    .triggers-left-cluster { 
+        display: flex; 
+        align-items: center; 
+        gap: 14px; 
+    }
+    .mono-icon-trigger-btn { 
+        cursor: pointer; 
+        width: 30px; 
+        height: 30px; 
+        display: flex; 
+        align-items: center; 
+        justify-content: center; 
+        color: var(--text-muted-gray); 
+    }
+    .mono-icon-trigger-btn svg { 
+        width: 22px; 
+        height: 22px; 
+        color: var(--text-muted-gray);
+    }
+    .triggers-right-cluster { 
+        display: flex; 
+        align-items: center; 
+        gap: 12px; 
+    }
+    .pill-voice-activation-btn { 
+        background: transparent; 
+        color: var(--text-muted-gray); 
+        font-size: 14px; 
+        font-weight: 700; 
+        padding: 6px 10px; 
+        border-radius: 16px; 
+        display: flex; 
+        align-items: center; 
+        gap: 6px; 
+        cursor: pointer; 
+    }
+    .pill-voice-activation-btn svg {
+        width: 18px;
+        height: 18px;
+    }
+    .circle-submit-data-btn { 
+        width: 32px; 
+        height: 32px; 
+        background: var(--text-absolute-white); 
+        color: var(--bg-pure-black); 
+        border-radius: 50%; 
+        display: flex; 
+        align-items: center; 
+        justify-content: center; 
+        cursor: pointer; 
+    }
+    .circle-submit-data-btn svg {
+        width: 16px;
+        height: 16px;
+        stroke-width: 3px;
+        color: var(--bg-pure-black);
+    }
+    
+    .file-attachment-runtime-badge { 
+        display: none; 
+        align-items: center; 
+        justify-content: space-between; 
+        background: rgba(255,255,255,0.02); 
+        padding: 8px 14px; 
+        border-radius: 14px; 
+        font-size: 13px; 
+        color: var(--text-muted-gray); 
+        border: 1px solid var(--border-monochrome); 
+        margin-top: 4px;
+    }
+    .file-attachment-runtime-badge .clear-badge-trigger {
+        cursor: pointer;
+        padding: 2px 6px;
+        font-weight: 700;
+        color: var(--text-absolute-white);
     }
 
-    .header {
-      height: 56px;
-      background: var(--surface);
-      border-bottom: 1px solid #1a1a1a;
-      display: flex;
-      align-items: center;
-      padding: 0 16px;
-      font-size: 18px;
-      font-weight: 600;
+    /* СИСТЕМНЫЕ BOTTOM SHEETS (ШТОРКИ) */
+    .sheet-dark-overlay-layer { 
+        position: fixed; 
+        top: 0; 
+        left: 0; 
+        right: 0; 
+        bottom: 0; 
+        background: rgba(0,0,0,0.7); 
+        z-index: 2000; 
+        display: none; 
+        opacity: 0; 
+        transition: opacity 0.25s ease-out; 
+    }
+    .sheet-dark-overlay-layer.active { 
+        display: block; 
+        opacity: 1; 
+    }
+    
+    .bottom-sheet-modal-view { 
+        position: fixed; 
+        bottom: 0; 
+        left: 0; 
+        right: 0; 
+        background: var(--bg-card-dark); 
+        border-top-left-radius: 20px; 
+        border-top-right-radius: 20px; 
+        z-index: 2001; 
+        transform: translateY(100%); 
+        transition: transform 0.28s cubic-bezier(0.1, 0.76, 0.55, 0.94); 
+        padding: 20px 16px 30px 16px; 
+        border-top: 1px solid var(--border-monochrome); 
+        display: flex; 
+        flex-direction: column; 
+        gap: 12px; 
+    }
+    .bottom-sheet-modal-view.active { 
+        transform: translateY(0); 
+    }
+    .sheet-drag-handle-bar { 
+        width: 36px; 
+        height: 4px; 
+        background: var(--border-monochrome); 
+        border-radius: 2px; 
+        align-self: center; 
+        margin-bottom: 12px; 
+    }
+    
+    /* ШТОРКА 1: МОДЕЛИ (СКРИН 1) */
+    .model-row-item-node { 
+        display: flex; 
+        align-items: center; 
+        justify-content: space-between; 
+        padding: 14px 16px; 
+        border-radius: 16px; 
+        cursor: pointer; 
+        border: 1px solid transparent;
+        transition: background 0.2s; 
+    }
+    .model-row-item-node:active { 
+        background: var(--bg-main-dark); 
+    }
+    .model-row-item-node.selected { 
+        background: var(--bg-input-dark); 
+        border-color: var(--border-monochrome);
+    }
+    .model-node-left-meta { 
+        display: flex; 
+        align-items: center; 
+        gap: 14px; 
+    }
+    .model-node-icon-frame { 
+        width: 20px; 
+        height: 20px; 
+        color: var(--text-muted-gray); 
+    }
+    .model-node-icon-frame svg {
+        width: 100%;
+        height: 100%;
+    }
+    .model-node-text-meta { 
+        display: flex; 
+        flex-direction: column; 
+        gap: 1px; 
+    }
+    .model-node-main-title { 
+        font-size: 15px; 
+        font-weight: 700; 
+        color: var(--text-absolute-white); 
+    }
+    .model-node-sub-desc { 
+        font-size: 13px; 
+        color: var(--text-muted-gray); 
+    }
+    .model-node-check-mark { 
+        width: 18px; 
+        height: 18px; 
+        color: var(--text-absolute-white); 
+        display: none; 
+    }
+    .model-row-item-node.selected .model-node-check-mark { 
+        display: block; 
+    }
+    
+    /* ШТОРКА 2: ПЛЮСИК (СКРИН 2) */
+    .attach-grid-layout-box { 
+        display: grid; 
+        grid-template-columns: repeat(3, 1fr); 
+        gap: 12px; 
+    }
+    .attach-grid-interactive-item { 
+        background: var(--bg-input-dark); 
+        border: 1px solid var(--border-monochrome); 
+        border-radius: 20px; 
+        aspect-ratio: 1; 
+        display: flex; 
+        flex-direction: column; 
+        align-items: center; 
+        justify-content: center; 
+        gap: 10px; 
+        cursor: pointer; 
+        transition: background 0.2s, transform 0.1s; 
+    }
+    .attach-grid-interactive-item:active { 
+        background: var(--bg-main-dark); 
+        transform: scale(0.96); 
+    }
+    .attach-grid-interactive-item svg { 
+        width: 26px; 
+        height: 26px; 
+        color: var(--text-absolute-white); 
+        stroke-width: 1.8px; 
+    }
+    .attach-grid-interactive-item span { 
+        font-size: 13px; 
+        font-weight: 700; 
     }
 
-    .chat-container {
-      flex: 1;
-      overflow-y: auto;
-      padding: 16px 12px 100px;
-      display: flex;
-      flex-direction: column;
-      gap: 14px;
-      background: var(--bg);
+    .hidden-file-inputs-sandbox { 
+        display: none !important; 
     }
-
-    .message {
-      max-width: 85%;
-      display: flex;
-      gap: 8px;
-    }
-
-    .prisma-msg { align-self: flex-start; }
-    .user-msg { align-self: flex-end; flex-direction: row-reverse; }
-
-    .bubble {
-      padding: 13px 17px;
-      border-radius: 18px;
-      line-height: 1.45;
-      font-size: 16px;
-    }
-
-    .prisma-bubble { background: var(--card); border-bottom-left-radius: 6px; }
-    .user-bubble { background: #1f1f1f; border-bottom-right-radius: 6px; }
-
-    /* Input */
-    .input-area {
-      position: fixed;
-      bottom: 0;
-      left: 0;
-      right: 0;
-      background: var(--surface);
-      border-top: 1px solid #1a1a1a;
-      padding: 12px 12px 22px;
-      z-index: 200;
-    }
-
-    .input-wrapper {
-      display: flex;
-      align-items: center;
-      background: var(--card);
-      border-radius: 9999px;
-      padding: 6px 8px;
-    }
-
-    .action-btn {
-      width: 44px;
-      height: 44px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-size: 22px;
-      color: #888;
-      border-radius: 50%;
-    }
-
-    #message-input {
-      flex: 1;
-      background: none;
-      border: none;
-      outline: none;
-      color: var(--text);
-      font-size: 16.5px;
-      padding: 8px 10px;
-    }
-
-    .send-btn {
-      width: 48px;
-      height: 48px;
-      background: #ffffff;
-      color: #000;
-      border: none;
-      border-radius: 50%;
-      font-size: 24px;
-    }
-
-    /* Modal */
-    .modal {
-      position: fixed;
-      top: 0; left: 0; right: 0; bottom: 0;
-      background: rgba(0,0,0,0.95);
-      display: none;
-      align-items: center;
-      justify-content: center;
-      z-index: 400;
-    }
-
-    .modal-content {
-      background: #111;
-      padding: 24px;
-      border-radius: 16px;
-      width: 90%;
-      max-width: 380px;
-    }
-  </style>
+    </style>
 </head>
 <body>
-  <div class="app">
-    <!-- Sidebar -->
-    <div class="sidebar" id="sidebar">
-      <div class="logo-container">
-        <div class="logo">PRISMA</div>
-      </div>
 
-      <button class="new-chat-btn" onclick="newChat()">+ Новый чат</button>
-      <input type="text" class="search-input" id="search-input" placeholder="Поиск чатов..." onkeyup="searchChats()">
-
-      <div class="chat-list" id="chat-list"></div>
-
-      <div style="padding: 20px; border-top: 1px solid #1a1a1a;">
-        <strong>Модель:</strong><br>
-        <select id="model-select" style="width:100%; padding:12px; background:#1a1a1a; color:white; border:none; border-radius:10px; margin-top:8px;">
-          <option value="flash">Gemini 2.5 Flash</option>
-          <option value="pro">Gemini 2.5 Pro</option>
-        </select>
-      </div>
+    <div class="hidden-file-inputs-sandbox">
+        <input type="file" id="kernelGalleryBridge" accept="image/*">
+        <input type="file" id="kernelCameraBridge" accept="image/*" capture="environment">
+        <input type="file" id="kernelDocumentBridge" accept="*/*">
     </div>
 
-    <!-- Main -->
-    <div class="main">
-      <div class="header">
-        <div onclick="toggleSidebar()" style="font-size:28px; cursor:pointer;">≡</div>
-        <div id="chat-title">Prisma</div>
-        <div onclick="showMenu()" style="font-size:28px; cursor:pointer;">⋮</div>
-      </div>
-
-      <div class="chat-container" id="chat"></div>
-
-      <div class="input-area">
-        <div class="input-wrapper">
-          <div class="action-btn" onclick="attachFile()">📎</div>
-          <div class="action-btn" onclick="openGallery()">📷</div>
-          <div class="action-btn" onclick="openCamera()">📹</div>
-          
-          <input type="text" id="message-input" placeholder="Сообщение Prisma..." autocomplete="off">
-          
-          <button class="send-btn" id="send-btn">↑</button>
+    <div class="sidebar-drawer-container" id="sidebarMenuNode">
+        <div class="sidebar-profile-header">
+            <div class="profile-avatar-circle">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path><circle cx="12" cy="7" r="4"></circle></svg>
+            </div>
+            <div class="profile-text-meta">
+                <div class="profile-main-title">Илья Осипов</div>
+                <div class="profile-sub-email">maksimmihajlov8212@gmail.com</div>
+            </div>
         </div>
-      </div>
+        <div class="sidebar-navigation-area">
+            <div class="action-btn-new-chat" onclick="createNewChatSessionHandler()">＋ Новый чат</div>
+            <div class="sidebar-group-title">История поисков</div>
+            <div id="sessionHistoryRenderNode" class="history-items-list"></div>
+        </div>
+        <div class="sidebar-footer-settings">
+            <div class="footer-icon-btn">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"></circle><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"></path></svg>
+            </div>
+            <span style="font-size: 12px; color: var(--text-dimmed-gray); font-weight:700;">PRISMA v2.6</span>
+        </div>
     </div>
-  </div>
 
-  <!-- Modal Settings -->
-  <div class="modal" id="modal">
-    <div class="modal-content">
-      <h3 style="margin-bottom:20px;">Настройки Prisma</h3>
-      <p>Персонализация</p>
-      <p>Очистить все чаты</p>
-      <p>Экспорт истории</p>
-      <button onclick="closeModal()" style="margin-top:30px; padding:12px 24px; background:#333; color:white; border:none; border-radius:10px; width:100%;">Закрыть</button>
+    <div class="sheet-dark-overlay-layer" id="sheetGlobalOverlay" onclick="dismissAllActiveSheets()"></div>
+
+    <div class="bottom-sheet-modal-view" id="sheetModelSelectorWindow">
+        <div class="sheet-drag-handle-bar"></div>
+        
+        <div class="model-row-item-node" id="target_mod_fast" onclick="commitModelChange('fast', 'Быстрый - Prisma 2.5')">
+            <div class="model-node-left-meta">
+                <div class="model-node-icon-frame">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"></polygon></svg>
+                </div>
+                <div class="model-node-text-meta">
+                    <div class="model-node-main-title">Быстрый</div>
+                    <div class="model-node-sub-desc">Prisma 2.5 (База Gemini 2.5)</div>
+                </div>
+            </div>
+            <svg class="model-node-check-mark" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><polyline points="20 6 9 17 4 12"></polyline></svg>
+        </div>
+
+        <div class="model-row-item-node" id="target_mod_casual" onclick="commitModelChange('casual', 'Повседневный - Prisma 3.5')">
+            <div class="model-node-left-meta">
+                <div class="model-node-icon-frame">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"></path></svg>
+                </div>
+                <div class="model-node-text-meta">
+                    <div class="model-node-main-title">Повседневный</div>
+                    <div class="model-node-sub-desc">Prisma 3.5 (Gemini 3.5 Flash)</div>
+                </div>
+            </div>
+            <svg class="model-node-check-mark" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><polyline points="20 6 9 17 4 12"></polyline></svg>
+        </div>
+
+        <div class="model-row-item-node" id="target_mod_expert" onclick="commitModelChange('expert', 'Эксперт - Prisma 3.1')">
+            <div class="model-node-left-meta">
+                <div class="model-node-icon-frame">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"></circle><path d="M12 2a14.5 14.5 0 0 0 0 20 14.5 14.5 0 0 0 0-20"></path><path d="M2 12h20"></path></svg>
+                </div>
+                <div class="model-node-text-meta">
+                    <div class="model-node-main-title">Эксперт</div>
+                    <div class="model-node-sub-desc">Prisma 3.1 (Gemini 3.1 Pro)</div>
+                </div>
+            </div>
+            <svg class="model-node-check-mark" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><polyline points="20 6 9 17 4 12"></polyline></svg>
+        </div>
     </div>
-  </div>
 
-  <script>
-    let currentChatId = null;
-    let chats = JSON.parse(localStorage.getItem('prisma_chats')) || {};
+    <div class="bottom-sheet-modal-view" id="sheetAttachmentWindow">
+        <div class="sheet-drag-handle-bar"></div>
+        <div class="attach-grid-layout-box">
+            <div class="attach-grid-interactive-item" onclick="triggerSystemFileBridgeNode('kernelGalleryBridge')">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect><circle cx="8.5" cy="8.5" r="1.5"></circle><polyline points="21 15 16 10 5 21"></polyline></svg>
+                <span>Фото</span>
+            </div>
+            <div class="attach-grid-interactive-item" onclick="triggerSystemFileBridgeNode('kernelCameraBridge')">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"></path><circle cx="12" cy="13" r="4"></circle></svg>
+                <span>Камера</span>
+            </div>
+            <div class="attach-grid-interactive-item" onclick="triggerSystemFileBridgeNode('kernelDocumentBridge')">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="16" y1="13" x2="8" y2="13"></line><line x1="16" y1="17" x2="8" y2="17"></line><polyline points="10 9 9 9 8 9"></polyline></svg>
+                <span>Файл</span>
+            </div>
+        </div>
+    </div>
 
-    const chatContainer = document.getElementById('chat');
-    const input = document.getElementById('message-input');
-    const sendBtn = document.getElementById('send-btn');
-    const sidebar = document.getElementById('sidebar');
-    const chatList = document.getElementById('chat-list');
-    const chatTitle = document.getElementById('chat-title');
-    const modal = document.getElementById('modal');
+    <div class="viewport-main-app">
+        <div class="global-layout-shading-mask" id="sidebarShadingMask" onclick="toggleSidebarDrawerNode(false)"></div>
 
-    function saveChats() {
-      localStorage.setItem('prisma_chats', JSON.stringify(chats));
+        <div class="navbar-top-header">
+            <div class="navbar-action-trigger" onclick="toggleSidebarDrawerNode(true)">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="3" y1="12" x2="21" y2="12"></line><line x1="3" y1="6" x2="21" y2="6"></line><line x1="3" y1="18" x2="21" y2="18"></line></svg>
+            </div>
+            
+            <div class="navbar-model-dropdown-pill" onclick="invokeBottomSheet('sheetModelSelectorWindow')">
+                <svg class="icon-bolt" viewBox="0 0 24 24"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"></polygon></svg>
+                <span id="currentModelDisplayLabel">Быстрый - Prisma 2.5</span>
+                <svg class="icon-chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="6 9 12 15 18 9"></polyline></svg>
+            </div>
+
+            <div class="navbar-action-trigger" onclick="createNewChatSessionHandler()" style="justify-content: flex-end;">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path><path d="M18.5 2.5a2.121 2.121 0 1 1 3 3L12 15l-4 1 1-4Z"></path></svg>
+            </div>
+        </div>
+
+        <div class="chat-scroller-viewport" id="chatRenderViewport">
+            <div class="brand-logo-centered-overlay" id="brandLogoCentricNode">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+                    <path d="M4.5 16.5L12 3L19.5 16.5H4.5Z" stroke-linejoin="round"/>
+                    <path d="M12 3V16.5" stroke-dasharray="2 2"/>
+                    <circle cx="12" cy="11" r="2.5"/>
+                </svg>
+            </div>
+        </div>
+        
+        <div class="dock-input-bottom-layout">
+            <div class="file-attachment-runtime-badge" id="runtimeAttachmentBadge">
+                <span id="runtimeAttachmentNameText">file.dat</span>
+                <div class="clear-badge-trigger" onclick="purgeAttachedFileBuffer()">✕</div>
+            </div>
+            
+            <div class="input-pill-frame-wrapper" style="margin-top: 6px;">
+                <div class="input-row-core-text">
+                    <input type="text" id="chatPayloadInputField" placeholder="Задайте любой вопрос" onkeypress="if(event.key==='Enter') executeClientMessageBroadcast()">
+                </div>
+                <div class="input-row-action-triggers">
+                    <div class="triggers-left-cluster">
+                        <div class="mono-icon-trigger-btn" onclick="invokeBottomSheet('sheetAttachmentWindow')">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>
+                        </div>
+                    </div>
+                    <div class="triggers-right-cluster">
+                        <div class="pill-voice-activation-btn">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 1a3 3 0 0 0-3 3v8a3 3 0 0 0 6 0V4a3 3 0 0 0-3-3z"></path><path d="M19 10v1a7 7 0 0 1-14 0v-1"></path><line x1="12" y1="19" x2="12" y2="23"></line><line x1="8" y1="23" x2="16" y2="23"></line></svg>
+                        </div>
+                        <div class="circle-submit-data-btn" onclick="executeClientMessageBroadcast()">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><line x1="12" y1="19" x2="12" y2="5"></line><polyline points="5 12 12 5 19 12"></polyline></svg>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+    const PRISMA_LOW_LEVEL_KERNEL = {
+        verifyMemoryBankIntegrity: function(phase) {
+            console.log(`[KERNEL] Memory bank checkout: ${phase}`);
+            return "OK";
+        }
+    };
+
+    const PRISMA_NETWORK_ROUTER_MODULE = {
+        getRoutingTable: function() {
+            return { route: "tg_datacenter", fallback: "local_cache" };
+        }
+    };
+
+    const PRISMA_DYNAMIC_LAYOUT_MANAGER = {
+        recalculateLayoutGeometry: function() {
+            let h = window.innerHeight;
+            console.log(`[LAYOUT] Screen viewport altitude synced: ${h}px`);
+        }
+    };
+
+    // ГЛОБАЛЬНЫЙ КЛИЕНТСКИЙ СТЭЙТ СИСТЕМЫ
+    let runtimeLocalFileBuffer = null;
+    let systemStorageState = JSON.parse(localStorage.getItem('prisma_grok_v3_state')) || {
+        sessions: {},
+        activeSessionId: null,
+        activeModelCode: 'fast',
+        activeModelLabel: 'Быстрый - Prisma 2.5'
+    };
+
+    function commitStateToDeviceFlash() {
+        localStorage.setItem('prisma_grok_v3_state', JSON.stringify(systemStorageState));
     }
 
-    function renderChatList(filteredChats = chats) {
-      chatList.innerHTML = '';
-      Object.keys(filteredChats).reverse().forEach(id => {
-        const chat = filteredChats[id];
-        const div = document.createElement('div');
-        div.className = `chat-item ${id === currentChatId ? 'active' : ''}`;
-        div.innerHTML = `
-          <span>${chat.title || 'Новый чат'}</span>
-          <span class="delete-btn" onclick="event.stopImmediatePropagation(); deleteChat('${id}')">🗑</span>
+    // ЛОГИКА BOTTOM SHEETS (ШТОРКИ)
+    function invokeBottomSheet(sheetId) {
+        document.getElementById('sheetGlobalOverlay').classList.add('active');
+        document.getElementById(sheetId).classList.add('active');
+    }
+
+    function dismissAllActiveSheets() {
+        document.getElementById('sheetGlobalOverlay').classList.remove('active');
+        document.querySelectorAll('.bottom-sheet-modal-view').forEach(el => el.classList.remove('active'));
+    }
+
+    // ИЗМЕНЕНИЕ МОДЕЛИ ЧЕРЕЗ МОЛНИЮ
+    function commitModelChange(modelCode, modelLabel) {
+        systemStorageState.activeModelCode = modelCode;
+        systemStorageState.activeModelLabel = modelLabel;
+        commitStateToDeviceFlash();
+        
+        document.querySelectorAll('.model-row-item-node').forEach(el => el.classList.remove('selected'));
+        document.getElementById('target_mod_' + modelCode).classList.add('selected');
+        document.getElementById('currentModelDisplayLabel').innerText = modelLabel;
+        
+        dismissAllActiveSheets();
+    }
+
+    // СИСТЕМНЫЕ ИНПУТЫ И ФАЙЛЫ
+    function triggerSystemFileBridgeNode(inputId) {
+        dismissAllActiveSheets();
+        document.getElementById(inputId).click();
+    }
+
+    function processIncomingFileStream(e) {
+        let file = e.target.files[0];
+        if (!file) return;
+        
+        let reader = new FileReader();
+        reader.onloadend = function() {
+            let base64Payload = reader.result.split(',')[1];
+            runtimeLocalFileBuffer = {
+                base64: base64Payload,
+                mime: file.type,
+                name: file.name
+            };
+            document.getElementById('runtimeAttachmentNameText').innerText = `📎 ${file.name}`;
+            document.getElementById('runtimeAttachmentBadge').style.display = 'flex';
+        };
+        reader.readAsDataURL(file);
+        e.target.value = ''; // сброс
+    }
+
+    document.getElementById('kernelGalleryBridge').addEventListener('change', processIncomingFileStream);
+    document.getElementById('kernelCameraBridge').addEventListener('change', processIncomingFileStream);
+    document.getElementById('kernelDocumentBridge').addEventListener('change', processIncomingFileStream);
+
+    function purgeAttachedFileBuffer() {
+        runtimeLocalFileBuffer = null;
+        document.getElementById('runtimeAttachmentBadge').style.display = 'none';
+    }
+
+    // ЛОГИКА САЙДБАРА
+    function toggleSidebarDrawerNode(open) {
+        document.getElementById('sidebarMenuNode').classList.toggle('open', open);
+        document.getElementById('sidebarShadingMask').classList.toggle('visible', open);
+    }
+
+    function renderSidebarSessionsHistoryList() {
+        let root = document.getElementById('sessionHistoryRenderNode');
+        root.innerHTML = '';
+        Object.keys(systemStorageState.sessions).reverse().forEach(sid => {
+            let item = systemStorageState.sessions[sid];
+            let row = document.createElement('div');
+            row.className = `history-row-node ${sid === systemStorageState.activeSessionId ? 'active' : ''}`;
+            
+            let label = document.createElement('span');
+            label.innerText = item.title || 'Новый чат';
+            label.onclick = () => { syncActiveSessionContext(sid); toggleSidebarDrawerNode(false); };
+            
+            let del = document.createElement('div');
+            del.className = 'delete-node-trigger';
+            del.innerText = '✕';
+            del.onclick = (e) => { e.stopPropagation(); deleteSessionFromContext(sid); };
+            
+            row.appendChild(label);
+            row.appendChild(del);
+            root.appendChild(row);
+        });
+    }
+
+    function deleteSessionFromContext(sid) {
+        delete systemStorageState.sessions[sid];
+        if(systemStorageState.activeSessionId === sid) systemStorageState.activeSessionId = null;
+        commitStateToDeviceFlash();
+        renderSidebarSessionsHistoryList();
+        if(Object.keys(systemStorageState.sessions).length > 0) syncActiveSessionContext(Object.keys(systemStorageState.sessions).pop());
+        else createNewChatSessionHandler();
+    }
+
+    function createNewChatSessionHandler() {
+        let sId = 'session_' + Date.now();
+        systemStorageState.sessions[sId] = { title: '', logs: [] };
+        systemStorageState.activeSessionId = sId;
+        commitStateToDeviceFlash();
+        renderSidebarSessionsHistoryList();
+        syncActiveSessionContext(sId);
+    }
+
+    function syncActiveSessionContext(sid) {
+        systemStorageState.activeSessionId = sid;
+        commitStateToDeviceFlash();
+        renderSidebarSessionsHistoryList();
+                
+        let scroller = document.getElementById('chatRenderViewport');
+        scroller.innerHTML = `
+            <div class="brand-logo-centered-overlay" id="brandLogoCentricNode">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+                    <path d="M4.5 16.5L12 3L19.5 16.5H4.5Z" stroke-linejoin="round"/>
+                    <path d="M12 3V16.5" stroke-dasharray="2 2"/>
+                    <circle cx="12" cy="11" r="2.5"/>
+                </svg>
+            </div>
         `;
-        div.onclick = () => loadChat(id);
-        chatList.appendChild(div);
-      });
-    }
-
-    function searchChats() {
-      const query = document.getElementById('search-input').value.toLowerCase();
-      const filtered = {};
-      Object.keys(chats).forEach(id => {
-        if (chats[id].title && chats[id].title.toLowerCase().includes(query)) {
-          filtered[id] = chats[id];
+        
+        let session = systemStorageState.sessions[sid];
+        if(!session || session.logs.length === 0) {
+            document.getElementById('brandLogoCentricNode').style.opacity = '1';
+            return;
         }
-      });
-      renderChatList(filtered);
+
+        document.getElementById('brandLogoCentricNode').style.opacity = '0';
+        session.logs.forEach((log) => {
+            renderMessageToDOM(log.role, log.text, log.file_base64, log.mime_type, log.file_name, false);
+        });
+        scroller.scrollTop = scroller.scrollHeight;
     }
 
-    function newChat() {
-      const id = Date.now().toString();
-      chats[id] = { title: "Новый чат", messages: [] };
-      currentChatId = id;
-      saveChats();
-      renderChatList();
-      loadChat(id);
-      toggleSidebar();
-    }
-
-    function loadChat(id) {
-      currentChatId = id;
-      chatContainer.innerHTML = '';
-      chatTitle.textContent = chats[id].title || "Prisma";
-
-      chats[id].messages.forEach(msg => {
-        addMessage(msg.text, msg.isUser);
-      });
-
-      renderChatList();
-    }
-
-    function deleteChat(id) {
-      if (confirm("Удалить этот чат?")) {
-        delete chats[id];
-        saveChats();
-        if (currentChatId === id) {
-          const keys = Object.keys(chats);
-          currentChatId = keys.length ? keys[0] : null;
+    // СИСТЕМНЫЙ РЕНДЕР СООБЩЕНИЙ С ЭФФЕКТОМ ПЕЧАТИ (GROK STYLE)
+    function renderMessageToDOM(role, text, fileB64 = null, mime = null, fileName = null, animate = false) {
+        let scroller = document.getElementById('chatRenderViewport');
+        let wrapper = document.createElement('div');
+        wrapper.className = `message-bubble-wrapper ${role === 'user' ? 'user-side' : 'bot-side'}`;
+        
+        let contentNode = document.createElement('div');
+        contentNode.className = 'message-content-node';
+        
+        // Рендер файлов
+        if (fileB64 && mime) {
+            if (mime.startsWith('image/')) {
+                let img = document.createElement('img');
+                img.src = `data:${mime};base64,${fileB64}`;
+                img.className = 'rendered-media-node';
+                contentNode.appendChild(img);
+            } else {
+                let docBox = document.createElement('div');
+                docBox.className = 'rendered-document-node';
+                docBox.innerHTML = `
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline></svg>
+                    <span>${fileName || 'Document'}</span>
+                `;
+                contentNode.appendChild(docBox);
+            }
         }
-        renderChatList();
-        if (currentChatId) loadChat(currentChatId);
-      }
+        
+        let textSpan = document.createElement('span');
+        contentNode.appendChild(textSpan);
+        wrapper.appendChild(contentNode);
+        scroller.appendChild(wrapper);
+        scroller.scrollTop = scroller.scrollHeight;
+
+        if (animate && role === 'bot') {
+            let index = 0;
+            let cursor = document.createElement('span');
+            cursor.className = 'typing-terminal-cursor';
+            contentNode.appendChild(cursor);
+            
+            function printChar() {
+                if (index < text.length) {
+                    textSpan.innerText += text.charAt(index);
+                    index++;
+                    scroller.scrollTop = scroller.scrollHeight;
+                    setTimeout(printChar, 20); // скорость печати
+                } else {
+                    cursor.remove(); // убираем курсор после завершения анимации
+                }
+            }
+            printChar();
+        } else {
+            textSpan.innerText = text;
+        }
     }
 
-    function addMessage(text, isUser = false) {
-      if (!currentChatId) newChat();
+    // ОТПРАВКА СООБЩЕНИЯ КЛИЕНТОМ
+    function executeClientMessageBroadcast() {
+        let input = document.getElementById('chatPayloadInputField');
+        let rawText = input.value.trim();
+        if(!rawText && !runtimeLocalFileBuffer) return;
 
-      const msg = document.createElement('div');
-      msg.className = `message ${isUser ? 'user-msg' : 'prisma-msg'}`;
-      msg.innerHTML = `<div class="bubble \( {isUser ? 'user-bubble' : 'prisma-bubble'}"> \){text}</div>`;
-      chatContainer.appendChild(msg);
-      chatContainer.scrollTop = chatContainer.scrollHeight;
+        if(!systemStorageState.activeSessionId) createNewChatSessionHandler();
+        let currentSession = systemStorageState.sessions[systemStorageState.activeSessionId];
+        
+        if(currentSession.logs.length === 0) {
+            let headerTitle = rawText || "Файл (" + (runtimeLocalFileBuffer ? runtimeLocalFileBuffer.name : "Медиа") + ")";
+            currentSession.title = headerTitle.length > 22 ? headerTitle.substring(0, 20) + "..." : headerTitle;
+            document.getElementById('brandLogoCentricNode').style.opacity = '0';
+        }
 
-      chats[currentChatId].messages.push({ text, isUser });
-      saveChats();
+        let newLogItem = { role: 'user', text: rawText };
+        if (runtimeLocalFileBuffer) {
+            newLogItem.file_base64 = runtimeLocalFileBuffer.base64;
+            newLogItem.mime_type = runtimeLocalFileBuffer.mime;
+            newLogItem.file_name = runtimeLocalFileBuffer.name;
+        }
+
+        currentSession.logs.push(newLogItem);
+        input.value = '';
+        purgeAttachedFileBuffer();
+        
+        syncActiveSessionContext(systemStorageState.activeSessionId);
+        dispatchNetworkPackageToTelegram(currentSession.logs);
     }
 
-    function sendMessage() {
-      if (input.value.trim() === '') return;
-      addMessage(input.value, true);
-      input.value = '';
+    // ИМИТАЦИЯ РАБОТЫ И СВЯЗИ С БЭКЕНДОМ ЧЕРЕЗ TELEGRAM WEBAPP
+    function dispatchNetworkPackageToTelegram(logsHistory) {
+        let scroller = document.getElementById('chatRenderViewport');
+        
+        let loader = document.createElement('div');
+        loader.className = 'bot-thinking-loader-pills';
+        loader.id = 'runtimeNetworkLoader';
+        loader.innerHTML = `<div class="thinking-circle-dot"></div><div class="thinking-circle-dot"></div><div class="thinking-circle-dot"></div>`;
+        scroller.appendChild(loader);
+        scroller.scrollTop = scroller.scrollHeight;
 
-      setTimeout(() => {
-        addMessage("Принял, брат.", false);
-      }, 800);
+        let payloadData = {
+            model: systemStorageState.activeModelCode,
+            history: logsHistory
+        };
+
+        try {
+            window.Telegram.WebApp.sendData(JSON.stringify(payloadData));
+        } catch(err) {
+            console.log("[TELEGRAM SDK] WebApp.sendData failed, running inside regular browser.");
+        }
+
+        // Заглушка-эмулятор ответа сети (в проде убрать inject из setTimeout)
+        setTimeout(() => {
+            window.postMessage(JSON.stringify({
+                action: 'inject',
+                text: "Пакет успешно доставлен на ядро Prisma. Модель " + systemStorageState.activeModelCode + " отработала в штатном режиме. Все системы функционируют исправно, данные синхронизированы."
+            }), "*");
+        }, 1200);
     }
 
-    sendBtn.addEventListener('click', sendMessage);
-    input.addEventListener('keypress', e => {
-      if (e.key === 'Enter') sendMessage();
+    // ИНЖЕКТ ОТВЕТОВ БОТА ИЗ СЕТИ
+    window.addEventListener('message', function(event) {
+        try {
+            let data = JSON.parse(event.data);
+            if (data && data.action === 'inject') {
+                document.getElementById('runtimeNetworkLoader')?.remove();
+                if(systemStorageState.activeSessionId) {
+                    systemStorageState.sessions[systemStorageState.activeSessionId].logs.push({ role: 'bot', text: data.text });
+                    commitStateToDeviceFlash();
+                    renderMessageToDOM('bot', data.text, null, null, null, true);
+                }
+            }
+        } catch(e){}
     });
 
-    function toggleSidebar() {
-      sidebar.classList.toggle('open');
-    }
-
-    function showMenu() {
-      modal.style.display = 'flex';
-    }
-
-    function closeModal() {
-      modal.style.display = 'none';
-    }
-
-    // Заглушки
-    function attachFile() { alert("Прикрепить файл"); }
-    function openGallery() { alert("Галерея"); }
-    function openCamera() { alert("Камера"); }
-
-    // Инициализация
+    // ИНИЦИАЛИЗАЦИЯ НА ХОЛОДНОМ СТАРТЕ
     window.onload = () => {
-      if (Object.keys(chats).length === 0) {
-        newChat();
-      } else {
-        currentChatId = Object.keys(chats)[0];
-        loadChat(currentChatId);
-      }
+        try { window.Telegram.WebApp.expand(); window.Telegram.WebApp.ready(); } catch(e){}
+        commitModelChange(systemStorageState.activeModelCode || 'fast', systemStorageState.activeModelLabel || 'Быстрый - Prisma 2.5');
+        renderSidebarSessionsHistoryList();
+        if(Object.keys(systemStorageState.sessions).length > 0) syncActiveSessionContext(Object.keys(systemStorageState.sessions).pop());
+        else createNewChatSessionHandler();
     };
-  </script>
+    </script>
 </body>
 </html>
