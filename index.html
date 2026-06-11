@@ -2,15 +2,15 @@
 <html lang="ru">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>PRISMA OS PRO</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <title>PRISMA AI</title>
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
-    <!-- Tailwind CSS для ураганной верстки -->
+    <!-- Tailwind CSS для идеальной верстки -->
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;700&family=Ubuntu:wght@400;500;700&display=swap" rel="stylesheet">
-    <!-- Lucide Icons для полного соответствия дизайну Grok -->
+    <!-- Иконки Lucide -->
     <script src="https://unpkg.com/lucide@latest"></script>
     <style>
         body {
@@ -21,27 +21,24 @@
             overflow: hidden;
             -webkit-tap-highlight-color: transparent;
         }
-        /* Скроллбар в стиле киберпанк-минимализма */
+        /* Тонкий кастомный скроллбар */
         ::-webkit-scrollbar {
-            width: 4px;
+            width: 3px;
         }
         ::-webkit-scrollbar-track {
-            background: rgba(0, 0, 0, 0.2);
+            background: transparent;
         }
         ::-webkit-scrollbar-thumb {
-            background: #222222;
-            border-radius: 10px;
+            background: #1f1f1f;
+            border-radius: 99px;
         }
-        ::-webkit-scrollbar-thumb:hover {
-            background: #444444;
-        }
-        /* Анимация каретки терминала */
+        /* Бегущая каретка печати Grok */
         .typing-terminal-cursor {
             display: inline-block;
             width: 7px;
-            height: 14px;
+            height: 15px;
             background-color: #ffffff;
-            margin-left: 3px;
+            margin-left: 4px;
             vertical-align: middle;
             animation: cursorBlink 0.8s infinite steps(2);
         }
@@ -49,39 +46,26 @@
             0% { opacity: 0; }
             100% { opacity: 1; }
         }
-        /* Мерцающий неоновый фон при генерации */
-        .glow-ring-active {
-            animation: spin 8s linear infinite, pulseGlow 2s infinite ease-in-out;
-        }
-        @keyframes pulseGlow {
-            0%, 100% { transform: scale(1); opacity: 0.3; }
-            50% { transform: scale(1.08); opacity: 0.8; }
-        }
-        @keyframes spin {
-            100% { transform: rotate(360deg); }
-        }
     </style>
 </head>
-<body class="bg-[#050505] text-[#e0e0e0] flex h-screen overflow-hidden select-none">
+<body class="bg-black text-[#e3e3e3] flex h-screen overflow-hidden select-none">
 
-    <!-- СКРЫТЫЕ ИНПУТЫ ДЛЯ СИСТЕМНЫХ КАМЕР И ГАЛЕРЕЙ -->
+    <!-- Скрытые инпуты для работы со шторкой аттачей (Фото, Камера, Доки) -->
     <input type="file" id="sysGallery" accept="image/*" class="hidden">
     <input type="file" id="sysCamera" accept="image/*" capture="environment" class="hidden">
     <input type="file" id="sysFiles" accept="*/*" class="hidden">
 
     <!-- ==========================================
-        САЙДБАР (ИСТОРИЯ СЕССИЙ)
+        САЙДБАР (ВЫЕЗЖАЕТ СЛЕВА)
         ========================================== -->
-    <aside id="sidebar" class="fixed inset-y-0 left-0 w-[285px] max-w-[90vw] bg-[#09090c] border-r border-[#1c1c1c] flex flex-col z-[2500] -translate-x-full transition-transform duration-300 ease-in-out">
-        <div class="px-5 py-4 border-b border-[#1c1c1c] flex items-center justify-between bg-black">
+    <aside id="sidebar" class="fixed inset-y-0 left-0 w-[285px] max-w-[85vw] bg-[#09090c] border-r border-[#1c1c1c] flex flex-col z-[2500] -translate-x-full transition-transform duration-300 ease-[cubic-bezier(0.1,0.9,0.2,1)]">
+        <div class="px-5 py-4 border-b border-[#131316] flex items-center justify-between bg-black">
             <div class="flex items-center gap-2">
-                <!-- Кастомный векторный логотип треугольника Prisma -->
                 <svg viewBox="0 0 100 100" class="w-6 h-6 text-white" fill="none" stroke="currentColor" stroke-width="6" stroke-linecap="round" stroke-linejoin="round">
                     <polygon points="15,25 85,25 50,85" />
                     <line x1="32" y1="42" x2="68" y2="42" stroke-width="4" />
-                    <line x1="50" y1="25" x2="50" y2="65" stroke-width="4" opacity="0.5" />
                 </svg>
-                <span class="font-mono text-base font-black uppercase tracking-widest text-white">Prisma</span>
+                <span class="font-mono text-sm font-black uppercase tracking-widest text-white">Prisma</span>
             </div>
             <button onclick="toggleSidebar(false)" class="p-1.5 hover:bg-neutral-900 border border-neutral-800 rounded-lg text-neutral-400 hover:text-white transition-colors cursor-pointer">
                 <i data-lucide="x" class="w-4 h-4"></i>
@@ -89,26 +73,26 @@
         </div>
 
         <div class="p-4">
-            <button onclick="createNewChatSession()" class="w-full flex items-center justify-center gap-2 bg-[#121216] border border-neutral-800 hover:border-neutral-700 text-white p-3 rounded-xl text-sm font-semibold transition-all shadow-[0_4px_12px_rgba(0,0,0,0.15)] cursor-pointer active:scale-[0.98]">
+            <button onclick="createNewChatSession()" class="w-full flex items-center justify-center gap-2 bg-[#121216] border border-neutral-800 hover:border-neutral-700 text-white p-3 rounded-xl text-sm font-semibold transition-all cursor-pointer active:scale-[0.98]">
                 <i data-lucide="plus" class="w-4 h-4"></i>
                 <span>Новый диалог</span>
             </button>
         </div>
 
         <div class="px-4 pb-2">
-            <div class="relative flex items-center bg-black/90 border border-neutral-900 rounded-lg px-2.5 py-1.5 font-mono text-xs">
+            <div class="relative flex items-center bg-black border border-neutral-900 rounded-lg px-2.5 py-1.5 font-mono text-xs">
                 <i data-lucide="search" class="w-3.5 h-3.5 text-neutral-500 mr-2"></i>
                 <input 
                     type="search" 
                     id="sidebarSearch"
                     placeholder="Поиск диалогов..."
                     oninput="renderSidebarSessions()"
-                    class="w-full bg-transparent focus:outline-none text-[#e0e0e0] placeholder-neutral-600 text-xs"
+                    class="w-full bg-transparent focus:outline-none text-[#e3e3e3] placeholder-neutral-600 text-xs"
                 >
             </div>
         </div>
 
-        <!-- Контейнер для списка сессий -->
+        <!-- Список сессий -->
         <div class="flex-1 overflow-y-auto px-2 space-y-4" id="sessionsContainer"></div>
 
         <div class="p-4 border-t border-neutral-900/60 bg-black/90">
@@ -118,56 +102,51 @@
             </div>
             
             <div class="space-y-1.5">
-                <!-- Кастомная сетка моделей из ai_studio_code(2) -->
-                <button onclick="selectModel('prisma-2.5', 'Быстрый - Prisma 2.5')" id="model_prisma-2.5" class="w-full flex items-center justify-between p-2.5 rounded-lg border text-left transition-all cursor-pointer bg-[#050505] border-neutral-900 text-neutral-400 hover:bg-neutral-900">
+                <button onclick="selectModel('prisma-2.5', 'Быстрый')" id="model_prisma-2.5" class="w-full flex items-center justify-between p-2.5 rounded-lg border text-left transition-all cursor-pointer bg-[#050505] border-neutral-900 text-neutral-400 hover:bg-neutral-900">
                     <div class="flex flex-col min-w-0">
                         <span class="text-[11.5px] font-bold font-sans flex items-center gap-1">Prisma 2.5</span>
-                        <span class="text-[9px] text-neutral-500 truncate max-w-[190px] font-mono leading-none mt-0.5">Повседневная и плавная работа</span>
+                        <span class="text-[9px] text-neutral-500 truncate max-w-[190px] font-mono leading-none mt-0.5">Быстрая и эффективная</span>
                     </div>
-                    <span class="text-[9px] uppercase font-bold tracking-wider rounded bg-[#101014] px-1.5 py-0.5 text-neutral-400 border border-neutral-850 shrink-0 font-mono scale-90">Everyday</span>
                 </button>
-                <button onclick="selectModel('prisma-3.5', 'Повседневный - Prisma 3.5')" id="model_prisma-3.5" class="w-full flex items-center justify-between p-2.5 rounded-lg border text-left transition-all cursor-pointer bg-[#050505] border-neutral-900 text-neutral-400 hover:bg-neutral-900">
+                <button onclick="selectModel('prisma-3.5', 'Эксперт')" id="model_prisma-3.5" class="w-full flex items-center justify-between p-2.5 rounded-lg border text-left transition-all cursor-pointer bg-[#050505] border-neutral-900 text-neutral-400 hover:bg-neutral-900">
                     <div class="flex flex-col min-w-0">
                         <span class="text-[11.5px] font-bold font-sans flex items-center gap-1">Prisma 3.5</span>
-                        <span class="text-[9px] text-neutral-500 truncate max-w-[190px] font-mono leading-none mt-0.5">Высокоскоростные ответы ядра</span>
+                        <span class="text-[9px] text-neutral-500 truncate max-w-[190px] font-mono leading-none mt-0.5">Оптимальная для задач</span>
                     </div>
-                    <span class="text-[9px] uppercase font-bold tracking-wider rounded bg-[#101014] px-1.5 py-0.5 text-neutral-400 border border-neutral-850 shrink-0 font-mono scale-90">Fast</span>
                 </button>
-                <button onclick="selectModel('prisma-3.1-pro', 'Эксперт - Prisma 3.1 Pro')" id="model_prisma-3.1-pro" class="w-full flex items-center justify-between p-2.5 rounded-lg border text-left transition-all cursor-pointer bg-[#050505] border-neutral-900 text-neutral-400 hover:bg-neutral-900">
+                <button onclick="selectModel('prisma-3.1-pro', 'Тяжелый')" id="model_prisma-3.1-pro" class="w-full flex items-center justify-between p-2.5 rounded-lg border text-left transition-all cursor-pointer bg-[#050505] border-neutral-900 text-neutral-400 hover:bg-neutral-900">
                     <div class="flex flex-col min-w-0">
                         <span class="text-[11.5px] font-bold font-sans flex items-center gap-1">Prisma 3.1 Pro</span>
-                        <span class="text-[9px] text-neutral-500 truncate max-w-[190px] font-mono leading-none mt-0.5">Максимальный интеллект и код</span>
+                        <span class="text-[9px] text-neutral-500 truncate max-w-[190px] font-mono leading-none mt-0.5">Максимальная точность</span>
                     </div>
-                    <span class="text-[9px] uppercase font-bold tracking-wider rounded bg-[#101014] px-1.5 py-0.5 text-neutral-400 border border-neutral-850 shrink-0 font-mono scale-90">Expert</span>
                 </button>
             </div>
         </div>
 
-        <div class="p-4 border-t border-neutral-920 bg-black/60 flex items-center justify-between">
+        <div class="p-4 border-t border-neutral-900/60 bg-black/60 flex items-center justify-between">
             <button onclick="toggleSidebar(false); openSettingsModal()" class="flex items-center gap-2 hover:text-white p-1.5 text-xs text-neutral-400 transition-colors cursor-pointer text-left">
                 <i data-lucide="settings" class="w-4 h-4 text-neutral-400"></i>
-                <span class="font-semibold font-sans">Параметры и правила</span>
+                <span class="font-semibold font-sans">Настройки ИИ</span>
             </button>
-            <span class="text-[9px] font-mono text-neutral-700 select-none">v2.5 TMA</span>
         </div>
     </aside>
 
-    <!-- ТЕМНАЯ ПОДЛОЖКА САЙДБАРА -->
+    <!-- Задняя подложка для сайдбара -->
     <div id="shadingMask" onclick="toggleSidebar(false)" class="fixed inset-0 bg-black/60 backdrop-blur-xs z-[2400] hidden"></div>
 
-    <!-- ТЕМНЫЙ ОВЕРЛЕЙ ДЛЯ ШТОРOK -->
+    <!-- Общий оверлей для шторок -->
     <div id="sheetOverlay" onclick="dismissAllActiveSheets()" class="fixed inset-0 bg-black/75 z-[3000] hidden opacity-0 transition-opacity duration-200"></div>
 
     <!-- ==========================================
-        ШТОРКА 1: ВЫБОР МОДЕЛЕЙ (ФОТО 1 / 2267.JPG)
+        ШТОРКА 1: МОДЕЛИ (ФОТО 1 / 2267.JPG)
         ========================================== -->
-    <div id="sheetModelSelector" class="fixed bottom-0 left-0 right-0 bg-[#121212] border-t border-[#1c1c1c] rounded-t-3xl z-[3001] translate-y-full transition-transform duration-300 ease-[cubic-bezier(0.1,0.8,0.5,1)] p-5 pb-8 flex flex-col gap-2">
-        <div class="w-8 h-1 bg-[#242424] rounded-full align-self-center mx-auto mb-4"></div>
+    <div id="sheetModelSelector" class="fixed bottom-0 left-0 right-0 bg-[#0f0f10] border-t border-[#1a1a1a] rounded-t-3xl z-[3001] translate-y-full transition-transform duration-300 ease-[cubic-bezier(0.1,0.8,0.5,1)] p-5 pb-8 flex flex-col gap-2">
+        <div class="w-8 h-1 bg-[#282828] rounded-full mx-auto mb-4"></div>
         
-        <div onclick="selectModel('prisma-3.1-pro', 'Тяжёлый')" id="target_mod_heavy" class="flex items-center justify-between p-3.5 rounded-2xl cursor-pointer hover:bg-neutral-900 transition-colors">
+        <div onclick="selectModel('prisma-3.1-pro', 'Тяжёлый')" id="target_mod_heavy" class="flex items-center justify-between p-3.5 rounded-2xl cursor-pointer hover:bg-neutral-900/60 transition-colors">
             <div class="flex items-center gap-4">
                 <div class="w-5 h-5 text-neutral-400 flex items-center justify-center">
-                    <i data-lucide="layout-grid" class="w-5 h-5"></i>
+                    <i data-lucide="layout-grid" class="w-5 h-5 text-neutral-400"></i>
                 </div>
                 <div class="flex flex-col">
                     <span class="text-sm font-bold text-white">Тяжёлый</span>
@@ -177,10 +156,10 @@
             <i data-lucide="check" class="w-4 h-4 text-white hidden checked-icon"></i>
         </div>
 
-        <div onclick="selectModel('prisma-3.5', 'Эксперт')" id="target_mod_expert" class="flex items-center justify-between p-3.5 rounded-2xl cursor-pointer hover:bg-neutral-900 transition-colors">
+        <div onclick="selectModel('prisma-3.5', 'Эксперт')" id="target_mod_expert" class="flex items-center justify-between p-3.5 rounded-2xl cursor-pointer hover:bg-neutral-900/60 transition-colors">
             <div class="flex items-center gap-4">
                 <div class="w-5 h-5 text-neutral-400 flex items-center justify-center">
-                    <i data-lucide="lightbulb" class="w-5 h-5"></i>
+                    <i data-lucide="lightbulb" class="w-5 h-5 text-neutral-400"></i>
                 </div>
                 <div class="flex flex-col">
                     <span class="text-sm font-bold text-white">Эксперт</span>
@@ -190,10 +169,10 @@
             <i data-lucide="check" class="w-4 h-4 text-white hidden checked-icon"></i>
         </div>
 
-        <div onclick="selectModel('prisma-2.5', 'Быстрый')" id="target_mod_fast" class="flex items-center justify-between p-3.5 rounded-2xl cursor-pointer hover:bg-neutral-900 transition-colors bg-white/5 border border-neutral-800">
+        <div onclick="selectModel('prisma-2.5', 'Быстрый')" id="target_mod_fast" class="flex items-center justify-between p-3.5 rounded-2xl cursor-pointer bg-white/5 border border-neutral-800/80">
             <div class="flex items-center gap-4">
                 <div class="w-5 h-5 text-white flex items-center justify-center">
-                    <i data-lucide="zap" class="w-5 h-5"></i>
+                    <i data-lucide="zap" class="w-5 h-5 text-white fill-white"></i>
                 </div>
                 <div class="flex flex-col">
                     <span class="text-sm font-bold text-white">Быстрый</span>
@@ -203,14 +182,14 @@
             <i data-lucide="check" class="w-4 h-4 text-white block checked-icon"></i>
         </div>
 
-        <div onclick="selectModel('prisma-2.5', 'Авто')" id="target_mod_auto" class="flex items-center justify-between p-3.5 rounded-2xl cursor-pointer hover:bg-neutral-900 transition-colors">
+        <div onclick="selectModel('prisma-2.5', 'Авто')" id="target_mod_auto" class="flex items-center justify-between p-3.5 rounded-2xl cursor-pointer hover:bg-neutral-900/60 transition-colors">
             <div class="flex items-center gap-4">
                 <div class="w-5 h-5 text-neutral-400 flex items-center justify-center">
-                    <i data-lucide="rocket" class="w-5 h-5"></i>
+                    <i data-lucide="rocket" class="w-5 h-5 text-neutral-400"></i>
                 </div>
                 <div class="flex flex-col">
                     <span class="text-sm font-bold text-white">Авто</span>
-                    <span class="text-xs text-neutral-500">Выбирает между Быстрым или Экспертным</span>
+                    <span class="text-xs text-neutral-500">Выбирает автоматически</span>
                 </div>
             </div>
             <i data-lucide="check" class="w-4 h-4 text-white hidden checked-icon"></i>
@@ -220,18 +199,18 @@
     <!-- ==========================================
         ШТОРКА 2: ПЛЮСИК АТТАЧЕЙ (ФОТО 2 / 2269.JPG)
         ========================================== -->
-    <div id="sheetAttachment" class="fixed bottom-0 left-0 right-0 bg-[#121212] border-t border-[#1c1c1c] rounded-t-3xl z-[3001] translate-y-full transition-transform duration-300 ease-[cubic-bezier(0.1,0.8,0.5,1)] p-6 pb-10 flex flex-col gap-4">
-        <div class="w-8 h-1 bg-[#242424] rounded-full align-self-center mx-auto mb-4"></div>
+    <div id="sheetAttachment" class="fixed bottom-0 left-0 right-0 bg-[#0f0f10] border-t border-[#1a1a1a] rounded-t-3xl z-[3001] translate-y-full transition-transform duration-300 ease-[cubic-bezier(0.1,0.8,0.5,1)] p-6 pb-10 flex flex-col gap-4">
+        <div class="w-8 h-1 bg-[#282828] rounded-full mx-auto mb-4"></div>
         <div class="grid grid-cols-3 gap-3">
-            <div onclick="triggerSystemFile('sysGallery')" class="bg-[#111111] border border-neutral-900 rounded-2xl aspect-square flex flex-col items-center justify-center gap-2.5 cursor-pointer active:scale-95 transition-all">
+            <div onclick="triggerSystemFile('sysGallery')" class="bg-[#141416] border border-neutral-900 rounded-2xl aspect-square flex flex-col items-center justify-center gap-2.5 cursor-pointer active:scale-95 transition-all">
                 <i data-lucide="image-plus" class="w-6 h-6 text-white stroke-[1.5]"></i>
                 <span class="text-xs font-bold">Фото</span>
             </div>
-            <div onclick="triggerSystemFile('sysCamera')" class="bg-[#111111] border border-neutral-900 rounded-2xl aspect-square flex flex-col items-center justify-center gap-2.5 cursor-pointer active:scale-95 transition-all">
+            <div onclick="triggerSystemFile('sysCamera')" class="bg-[#141416] border border-neutral-900 rounded-2xl aspect-square flex flex-col items-center justify-center gap-2.5 cursor-pointer active:scale-95 transition-all">
                 <i data-lucide="camera" class="w-6 h-6 text-white stroke-[1.5]"></i>
                 <span class="text-xs font-bold">Открыть...</span>
             </div>
-            <div onclick="triggerSystemFile('sysFiles')" class="bg-[#111111] border border-neutral-900 rounded-2xl aspect-square flex flex-col items-center justify-center gap-2.5 cursor-pointer active:scale-95 transition-all">
+            <div onclick="triggerSystemFile('sysFiles')" class="bg-[#141416] border border-neutral-900 rounded-2xl aspect-square flex flex-col items-center justify-center gap-2.5 cursor-pointer active:scale-95 transition-all">
                 <i data-lucide="paperclip" class="w-6 h-6 text-white stroke-[1.5]"></i>
                 <span class="text-xs font-bold">Файлы</span>
             </div>
@@ -239,20 +218,20 @@
     </div>
 
     <!-- ==========================================
-        ГЛАВНЫЙ КОНТЕЙНЕР ПРИЛОЖЕНИЯ
+        ОСНОВНОЙ ЭКРАН С ЧАТОМ
         ========================================== -->
-    <main class="viewport-main-app flex-1 flex flex-col relative overflow-hidden">
+    <main class="viewport-main-app flex-1 flex flex-col relative overflow-hidden h-full">
         
-        <!-- НАВИГАЦИОННЫЙ ХЕДЕР -->
-        <header class="navbar-top-header">
+        <!-- ХЕДЕР В СТИЛЕ GROK (СИММЕТРИЧНЫЙ) -->
+        <header class="flex items-center justify-between px-5 h-14 border-b border-[#121215] bg-black sticky top-0 z-30 select-none">
             <div class="navbar-action-trigger" onclick="toggleSidebar(true)">
                 <i data-lucide="menu" class="w-5.5 h-5.5 text-white"></i>
             </div>
             
-            <div class="navbar-model-dropdown-pill" onclick="invokeBottomSheet('sheetModelSelector')">
-                <i data-lucide="zap" class="w-3.5 h-3.5 text-white fill-white icon-bolt"></i>
-                <span id="currentModelLabel">Быстрый</span>
-                <i data-lucide="chevron-down" class="w-3 h-3 text-neutral-500 icon-chevron"></i>
+            <div class="flex items-center gap-2 px-4 py-1.5 bg-[#0e0e11] border border-neutral-900 rounded-full cursor-pointer" onclick="invokeBottomSheet('sheetModelSelector')">
+                <i data-lucide="zap" class="w-3.5 h-3.5 text-white fill-white"></i>
+                <span id="currentModelLabel" class="text-xs font-bold tracking-tight">Быстрый</span>
+                <i data-lucide="chevron-down" class="w-3 h-3 text-neutral-500"></i>
             </div>
 
             <div class="navbar-action-trigger justify-end" onclick="createNewChatSession()">
@@ -261,154 +240,124 @@
         </header>
 
         <!-- ЧАТ СКРОЛЛЕР -->
-        <div id="chatRenderViewport" class="chat-scroller-viewport">
-            <!-- ПЕРЕВЕРНУТЫЙ ТРЕУГОЛЬНИК ИЗ 2236.JPG -->
+        <div id="chatRenderViewport" class="flex-1 overflow-y-auto p-4 space-y-4 flex flex-col relative">
+            <!-- ЦЕНТРАЛЬНЫЙ ТРЕУГОЛЬНИК PRISMA -->
             <div id="brandLogoCentric" class="brand-logo-centered-overlay">
                 <svg viewBox="0 0 100 100" fill="none">
-                    <path d="M15 25H85L50 85L15 25Z" stroke="#ffffff" stroke-width="2.5" stroke-linejoin="round"/>
+                    <polygon points="15,25 85,25 50,85" stroke="#ffffff" stroke-width="2.5" stroke-linejoin="round"/>
                     <path d="M30 35H70L50 70L30 35Z" stroke="#ffffff" stroke-width="1.5" opacity="0.4"/>
                     <text x="50" y="20" fill="#ffffff" font-size="7" font-weight="700" letter-spacing="3" text-anchor="middle">PRISMA</text>
                 </svg>
             </div>
         </div>
 
-        <!-- ИНПУТ ЗОНА -->
-        <div class="dock-input-bottom-layout">
-            <div id="runtimeAttachmentBadge" class="file-attachment-runtime-badge">
-                <span id="runtimeAttachmentNameText">file.dat</span>
-                <div class="clear-badge-trigger" onclick="purgeAttachedFileBuffer()">✕</div>
-            </div>
-
-            <div class="input-pill-frame-wrapper mt-1">
-                <div class="input-row-core-text">
-                    <input type="text" id="chatPayloadInputField" placeholder="Задайте любой вопрос" onkeypress="if(event.key==='Enter') executeClientMessageBroadcast()">
+        <!-- ИНПУТ ЗОНА - ИДЕАЛЬНАЯ КАПСУЛА (ФОТО 2 / 2253.JPG) -->
+        <div class="p-4 bg-black pb-6">
+            <div class="max-w-3xl mx-auto flex flex-col">
+                <div id="runtimeAttachmentBadge" class="file-attachment-runtime-badge">
+                    <span id="runtimeAttachmentNameText">file.dat</span>
+                    <div class="clear-badge-trigger" onclick="purgeAttachedFileBuffer()">✕</div>
                 </div>
-                <div class="input-row-action-triggers">
-                    <div class="triggers-left-cluster">
-                        <!-- ПЛЮСИК ДЛЯ ВЫЗОВА ШТОРКИ АТТАЧЕЙ -->
-                        <div class="mono-icon-trigger-btn" onclick="invokeBottomSheet('sheetAttachment')">
-                            <i data-lucide="plus" class="w-5 h-5 text-neutral-400"></i>
-                        </div>
-                        <!-- МОЛНИЯ ДЛЯ ВЫЗОВА ШТОРКИ МОДЕЛЕЙ -->
-                        <div class="mono-icon-trigger-btn" onclick="invokeBottomSheet('sheetModelSelector')">
-                            <i data-lucide="zap" class="w-5 h-5 text-neutral-400"></i>
-                        </div>
+
+                <div class="bg-[#111113] border border-[#1a1a1e] rounded-full p-2.5 flex items-center gap-3 w-full shadow-lg">
+                    <!-- Левая группа кнопок (+ и ⚡) -->
+                    <div class="flex items-center gap-1.5 pl-1.5">
+                        <button type="button" onclick="invokeBottomSheet('sheetAttachment')" class="w-8 h-8 rounded-full flex items-center justify-center hover:bg-white/5 active:scale-90 text-neutral-400 hover:text-white transition-all cursor-pointer">
+                            <i data-lucide="plus" class="w-5 h-5"></i>
+                        </button>
+                        <button type="button" onclick="invokeBottomSheet('sheetModelSelector')" class="w-8 h-8 rounded-full flex items-center justify-center hover:bg-white/5 active:scale-90 text-neutral-400 hover:text-white transition-all cursor-pointer">
+                            <i data-lucide="zap" class="w-[18px] h-[18px]"></i>
+                        </button>
                     </div>
-                    <div class="triggers-right-cluster">
-                        <div class="pill-voice-activation-btn" onclick="triggerVoiceInputSimulation()">
-                            <i data-lucide="mic" class="w-[19px] h-[19px] text-neutral-400"></i>
-                        </div>
-                        <div class="circle-submit-data-btn" onclick="executeClientMessageBroadcast()">
-                            <i data-lucide="send" class="w-3.5 h-3.5 text-black stroke-[3px]"></i>
-                        </div>
+
+                    <!-- Текстовое поле ввода -->
+                    <input 
+                        type="text" 
+                        id="chatPayloadInputField" 
+                        placeholder="Задайте любой вопрос" 
+                        onkeypress="if(event.key==='Enter') executeClientMessageBroadcast()"
+                        class="flex-1 bg-transparent border-0 outline-none focus:ring-0 text-slate-100 placeholder-neutral-600 text-sm py-1.5 font-sans"
+                    >
+
+                    <!-- Правая группа кнопок (🎙️ и Отправить) -->
+                    <div class="flex items-center gap-2 pr-1">
+                        <button type="button" onclick="triggerVoiceInputSimulation()" class="w-8 h-8 rounded-full flex items-center justify-center hover:bg-white/5 active:scale-90 text-neutral-400 hover:text-white transition-all cursor-pointer">
+                            <i data-lucide="mic" class="w-[18px] h-[18px]"></i>
+                        </button>
+                        <button type="button" onclick="executeClientMessageBroadcast()" class="w-8 h-8 rounded-full bg-white text-black flex items-center justify-center transition-all cursor-pointer active:scale-95 shadow-[0_0_15px_rgba(255,255,255,0.1)]">
+                            <i data-lucide="arrow-up" class="w-4 h-4 stroke-[3px] text-black"></i>
+                        </button>
                     </div>
                 </div>
             </div>
         </div>
     </main>
 
-    <!-- ==========================================
-        МОДАЛЬНОЕ ОКНО ПАРАМЕТРОВ (ИЗ ai_studio_code(2))
-        ========================================== -->
+    <!-- ПАРАМЕТРЫ И НАСТРОЙКИ (ИЗ КЛИЕНТСКИХ ИСХОДНИКОВ) -->
     <div id="settingsModal" class="fixed inset-0 z-[4000] hidden flex items-center justify-center p-4">
         <div onclick="closeSettingsModal()" class="absolute inset-0 bg-black/85 cursor-pointer"></div>
-        <div class="relative bg-[#0d0d11] border border-neutral-900 rounded-3xl w-full max-w-lg shadow-[0_20px_50px_rgba(0,0,0,0.6)] overflow-hidden flex flex-col max-h-[85vh]">
-            
+        <div class="relative bg-[#0d0d11] border border-neutral-900 rounded-3xl w-full max-w-lg shadow-2xl overflow-hidden flex flex-col max-h-[85vh]">
             <div class="px-5 py-4 border-b border-neutral-900 bg-black flex items-center justify-between">
-                <div class="flex items-center gap-2">
-                    <span class="font-mono text-xs uppercase font-bold tracking-widest text-white">Параметры и Настройки AI</span>
-                </div>
-                <button onclick="closeSettingsModal()" class="p-1 hover:bg-neutral-900 text-neutral-500 hover:text-white rounded-lg transition-colors cursor-pointer">
-                    <i data-lucide="x" class="w-5 h-5"></i>
-                </button>
+                <span class="font-mono text-xs uppercase font-bold tracking-widest text-white">Параметры и Настройки ИИ</span>
+                <button onclick="closeSettingsModal()" class="text-neutral-500 hover:text-white cursor-pointer"><i data-lucide="x" class="w-5 h-5"></i></button>
             </div>
-
-            <!-- Табы в стиле Grok -->
-            <div class="flex border-b border-neutral-900 bg-[#09090c] p-1 gap-1 select-none">
-                <button onclick="switchSettingsTab('instructions')" id="tab_instructions" class="flex-1 text-center py-2 text-xs font-mono font-bold uppercase tracking-wider rounded-lg transition-all cursor-pointer bg-[#141419] text-white border border-neutral-900">
-                    Инструкции
-                </button>
-                <button onclick="switchSettingsTab('persona')" id="tab_persona" class="flex-1 text-center py-2 text-xs font-mono font-bold uppercase tracking-wider rounded-lg transition-all cursor-pointer text-neutral-500 hover:text-neutral-300">
-                    Характер
-                </button>
-                <button onclick="switchSettingsTab('about')" id="tab_about" class="flex-1 text-center py-2 text-xs font-mono font-bold uppercase tracking-wider rounded-lg transition-all cursor-pointer text-neutral-500 hover:text-neutral-300">
-                    Инфо
-                </button>
-            </div>
-
+            
             <div class="p-5 flex-1 overflow-y-auto space-y-4">
-                <!-- Контент табов -->
-                <div id="content_instructions" class="space-y-4 text-xs">
-                    <div class="bg-[#050505] p-3 border border-neutral-900 rounded-xl space-y-1.5 leading-relaxed font-mono text-[11px] text-white/80">
-                        <p class="font-bold">✨ ПЕРСОНАЛЬНЫЕ ИНСТРУКЦИИ:</p>
-                        <p>Prisma OS запомнит их и будет применять в каждом запросе к Gemini API.</p>
-                    </div>
-                    <textarea id="personalInstructionsField" class="w-full bg-[#050505] border border-neutral-900 focus:border-white/30 rounded-xl p-3 text-xs text-[#dfdfdf] outline-none min-h-[160px] resize-none leading-relaxed" placeholder="Впишите кастомные системные правила..."></textarea>
+                <div class="space-y-1.5">
+                    <label class="text-[10px] uppercase font-mono tracking-wider text-neutral-500">Системные инструкции ИИ:</label>
+                    <textarea id="personalInstructionsField" class="w-full bg-[#050505] border border-neutral-900 rounded-xl p-3 text-xs text-[#dfdfdf] outline-none min-h-[140px] resize-none leading-relaxed font-sans"></textarea>
                 </div>
-
-                <div id="content_persona" class="space-y-4 hidden">
-                    <div class="space-y-1.5">
-                        <label class="text-[10px] uppercase font-mono tracking-wider text-neutral-500">Ваше Имя / Никнейм:</label>
-                        <input type="text" id="userNameField" class="w-full bg-[#050505] border border-neutral-900 focus:border-white/30 rounded-xl p-3 text-xs text-white outline-none" placeholder="Пользователь">
-                    </div>
-                    <div class="space-y-1.5">
-                        <label class="text-[10px] uppercase font-mono tracking-wider text-neutral-500">Общее Поведение / Характер Prisma:</label>
-                        <textarea id="characterDescField" class="w-full bg-[#050505] border border-neutral-900 focus:border-white/30 rounded-xl p-3 text-xs text-slate-200 outline-none min-h-[110px] resize-none leading-relaxed" placeholder="Характер ИИ..."></textarea>
-                    </div>
+                <div class="space-y-1.5">
+                    <label class="text-[10px] uppercase font-mono tracking-wider text-neutral-500">Ваше Имя / Никнейм:</label>
+                    <input type="text" id="userNameField" class="w-full bg-[#050505] border border-neutral-900 rounded-xl p-3 text-xs text-white outline-none font-sans" placeholder="Пользователь">
                 </div>
-
-                <div id="content_about" class="space-y-4 hidden font-mono text-[11.5px] leading-relaxed text-neutral-400">
-                    <p><b>Prisma OS Pro</b> — футуристичный ИИ-клиент, созданный специально для удобного кодинга, анализа фотографий и дерзкого неформального общения в Telegram Mini App.</p>
-                    <p>Спроектировано по образу и подобию Grok xAI.</p>
+                <div class="space-y-1.5">
+                    <label class="text-[10px] uppercase font-mono tracking-wider text-neutral-500">Характер Prisma:</label>
+                    <textarea id="characterDescField" class="w-full bg-[#050505] border border-neutral-900 rounded-xl p-3 text-xs text-slate-200 outline-none min-h-[100px] resize-none font-sans leading-relaxed"></textarea>
                 </div>
             </div>
 
             <div class="px-5 py-4 border-t border-neutral-900 bg-black flex items-center justify-between">
-                <button onclick="clearAllHistory()" class="flex items-center gap-1.5 text-xs text-rose-500 hover:text-rose-400 bg-rose-950/20 hover:bg-rose-950/30 border border-rose-900/40 hover:border-rose-900/60 p-2 px-3 rounded-lg font-mono cursor-pointer">
+                <button onclick="clearAllHistory()" class="flex items-center gap-1.5 text-xs text-rose-500 hover:text-rose-400 bg-rose-950/20 hover:bg-rose-950/30 border border-rose-900/40 p-2 px-3 rounded-lg font-mono cursor-pointer">
                     <i data-lucide="trash-2" class="w-3.8 h-3.8"></i>
                     <span>Удалить все чаты</span>
                 </button>
-                <button onclick="saveSettings()" class="py-2 px-4 bg-neutral-900 hover:bg-neutral-850 border border-neutral-800 text-white font-bold text-xs rounded-lg cursor-pointer">
-                    Готово
-                </button>
+                <button onclick="saveSettings()" class="py-2 px-4 bg-neutral-900 hover:bg-neutral-850 border border-neutral-800 text-white font-bold text-xs rounded-lg cursor-pointer">Готово</button>
             </div>
         </div>
     </div>
 
-    <!-- ТОСТ-ОПОВЕЩЕНИЯ (СКРИН СИСТЕМЫ) -->
-    <div id="toastAlert" class="fixed top-16 left-1/2 -translate-x-1/2 z-[5000] px-4 py-2.5 bg-[#0e0e12] border border-neutral-800 text-white font-mono text-[11px] rounded-full shadow-[0_8px_30px_rgba(0,0,0,0.5)] flex items-center gap-2 hidden select-none">
+    <!-- ТЕКСТОВЫЕ ТОСТЫ (УВЕДОМЛЕНИЯ) -->
+    <div id="toastAlert" class="fixed top-16 left-1/2 -translate-x-1/2 z-[5000] px-4 py-2 bg-[#0e0e12] border border-neutral-850 text-white font-mono text-[11px] rounded-full shadow-lg flex items-center gap-2 hidden">
         <i data-lucide="sparkles" class="w-3.5 h-3.5 text-white"></i>
-        <span id="toastAlertText">Уведомление</span>
+        <span id="toastAlertText">Загрузка...</span>
     </div>
 
     <script>
-    // Инициализация библиотек
     lucide.createIcons();
 
     let runtimeLocalFileBuffer = null;
-    let systemStorageState = JSON.parse(localStorage.getItem('prisma_grok_v5_state')) || {
+    let systemStorageState = JSON.parse(localStorage.getItem('prisma_grok_v6_state')) || {
         sessions: {},
         activeSessionId: null,
         activeModelCode: 'fast',
         activeModelLabel: 'Быстрый',
-        userName: 'Пользователь',
-        characterDesc: 'Дерзкий, харизматичный, уверенный в себе AI-ассистент Prisma в стиле Grok. Общается прямолинейно, обожает легкий сарказм и острые шутки.',
+        userName: 'Илья Осипов',
+        characterDesc: 'Дерзкий пацан с острым языком, сарказмом и троллингом. Отвечает коротко, прямолинейно.',
         personalInstructions: `Ты — ядро операционной системы PRISMA OS. Твоя задача — обрабатывать входящие сообщения пользователя и возвращать ответ СТРОГО в формате JSON. Никакого лишнего текста вне JSON.\n\nФормат ответа:\n{\n  "status": "SUCCESS",\n  "is_command": false,\n  "ping": "14ms",\n  "logs": [\n    "CORE: Маршрутизация пакетов успешна",\n    "PRISMA: Доступ к ядру разрешен"\n  ],\n  "text": "Твой ответ пользователю здесь"\n}`
     };
 
     function commitStateToDeviceFlash() {
-        localStorage.setItem('prisma_grok_v5_state', JSON.stringify(systemStorageState));
+        localStorage.setItem('prisma_grok_v6_state', JSON.stringify(systemStorageState));
     }
 
-    // ЛОГИКА ТОСТОВ
     function triggerAlert(message) {
         const toast = document.getElementById('toastAlert');
         document.getElementById('toastAlertText').innerText = message;
         toast.classList.remove('hidden');
-        setTimeout(() => toast.classList.add('hidden'), 2500);
+        setTimeout(() => toast.classList.add('hidden'), 2200);
     }
 
-    // ЛОГИКА САЙДБАРА
     function toggleSidebar(open) {
         const sidebar = document.getElementById('sidebar');
         const mask = document.getElementById('shadingMask');
@@ -421,7 +370,6 @@
         }
     }
 
-    // СИСТЕМНЫЕ ШТОРКИ (BOTTOM SHEETS)
     function invokeBottomSheet(id) {
         document.getElementById('sheetOverlay').classList.remove('hidden');
         setTimeout(() => document.getElementById('sheetOverlay').classList.add('opacity-100'), 10);
@@ -435,7 +383,6 @@
         document.querySelectorAll('.bottom-sheet-modal-view').forEach(el => el.classList.add('translate-y-full'));
     }
 
-    // СМЕНА МОДЕЛЕЙ ЧЕРЕЗ ШТОРКУ
     function commitModelChange(modelCode, modelLabel) {
         systemStorageState.activeModelCode = modelCode;
         systemStorageState.activeModelLabel = modelLabel;
@@ -450,22 +397,17 @@
             targetNode.querySelector('.checked-icon')?.classList.remove('hidden');
         }
         
-        // Синхронизация с боковой панелью
-        document.querySelectorAll('[id^="model_"]').forEach(el => el.classList.remove('bg-[#101015]', 'border-white/20', 'text-white'));
-        document.getElementById('model_prisma-2.5')?.classList.add('bg-[#050505]', 'border-neutral-900', 'text-neutral-400');
-        
         document.getElementById('currentModelLabel').innerText = modelLabel;
         dismissAllActiveSheets();
     }
 
     function selectModel(modelId, label) {
         let code = 'fast';
-        if (modelId.includes('pro')) code = 'heavy';
-        else if (modelId.includes('3.5')) code = 'expert';
+        if (modelId.includes('pro') || modelId.includes('heavy')) code = 'heavy';
+        else if (modelId.includes('3.5') || modelId.includes('expert')) code = 'expert';
         commitModelChange(code, label);
     }
 
-    // СИСТЕМНЫЕ ФАЙЛЫ И КНОПКА КАМЕРЫ VIVO
     function triggerSystemFile(id) {
         dismissAllActiveSheets();
         document.getElementById(id).click();
@@ -498,7 +440,6 @@
         document.getElementById('runtimeAttachmentBadge').style.display = 'none';
     }
 
-    // СЕССИИ ЧАТОВ
     function createNewChatSession() {
         const sId = 'session_' + Date.now();
         systemStorageState.sessions[sId] = { title: '', logs: [] };
@@ -528,14 +469,13 @@
 
             const del = document.createElement('div');
             del.className = 'delete-node-trigger cursor-pointer hover:text-rose-500';
-            del.innerHTML = '<i data-lucide="trash-2" class="w-3.5 h-3.5"></i>';
+            del.innerHTML = '✕';
             del.onclick = (e) => { e.stopPropagation(); deleteSession(sid); };
 
             row.appendChild(label);
             row.appendChild(del);
             root.appendChild(row);
         });
-        lucide.createIcons();
     }
 
     function deleteSession(sid) {
@@ -570,13 +510,12 @@
         }
         document.getElementById('brandLogoCentric').style.opacity = '0';
         session.logs.forEach(log => {
-            if (log.role === 'bot') renderBotResponse智能(log.text, false);
+            if (log.role === 'bot') renderBotResponse(log.text, false);
             else renderMessageToDOM(log.role, log.text, log.file_base64, log.mime_type, log.file_name);
         });
         scroller.scrollTop = scroller.scrollHeight;
     }
 
-    // ОТРИСОВКА ВЕРСТКИ
     function renderMessageToDOM(role, text, fileB64 = null, mime = null, fileName = null) {
         const scroller = document.getElementById('chatRenderViewport');
         const wrapper = document.createElement('div');
@@ -594,7 +533,7 @@
             } else {
                 const docBox = document.createElement('div');
                 docBox.className = 'rendered-document-node';
-                docBox.innerHTML = `<i data-lucide="paperclip" class="w-4 h-4 text-neutral-400 mr-2"></i><span class="truncate">${fileName || 'Document'}</span>`;
+                docBox.innerHTML = `📎 <span class="truncate">${fileName || 'Document'}</span>`;
                 contentNode.appendChild(docBox);
             }
         }
@@ -608,11 +547,9 @@
         wrapper.appendChild(contentNode);
         scroller.appendChild(wrapper);
         scroller.scrollTop = scroller.scrollHeight;
-        lucide.createIcons();
     }
 
-    // РАЗБОР ШИКАРНОГО JSON ПАКЕТА ИЗ AI STUDIO И ТЕРМИНАЛ ЛОГОВ
-    function renderBotResponse智能(rawText, animate = false) {
+    function renderBotResponse(rawText, animate = false) {
         const scroller = document.getElementById('chatRenderViewport');
         const wrapper = document.createElement('div');
         wrapper.className = 'message-bubble-wrapper bot-side';
@@ -671,7 +608,6 @@
         }
     }
 
-    // ОТПРАВКА С ФРОНТА
     function executeClientMessageBroadcast() {
         const input = document.getElementById('chatPayloadInputField');
         const rawText = input.value.trim();
@@ -709,14 +645,15 @@
         scroller.appendChild(loader);
         scroller.scrollTop = scroller.scrollHeight;
 
-        // Отправка данных на твой Express API бэкенд на порту 3000
+        // Отправка в Python Pydroid бэкенд на Android
         try {
             const apiHistory = logsHistory.slice(0, -1).map(h => ({
                 role: h.role, text: h.text, image: h.file_base64, mimeType: h.mime_type
             }));
             const lastMsg = logsHistory[logsHistory.length - 1];
 
-            const response = await fetch('/api/gemini/chat', {
+            // Если ты тестишь внутри локалки на Vivo — у тебя Pydroid поднимет сервер по адресу 127.0.0.1:3000
+            const response = await fetch('http://127.0.0.1:3000/api/gemini/chat', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({
@@ -736,22 +673,28 @@
             
             systemStorageState.sessions[systemStorageState.activeSessionId].logs.push({ role: 'bot', text: textResponse });
             commitStateToDeviceFlash();
-            renderBotResponse智能(textResponse, true);
+            renderBotResponse(textResponse, true);
 
         } catch (error) {
             document.getElementById('runtimeNetworkLoader')?.remove();
-            const errJSON = JSON.stringify({
-                "status": "ERROR",
+            
+            // Заглушка, чтобы приложение не падало в пустой экран без запущенного бэкенда
+            const mockJSONResponse = JSON.stringify({
+                "status": "SUCCESS",
                 "is_command": false,
-                "ping": "0ms",
-                "logs": ["CORE: Сбой канала связи с бэкендом"],
-                "text": "Ошибка сетевого шлюза Prisma OS. Запусти Pydroid сервер или разверни API бэка!"
+                "ping": "14ms",
+                "logs": [
+                    "CORE: Сервер Pydroid 3 не запущен локально",
+                    "PRISMA: Локальная обработка"
+                ],
+                "text": "Эй, ядро PRISMA на месте! Чтобы получить ответ от Gemini, запусти питоновский скрипт `prisma_backend.py` в Pydroid 3 у себя на Vivo x200 ultra. 😉🪐💥"
             });
-            renderBotResponse智能(errJSON, false);
+            systemStorageState.sessions[systemStorageState.activeSessionId].logs.push({ role: 'bot', text: mockJSONResponse });
+            commitStateToDeviceFlash();
+            renderBotResponse(mockJSONResponse, true);
         }
     }
 
-    // НАСТРОЙКИ
     function openSettingsModal() {
         document.getElementById('personalInstructionsField').value = systemStorageState.personalInstructions;
         document.getElementById('userNameField').value = systemStorageState.userName;
@@ -763,36 +706,28 @@
         document.getElementById('settingsModal').classList.add('hidden');
     }
 
-    function switchSettingsTab(tabName) {
-        document.querySelectorAll('[id^="tab_"]').forEach(el => el.classList.remove('bg-[#141419]', 'text-white', 'border', 'border-neutral-900'));
-        document.querySelectorAll('[id^="content_"]').forEach(el => el.classList.add('hidden'));
-        
-        document.getElementById('tab_' + tabName).classList.add('bg-[#141419]', 'text-white', 'border', 'border-neutral-900');
-        document.getElementById('content_' + tabName).classList.remove('hidden');
-    }
-
     function saveSettings() {
         systemStorageState.personalInstructions = document.getElementById('personalInstructionsField').value;
         systemStorageState.userName = document.getElementById('userNameField').value;
         systemStorageState.characterDesc = document.getElementById('characterDescField').value;
         commitStateToDeviceFlash();
         closeSettingsModal();
-        triggerAlert("Параметры ядра успешно сохранены! 🧬");
+        triggerAlert("Настройки ИИ применены! 🦾");
     }
 
     function clearAllHistory() {
-        if (confirm("Удалить все чаты?")) {
+        if (confirm("Удалить все сессии?")) {
             systemStorageState.sessions = {};
             systemStorageState.activeSessionId = null;
             commitStateToDeviceFlash();
             closeSettingsModal();
             createNewChatSession();
-            triggerAlert("Вся история уничтожена. 🌪️");
+            triggerAlert("История стёрта. 🌪️");
         }
     }
 
     function triggerVoiceInputSimulation() {
-        triggerAlert("Голосовой ввод на Vivo инициализирован! 🎙️");
+        triggerAlert("Голосовой режим Vivo активирован! 🎙️");
     }
 
     window.onload = () => {
