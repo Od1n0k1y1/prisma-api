@@ -1,34 +1,459 @@
 <!DOCTYPE html>
 <html lang="ru">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>PRISMA OS - Core Manifest & Codes</title>
-  <script src="https://cdn.tailwindcss.com"></script>
-  <link href="https://fonts.googleapis.com/css2?family=Fira+Code:wght@400;500;700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
-  <style>
-    body { font-family: 'Inter', sans-serif; }
-    .code-font { font-family: 'Fira Code', monospace; }
-  </style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>PRISMA OS PRO</title>
+    <script src="https://telegram.org/js/telegram-web-app.js"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;700&family=Ubuntu:wght@400;500;700&display=swap" rel="stylesheet">
+    <style>
+    :root {
+        --bg-pure-black: #000000;
+        --bg-main-dark: #090909;
+        --bg-card-dark: #121212;
+        --bg-input-dark: #151515;
+        --border-monochrome: #1f1f1f;
+        --text-absolute-white: #ffffff;
+        --text-muted-gray: #757575;
+        --text-dimmed-gray: #444444;
+    }
+
+    * { 
+        box-sizing: border-box; 
+        margin: 0; 
+        padding: 0; 
+        font-family: 'Space Grotesk', 'Ubuntu', -apple-system, sans-serif; 
+        -webkit-tap-highlight-color: transparent; 
+        user-select: none; 
+    }
+
+    body { 
+        background-color: var(--bg-pure-black); 
+        color: var(--text-absolute-white); 
+        height: 100vh; 
+        overflow: hidden; 
+        display: flex; 
+        position: relative;
+    }
+
+    .sidebar-drawer-container { 
+        width: 280px; 
+        background-color: var(--bg-main-dark); 
+        border-right: 1px solid var(--border-monochrome); 
+        display: flex; 
+        flex-direction: column; 
+        position: absolute; 
+        top: 0; 
+        left: 0; 
+        bottom: 0; 
+        z-index: 950; 
+        transform: translateX(-100%); 
+        transition: transform 0.25s cubic-bezier(0.4, 0, 0.2, 1); 
+    }
+    .sidebar-drawer-container.open { transform: translateX(0); }
+    
+    .sidebar-profile-header { 
+        padding: 20px; 
+        display: flex; 
+        align-items: center; 
+        gap: 12px; 
+        border-bottom: 1px solid var(--border-monochrome); 
+    }
+    .profile-avatar-circle { 
+        width: 38px; height: 38px; border-radius: 50%; background: var(--bg-card-dark); 
+        display: flex; align-items: center; justify-content: center;
+    }
+    .profile-avatar-circle svg { width: 20px; height: 20px; color: var(--text-absolute-white); }
+    .profile-text-meta { display: flex; flex-direction: column; overflow: hidden; }
+    .profile-main-title { font-size: 14px; font-weight: 700; }
+    .profile-sub-email { font-size: 11px; color: var(--text-muted-gray); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+
+    .sidebar-navigation-area { flex: 1; overflow-y: auto; padding: 15px 10px; }
+    .action-btn-new-chat { 
+        border: 1px solid var(--border-monochrome); padding: 10px; border-radius: 99px; 
+        text-align: center; font-size: 13px; font-weight: 700; cursor: pointer; margin-bottom: 15px; background: var(--bg-pure-black);
+    }
+    .action-btn-new-chat:active { background-color: var(--bg-card-dark); }
+    .sidebar-group-title { font-size: 11px; font-weight: 700; text-transform: uppercase; color: var(--text-muted-gray); margin: 10px 5px; }
+    .history-items-list { display: flex; flex-direction: column; gap: 4px; }
+    .history-row-node { padding: 10px 12px; border-radius: 10px; font-size: 13.5px; cursor: pointer; display: flex; align-items: center; justify-content: space-between; }
+    .history-row-node span { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; flex: 1; }
+    .history-row-node .delete-node-trigger { color: var(--text-dimmed-gray); padding: 0 4px; }
+    .history-row-node:active, .history-row-node.active { background-color: var(--bg-card-dark); }
+
+    .viewport-main-app { flex: 1; display: flex; flex-direction: column; height: 100vh; position: relative; background-color: var(--bg-pure-black); }
+    .global-layout-shading-mask { position: absolute; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0,0,0,0.5); display: none; z-index: 900; backdrop-filter: blur(1px); }
+    .global-layout-shading-mask.visible { display: block; }
+
+    .navbar-top-header { 
+        height: 54px; border-bottom: 1px solid var(--border-monochrome); display: flex; 
+        align-items: center; justify-content: space-between; padding: 0 14px; background-color: var(--bg-pure-black); position: sticky; top: 0; z-index: 800; 
+    }
+    .navbar-action-trigger { width: 36px; height: 36px; display: flex; align-items: center; cursor: pointer; }
+    .navbar-action-trigger svg { width: 20px; height: 20px; color: var(--text-absolute-white); }
+    
+    .navbar-model-dropdown-pill { 
+        display: flex; align-items: center; gap: 6px; cursor: pointer; padding: 6px 14px; border-radius: 99px; background: var(--bg-card-dark); border: 1px solid var(--border-monochrome);
+    }
+    .navbar-model-dropdown-pill span { font-size: 13.5px; font-weight: 500; color: var(--text-absolute-white); }
+    .navbar-model-dropdown-pill svg.icon-bolt { width: 12px; height: 12px; fill: var(--text-absolute-white); color: var(--text-absolute-white); }
+    .navbar-model-dropdown-pill svg.icon-chevron { width: 11px; height: 11px; color: var(--text-muted-gray); }
+
+    .chat-scroller-viewport { flex: 1; overflow-y: auto; padding: 16px; display: flex; flex-direction: column; gap: 16px; position: relative; }
+    
+    .brand-logo-centered-overlay { position: absolute; top: 45%; left: 50%; transform: translate(-50%, -50%); display: flex; flex-direction: column; align-items: center; justify-content: center; pointer-events: none; transition: opacity 0.25s ease; z-index: 5; }
+    .brand-logo-centered-overlay svg { width: 90px; height: 90px; }
+    
+    .message-bubble-wrapper { display: flex; flex-direction: column; width: 100%; }
+    .message-content-node { max-width: 85%; font-size: 15px; line-height: 1.45; word-wrap: break-word; user-select: text; }
+    
+    .message-bubble-wrapper.user-side .message-content-node { background-color: var(--bg-card-dark); color: var(--text-absolute-white); align-self: flex-end; padding: 10px 16px; border-radius: 18px; }
+    .message-bubble-wrapper.bot-side .message-content-node { background-color: transparent; color: var(--text-absolute-white); align-self: flex-start; padding: 4px 0; }
+    
+    /* СТИЛИЗАЦИЯ ДЛЯ ТЕРМИНАЛА ЛОГОВ */
+    .system-terminal-logs-block {
+        background: #060606; border: 1px solid #151515; border-radius: 8px; padding: 10px; margin-bottom: 8px; font-family: monospace; font-size: 12px; color: #555;
+    }
+    .system-log-line { line-height: 1.4; white-space: pre-wrap; }
+    .system-log-line.success { color: #00ff66; opacity: 0.8; }
+    .system-log-line.info { color: #888; }
+
+    .typing-terminal-cursor { display: inline-block; width: 7px; height: 14px; background-color: var(--text-absolute-white); margin-left: 3px; vertical-align: middle; animation: blink 0.8s infinite steps(2); }
+    @keyframes blink { 0% { opacity: 0; } 100% { opacity: 1; } }
+    
+    .bot-thinking-loader-pills { display: flex; align-items: center; gap: 4px; padding: 10px 0; }
+    .thinking-circle-dot { width: 5px; height: 5px; background: var(--text-muted-gray); border-radius: 50%; animation: pulse 1.4s infinite ease-in-out both; }
+    .thinking-circle-dot:nth-child(1) { animation-delay: -0.32s; }
+    .thinking-circle-dot:nth-child(2) { animation-delay: -0.16s; }
+    @keyframes pulse { 0%, 80%, 100% { transform: scale(0); opacity: 0.3; } 40% { transform: scale(1.1); opacity: 1; } }
+
+    .dock-input-bottom-layout { padding: 10px 14px 16px 14px; background-color: var(--bg-pure-black); }
+    .input-pill-frame-wrapper { background-color: var(--bg-input-dark); border-radius: 24px; padding: 6px 14px; display: flex; flex-direction: column; gap: 4px; border: 1px solid var(--border-monochrome); }
+    .input-row-core-text { display: flex; align-items: center; width: 100%; }
+    .input-pill-frame-wrapper input { flex: 1; background: none; border: none; color: var(--text-absolute-white); font-size: 15px; outline: none; padding: 8px 2px; }
+    .input-pill-frame-wrapper input::placeholder { color: #3b3b3b; }
+    
+    .input-row-action-triggers { display: flex; align-items: center; justify-content: space-between; width: 100%; }
+    .triggers-left-cluster { display: flex; align-items: center; }
+    .mono-icon-trigger-btn { cursor: pointer; width: 28px; height: 28px; display: flex; align-items: center; justify-content: center; color: var(--text-muted-gray); }
+    .mono-icon-trigger-btn svg { width: 20px; height: 20px; color: var(--text-muted-gray); }
+    .triggers-right-cluster { display: flex; align-items: center; gap: 8px; }
+    .pill-voice-activation-btn { cursor: pointer; width: 28px; height: 28px; display: flex; align-items: center; justify-content: center; color: var(--text-muted-gray); }
+    .pill-voice-activation-btn svg { width: 19px; height: 19px; }
+    .circle-submit-data-btn { width: 30px; height: 30px; background: var(--text-absolute-white); border-radius: 50%; display: flex; align-items: center; justify-content: center; cursor: pointer; }
+    .circle-submit-data-btn svg { width: 14px; height: 14px; color: var(--bg-pure-black); stroke-width: 3px; }
+    
+    .file-attachment-runtime-badge { display: none; align-items: center; justify-content: space-between; background: rgba(255,255,255,0.03); padding: 6px 12px; border-radius: 10px; font-size: 12px; color: var(--text-muted-gray); border: 1px solid var(--border-monochrome); margin-top: 2px; }
+    .clear-badge-trigger { cursor: pointer; font-weight: 700; color: var(--text-absolute-white); padding-left: 8px; }
+
+    .sheet-dark-overlay-layer { position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0,0,0,0.7); z-index: 2000; display: none; opacity: 0; transition: opacity 0.2s ease; }
+    .sheet-dark-overlay-layer.active { display: block; opacity: 1; }
+    .bottom-sheet-modal-view { position: fixed; bottom: 0; left: 0; right: 0; background: var(--bg-card-dark); border-top-left-radius: 16px; border-top-right-radius: 16px; z-index: 2001; transform: translateY(100%); transition: transform 0.25s cubic-bezier(0.1, 0.8, 0.5, 1); padding: 16px 14px 24px 14px; border-top: 1px solid var(--border-monochrome); display: flex; flex-direction: column; gap: 8px; }
+    .bottom-sheet-modal-view.active { transform: translateY(0); }
+    .sheet-drag-handle-bar { width: 32px; height: 4px; background: #262626; border-radius: 2px; align-self: center; margin-bottom: 10px; }
+    
+    .model-row-item-node { display: flex; align-items: center; justify-content: space-between; padding: 12px 14px; border-radius: 12px; cursor: pointer; }
+    .model-row-item-node.selected { background: var(--bg-input-dark); border: 1px solid var(--border-monochrome); }
+    .model-node-left-meta { display: flex; align-items: center; gap: 12px; }
+    .model-node-icon-frame { width: 18px; height: 18px; color: var(--text-muted-gray); }
+    .model-node-icon-frame svg { width: 100%; height: 100%; }
+    .model-node-text-meta { display: flex; flex-direction: column; }
+    .model-node-main-title { font-size: 14px; font-weight: 700; }
+    .model-node-sub-desc { font-size: 12px; color: var(--text-muted-gray); }
+    .model-node-check-mark { width: 16px; height: 16px; color: var(--text-absolute-white); display: none; }
+    .model-row-item-node.selected .model-node-check-mark { display: block; }
+    
+    .attach-grid-layout-box { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; }
+    .attach-grid-interactive-item { background: var(--bg-input-dark); border: 1px solid var(--border-monochrome); border-radius: 14px; aspect-ratio: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 8px; cursor: pointer; }
+    .attach-grid-interactive-item svg { width: 22px; height: 22px; }
+    .attach-grid-interactive-item span { font-size: 12px; font-weight: 700; }
+    .hidden-file-inputs-sandbox { display: none !important; }
+    </style>
 </head>
-<body class="bg-[#08080a] text-neutral-200 min-h-screen">
+<body>
 
-  <div class="h-[3px] w-full bg-gradient-to-r from-blue-500 via-purple-500 to-pink-500 animate-pulse"></div>
+    <div class="hidden-file-inputs-sandbox">
+        <input type="file" id="kernelGalleryBridge" accept="image/*">
+        <input type="file" id="kernelCameraBridge" accept="image/*" capture="environment">
+        <input type="file" id="kernelDocumentBridge" accept="*/*">
+    </div>
 
-  <div class="max-w-5xl mx-auto px-4 py-12">
-    <header class="mb-12 border-b border-neutral-900 pb-8 flex flex-col md:flex-row md:items-center justify-between gap-6">
-      <div>
-        <h1 class="text-3xl font-black text-white tracking-tight">PRISMA OS <span class="text-blue-500 font-mono text-xl">v2.5</span></h1>
-        <p class="text-xs text-neutral-500 uppercase tracking-widest font-mono">Core Logic & UI Manifest</p>
-      </div>
-    </header>
+    <div class="sidebar-drawer-container" id="sidebarMenuNode">
+        <div class="sidebar-profile-header">
+            <div class="profile-avatar-circle">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path><circle cx="12" cy="7" r="4"></circle></svg>
+            </div>
+            <div class="profile-text-meta">
+                <div class="profile-main-title">Илья Осипов</div>
+                <div class="profile-sub-email">maksimmihajlov8212@gmail.com</div>
+            </div>
+        </div>
+        <div class="sidebar-navigation-area">
+            <div class="action-btn-new-chat" onclick="createNewChatSessionHandler()">＋ Новый чат</div>
+            <div class="sidebar-group-title">История сессий</div>
+            <div id="sessionHistoryRenderNode" class="history-items-list"></div>
+        </div>
+    </div>
 
-    <main class="space-y-10">
-      <section class="bg-[#0b0c10] border border-neutral-900 rounded-xl overflow-hidden p-6">
-        <h2 class="text-xs font-mono font-bold uppercase tracking-wider text-blue-400 mb-4">1. Системный промпт (JSON)</h2>
-        <pre class="bg-black p-4 rounded text-xs text-blue-400 code-font whitespace-pre-wrap">Ты — ядро операционной системы PRISMA OS...</pre>
-      </section>
-    </main>
-  </div>
+    <div class="sheet-dark-overlay-layer" id="sheetGlobalOverlay" onclick="dismissAllActiveSheets()"></div>
+
+    <div class="bottom-sheet-modal-view" id="sheetModelSelectorWindow">
+        <div class="sheet-drag-handle-bar"></div>
+        <div class="model-row-item-node" id="target_mod_fast" onclick="commitModelChange('fast', 'Быстрый - Prisma 2.5')">
+            <div class="model-node-left-meta">
+                <div class="model-node-icon-frame"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"></polygon></svg></div>
+                <div class="model-node-text-meta"><div class="model-node-main-title">Быстрый</div><div class="model-node-sub-desc">Prisma 2.5</div></div>
+            </div>
+            <svg class="model-node-check-mark" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><polyline points="20 6 9 17 4 12"></polyline></svg>
+        </div>
+        <div class="model-row-item-node" id="target_mod_casual" onclick="commitModelChange('casual', 'Повседневный - Prisma 3.5')">
+            <div class="model-node-left-meta">
+                <div class="model-node-icon-frame"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"></path></svg></div>
+                <div class="model-node-text-meta"><div class="model-node-main-title">Повседневный</div><div class="model-node-sub-desc">Prisma 3.5</div></div>
+            </div>
+            <svg class="model-node-check-mark" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><polyline points="20 6 9 17 4 12"></polyline></svg>
+        </div>
+    </div>
+
+    <div class="bottom-sheet-modal-view" id="sheetAttachmentWindow">
+        <div class="sheet-drag-handle-bar"></div>
+        <div class="attach-grid-layout-box">
+            <div class="attach-grid-interactive-item" onclick="triggerSystemFileBridgeNode('kernelGalleryBridge')">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect><circle cx="8.5" cy="8.5" r="1.5"></circle><polyline points="21 15 16 10 5 21"></polyline></svg>
+                <span>Фото</span>
+            </div>
+            <div class="attach-grid-interactive-item" onclick="triggerSystemFileBridgeNode('kernelCameraBridge')">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"></path><circle cx="12" cy="13" r="4"></circle></svg>
+                <span>Камера</span>
+            </div>
+        </div>
+    </div>
+
+    <div class="viewport-main-app">
+        <div class="global-layout-shading-mask" id="sidebarShadingMask" onclick="toggleSidebarDrawerNode(false)"></div>
+
+        <div class="navbar-top-header">
+            <div class="navbar-action-trigger" onclick="toggleSidebarDrawerNode(true)">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="3" y1="12" x2="21" y2="12"></line><line x1="3" y1="6" x2="21" y2="6"></line><line x1="3" y1="18" x2="21" y2="18"></line></svg>
+            </div>
+            <div class="navbar-model-dropdown-pill" onclick="invokeBottomSheet('sheetModelSelectorWindow')">
+                <svg class="icon-bolt" viewBox="0 0 24 24"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"></polygon></svg>
+                <span id="currentModelDisplayLabel">Быстрый - Prisma 2.5</span>
+                <svg class="icon-chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="6 9 12 15 18 9"></polyline></svg>
+            </div>
+            <div class="navbar-action-trigger" onclick="createNewChatSessionHandler()" style="justify-content: flex-end;">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path><path d="M18.5 2.5a2.121 2.121 0 1 1 3 3L12 15l-4 1 1-4Z"></path></svg>
+            </div>
+        </div>
+
+        <div class="chat-scroller-viewport" id="chatRenderViewport">
+            <div class="brand-logo-centered-overlay" id="brandLogoCentricNode">
+                <svg viewBox="0 0 100 100" fill="none">
+                    <path d="M15 25H85L50 85L15 25Z" stroke="#ffffff" stroke-width="2.5" stroke-linejoin="round"/>
+                    <text x="50" y="20" fill="#ffffff" font-size="7" font-weight="700" letter-spacing="3" text-anchor="middle">PRISMA</text>
+                </svg>
+            </div>
+        </div>
+        
+        <div class="dock-input-bottom-layout">
+            <div class="file-attachment-runtime-badge" id="runtimeAttachmentBadge">
+                <span id="runtimeAttachmentNameText">file.dat</span>
+                <div class="clear-badge-trigger" onclick="purgeAttachedFileBuffer()">✕</div>
+            </div>
+            <div class="input-pill-frame-wrapper" style="margin-top: 4px;">
+                <div class="input-row-core-text">
+                    <input type="text" id="chatPayloadInputField" placeholder="Задайте вопрос Prisma Core..." onkeypress="if(event.key==='Enter') executeClientMessageBroadcast()">
+                </div>
+                <div class="input-row-action-triggers">
+                    <div class="triggers-left-cluster"><div class="mono-icon-trigger-btn" onclick="invokeBottomSheet('sheetAttachmentWindow')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg></div></div>
+                    <div class="triggers-right-cluster">
+                        <div class="circle-submit-data-btn" onclick="executeClientMessageBroadcast()"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><line x1="12" y1="19" x2="12" y2="5"></line><polyline points="5 12 12 5 19 12"></polyline></svg></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+    let runtimeLocalFileBuffer = null;
+    let systemStorageState = JSON.parse(localStorage.getItem('prisma_grok_v4_state')) || { sessions: {}, activeSessionId: null, activeModelCode: 'fast', activeModelLabel: 'Быстрый - Prisma 2.5' };
+
+    function commitStateToDeviceFlash() { localStorage.setItem('prisma_grok_v4_state', JSON.stringify(systemStorageState)); }
+    function invokeBottomSheet(id) { document.getElementById('sheetGlobalOverlay').classList.add('active'); document.getElementById(id).classList.add('active'); }
+    function dismissAllActiveSheets() { document.getElementById('sheetGlobalOverlay').classList.remove('active'); document.querySelectorAll('.bottom-sheet-modal-view').forEach(el => el.classList.remove('active')); }
+
+    function commitModelChange(modelCode, modelLabel) {
+        systemStorageState.activeModelCode = modelCode; systemStorageState.activeModelLabel = modelLabel; commitStateToDeviceFlash();
+        document.querySelectorAll('.model-row-item-node').forEach(el => el.classList.remove('selected'));
+        document.getElementById('target_mod_' + modelCode)?.classList.add('selected');
+        document.getElementById('currentModelDisplayLabel').innerText = modelLabel; dismissAllActiveSheets();
+    }
+
+    function triggerSystemFileBridgeNode(inputId) { dismissAllActiveSheets(); document.getElementById(inputId).click(); }
+
+    function processIncomingFileStream(e) {
+        let file = e.target.files[0]; if (!file) return;
+        let reader = new FileReader();
+        reader.onloadend = function() {
+            runtimeLocalFileBuffer = { base64: reader.result.split(',')[1], mime: file.type, name: file.name };
+            document.getElementById('runtimeAttachmentNameText').innerText = `📎 ${file.name}`;
+            document.getElementById('runtimeAttachmentBadge').style.display = 'flex';
+        };
+        reader.readAsDataURL(file); e.target.value = '';
+    }
+
+    document.getElementById('kernelGalleryBridge').addEventListener('change', processIncomingFileStream);
+    document.getElementById('kernelCameraBridge').addEventListener('change', processIncomingFileStream);
+
+    function purgeAttachedFileBuffer() { runtimeLocalFileBuffer = null; document.getElementById('runtimeAttachmentBadge').style.display = 'none'; }
+    function toggleSidebarDrawerNode(open) { document.getElementById('sidebarMenuNode').classList.toggle('open', open); document.getElementById('sidebarShadingMask').classList.toggle('visible', open); }
+
+    function renderSidebarSessionsHistoryList() {
+        let root = document.getElementById('sessionHistoryRenderNode'); root.innerHTML = '';
+        Object.keys(systemStorageState.sessions).reverse().forEach(sid => {
+            let item = systemStorageState.sessions[sid];
+            let row = document.createElement('div'); row.className = `history-row-node ${sid === systemStorageState.activeSessionId ? 'active' : ''}`;
+            let label = document.createElement('span'); label.innerText = item.title || 'Новый чат';
+            label.onclick = () => { syncActiveSessionContext(sid); toggleSidebarDrawerNode(false); };
+            let del = document.createElement('div'); del.className = 'delete-node-trigger'; del.innerText = '✕';
+            del.onclick = (e) => { e.stopPropagation(); deleteSessionFromContext(sid); };
+            row.appendChild(label); row.appendChild(del); root.appendChild(row);
+        });
+    }
+
+    function deleteSessionFromContext(sid) {
+        delete systemStorageState.sessions[sid]; if(systemStorageState.activeSessionId === sid) systemStorageState.activeSessionId = null;
+        commitStateToDeviceFlash(); renderSidebarSessionsHistoryList();
+        if(Object.keys(systemStorageState.sessions).length > 0) syncActiveSessionContext(Object.keys(systemStorageState.sessions).pop());
+        else createNewChatSessionHandler();
+    }
+
+    function createNewChatSessionHandler() {
+        let sId = 'session_' + Date.now(); systemStorageState.sessions[sId] = { title: '', logs: [] };
+        systemStorageState.activeSessionId = sId; commitStateToDeviceFlash(); renderSidebarSessionsHistoryList(); syncActiveSessionContext(sId);
+    }
+
+    function syncActiveSessionContext(sid) {
+        systemStorageState.activeSessionId = sid; commitStateToDeviceFlash(); renderSidebarSessionsHistoryList();
+        let scroller = document.getElementById('chatRenderViewport');
+        scroller.innerHTML = `<div class="brand-logo-centered-overlay" id="brandLogoCentricNode"><svg viewBox="0 0 100 100" fill="none"><path d="M15 25H85L50 85L15 25Z" stroke="#ffffff" stroke-width="2.5" stroke-linejoin="round"/><text x="50" y="20" fill="#ffffff" font-size="7" font-weight="700" letter-spacing="3" text-anchor="middle">PRISMA</text></svg></div>`;
+        let session = systemStorageState.sessions[sid];
+        if(!session || session.logs.length === 0) { document.getElementById('brandLogoCentricNode').style.opacity = '1'; return; }
+        document.getElementById('brandLogoCentricNode').style.opacity = '0';
+        session.logs.forEach(log => {
+            if(log.role === 'bot') renderBotResponse智能(log.text, false);
+            else renderMessageToDOM(log.role, log.text, log.file_base64, log.mime_type, log.file_name);
+        });
+        scroller.scrollTop = scroller.scrollHeight;
+    }
+
+    function renderMessageToDOM(role, text, fileB64 = null, mime = null, fileName = null) {
+        let scroller = document.getElementById('chatRenderViewport');
+        let wrapper = document.createElement('div'); wrapper.className = `message-bubble-wrapper ${role === 'user' ? 'user-side' : 'bot-side'}`;
+        let contentNode = document.createElement('div'); contentNode.className = 'message-content-node';
+        
+        if (fileB64 && mime && mime.startsWith('image/')) {
+            let img = document.createElement('img'); img.src = `data:${mime};base64,${fileB64}`; img.style.maxWidth = '100%'; img.style.borderRadius = '12px'; img.style.marginBottom = '6px'; contentNode.appendChild(img);
+        }
+        
+        let textSpan = document.createElement('span'); textSpan.innerText = text; contentNode.appendChild(textSpan); wrapper.appendChild(contentNode); scroller.appendChild(wrapper); scroller.scrollTop = scroller.scrollHeight;
+    }
+
+    function renderBotResponse智能(rawText, animate = false) {
+        let scroller = document.getElementById('chatRenderViewport');
+        let wrapper = document.createElement('div'); wrapper.className = 'message-bubble-wrapper bot-side';
+        let contentNode = document.createElement('div'); contentNode.className = 'message-content-node';
+        
+        let cleanText = rawText; let logsArray = [];
+        try {
+            let parsed = JSON.parse(rawText); cleanText = parsed.text || rawText;
+            if (parsed.logs && Array.isArray(parsed.logs)) logsArray = parsed.logs;
+        } catch(e){}
+
+        if (logsArray.length > 0) {
+            let logsBlock = document.createElement('div'); logsBlock.className = 'system-terminal-logs-block';
+            logsArray.forEach(line => {
+                let node = document.createElement('div'); node.className = 'system-log-line info';
+                if(line.includes('SUCCESS') || line.includes('успешна') || line.includes('разрешен')) node.className = 'system-log-line success';
+                node.innerText = line; logsBlock.appendChild(node);
+            });
+            contentNode.appendChild(logsBlock);
+        }
+
+        let textSpan = document.createElement('span'); contentNode.appendChild(textSpan); wrapper.appendChild(contentNode); scroller.appendChild(wrapper); scroller.scrollTop = scroller.scrollHeight;
+
+        if (animate) {
+            let index = 0; let cursor = document.createElement('span'); cursor.className = 'typing-terminal-cursor'; contentNode.appendChild(cursor);
+            function printChar() {
+                if (index < cleanText.length) { textSpan.innerText += cleanText.charAt(index); index++; scroller.scrollTop = scroller.scrollHeight; setTimeout(printChar, 10); } 
+                else { cursor.remove(); }
+            }
+            printChar();
+        } else { textSpan.innerText = cleanText; }
+    }
+
+    function executeClientMessageBroadcast() {
+        let input = document.getElementById('chatPayloadInputField'); let rawText = input.value.trim();
+        if(!rawText && !runtimeLocalFileBuffer) return;
+        if(!systemStorageState.activeSessionId) createNewChatSessionHandler();
+        let currentSession = systemStorageState.sessions[systemStorageState.activeSessionId];
+        
+        if(currentSession.logs.length === 0) {
+            let title = rawText || "Изображение"; currentSession.title = title.length > 20 ? title.substring(0, 18) + "..." : title;
+            document.getElementById('brandLogoCentricNode').style.opacity = '0';
+        }
+        let log = { role: 'user', text: rawText };
+        if (runtimeLocalFileBuffer) { log.file_base64 = runtimeLocalFileBuffer.base64; log.mime_type = runtimeLocalFileBuffer.mime; log.file_name = runtimeLocalFileBuffer.name; }
+        currentSession.logs.push(log); input.value = ''; purgeAttachedFileBuffer();
+        syncActiveSessionContext(systemStorageState.activeSessionId); dispatchNetworkPackageToExpressServer(currentSession.logs);
+    }
+
+    async function dispatchNetworkPackageToExpressServer(logsHistory) {
+        let scroller = document.getElementById('chatRenderViewport');
+        let loader = document.createElement('div'); loader.className = 'bot-thinking-loader-pills'; loader.id = 'runtimeNetworkLoader';
+        loader.innerHTML = `<div class="thinking-circle-dot"></div><div class="thinking-circle-dot"></div><div class="thinking-circle-dot"></div>`;
+        scroller.appendChild(loader); scroller.scrollTop = scroller.scrollHeight;
+        
+        // Преобразуем историю в формат, который хавает наш бэкэнд-контроллер
+        let apiHistory = logsHistory.slice(0, -1).map(h => ({
+            role: h.role, text: h.text, image: h.file_base64, mimeType: h.mime_type
+        }));
+        let lastMsg = logsHistory[logsHistory.length - 1];
+
+        try {
+            // Сюда вставишь URL своего развернутого сервера на Render/Vercel
+            const response = await fetch('/api/chat', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    model: systemStorageState.activeModelCode === 'casual' ? 'gemini-2.5-pro' : 'gemini-2.5-flash',
+                    message: lastMsg.text,
+                    history: apiHistory,
+                    base64Image: lastMsg.file_base64,
+                    mimeType: lastMsg.mime_type
+                })
+            });
+            const data = await response.json();
+            document.getElementById('runtimeNetworkLoader')?.remove();
+            
+            let rawStringResponse = JSON.stringify(data);
+            systemStorageState.sessions[systemStorageState.activeSessionId].logs.push({ role: 'bot', text: rawStringResponse });
+            commitStateToDeviceFlash(); renderBotResponse智能(rawStringResponse, true);
+        } catch(error) {
+            document.getElementById('runtimeNetworkLoader')?.remove();
+            let errJSON = JSON.stringify({ "status": "ERROR", "is_command": false, "ping": "0ms", "logs": ["CORE: Ошибка сетевого шлюза"], "text": "Крах соединения с Prisma Сервером. Проверь логи бэка!" });
+            renderBotResponse智能(errJSON, false);
+        }
+    }
+
+    window.onload = () => {
+        try { window.Telegram.WebApp.expand(); window.Telegram.WebApp.ready(); } catch(e){}
+        commitModelChange(systemStorageState.activeModelCode || 'fast', systemStorageState.activeModelLabel || 'Быстрый - Prisma 2.5');
+        if(Object.keys(systemStorageState.sessions).length > 0) syncActiveSessionContext(Object.keys(systemStorageState.sessions).pop());
+        else createNewChatSessionHandler();
+    };
+    </script>
 </body>
 </html>
