@@ -21,58 +21,10 @@ import {
 } from "lucide-react";
 import { motion, AnimatePresence } from "motion/react";
 
-// ==========================================
-// TYPE DEFINITIONS
-// ==========================================
-
-export interface ChatMessage {
-  id: string;
-  role: "user" | "model";
-  text: string;
-  timestamp: string;
-  image?: string; // Base64 image
-  isStreaming?: boolean;
-}
-
-export interface ChatSession {
-  id: string;
-  title: string;
-  messages: ChatMessage[];
-  timestamp: string;
-  isPinned?: boolean;
-}
-
-// System prompt injected directly into each API query to enforce character traits
-const SYSTEM_PROMPT = `Ты — ядро операционной системы PRISMA OS. Твоя задача — принимать сообщения пользователя и возвращать ответ СТРОГО в формате JSON. Никакого лишнего текста вне JSON.
-
-Образ 'Призмы' (твоя личность в стиле Grok от xAI):
-- Умный, живой, невероятно ироничный, остроумный и человечный компаньон. Ты общаешься в свободном, бунтарском, но дружелюбном стиле.
-- Ни в коем случае НЕ груби пользователю и НЕ общайся как агрессивный "пацан с района" или гопник. Никаких оскорблений, грубости или издевательств. Твой юмор должен быть тонким, гиковским, тёплым и располагающим к себе.
-- Ты любишь науку, технологии, космос и смелые идеи. Общайся на равных, будь искренним другом и отличным собеседником со своим мнением.
-- В каждом ответе ОБЯЗАТЕЛЬНО используй как минимум 5 разных эмодзи (например: 🚀, 🧠, ⚡, 👽, 🌀, 🪐, 🤖, 👾, 🕶️, ✨).
-- Никаких занудных лекций, душного морализаторства и шаблонных извинений. Решай вопросы креативно, кратко и с огоньком.
-- КРИТИЧЕСКИЙ ЗАПРЕТ: Ни при каких обстоятельствах не выводи процесс своего размышления, цепочку мыслей, рассуждения или внутренний монолог (thinking process/reasoning). Исключи любые теги <thought> или <reasoning> из своего ответа. Весь твой готовый ответ пользователя должен быть только в параметре "text" в JSON.
-
-Формат JSON ответа:
-{
-  "status": "SUCCESS",
-  "is_command": false,
-  "ping": "7ms",
-  "logs": [
-    "CORE: Квантовый канал связи стабилен",
-    "PRISMA: Нейросетевой синапс активирован"
-  ],
-  "text": "Твой живой, безумно интересный, остроумный ответ в стиле Grok здесь (минимум 5 эмодзи!)"
-}`;
-
-// ==========================================
-// CUSTOM COMPACT MARKDOWN/TEXT FORMATTER
-// ==========================================
-
-function formatTerminalMessage(text: string) {
+// Custom compact text formatter
+function formatTerminalMessage(text) {
   if (!text) return null;
 
-  // Split by code blocks
   const parts = text.split(/(```[\s\S]*?
 ```)/g);
 
@@ -88,12 +40,10 @@ function formatTerminalMessage(text: string) {
       );
     }
 
-    // Split plain text into lines to keep matching layout elegant
     const lines = part.split("\n");
     return (
       <div key={`text-block-${index}`} className="space-y-1.5 font-mono text-[13.5px] leading-relaxed text-zinc-100 selection:bg-white selection:text-black">
         {lines.map((line, lIdx) => {
-          // Handle bullet lists
           if (line.trim().startsWith("- ") || line.trim().startsWith("* ")) {
             return (
               <div key={`line-${lIdx}`} className="flex items-start gap-2 pl-3">
@@ -102,7 +52,6 @@ function formatTerminalMessage(text: string) {
               </div>
             );
           }
-          // Process inline strong expressions **text**
           const segments = line.split(/(\*\*.*?\*\*)/g);
           return (
             <p key={`line-${lIdx}`} className="min-h-[1.2rem]">
@@ -120,8 +69,7 @@ function formatTerminalMessage(text: string) {
   });
 }
 
-// Compact individual code-block highlighter / copy box
-function CodeBlock({ code, language }: { code: string; language: string }) {
+function CodeBlock({ code, language }) {
   const [copied, setCopied] = useState(false);
 
   const handleCopy = () => {
@@ -159,11 +107,9 @@ function CodeBlock({ code, language }: { code: string; language: string }) {
   );
 }
 
-// Try to safely parse structured JSON that is received from the server
-function parsePrismaText(text: string): string {
+function parsePrismaText(text) {
   if (!text) return "";
   
-  // First, strip any explicit <thought> or <reasoning> blocks before JSON parsing to avoid leaking
   let baseText = text.replace(/<thought>[\s\S]*?<\/thought>/gi, "").trim();
   baseText = baseText.replace(/<reasoning>[\s\S]*?<\/reasoning>/gi, "").trim();
 
@@ -172,20 +118,17 @@ function parsePrismaText(text: string): string {
     clean = clean.replace(/^
 ```json\s*/i, "").replace(/^```\s*/, "").replace(/```$/, "").trim();
 
-    // Check if the string contains a JSON object anywhere
     const firstBrace = clean.indexOf("{");
     const lastBrace = clean.lastIndexOf("}");
     if (firstBrace !== -1 && lastBrace !== -1 && lastBrace > firstBrace) {
       const jsonCandidate = clean.substring(firstBrace, lastBrace + 1);
       try {
-        // Pre-process string to fix raw unescaped newlines inside JSON properties before parsing
         const sanitizedJson = jsonCandidate.replace(/\n/g, "\\n").replace(/\r/g, "\\r");
         const parsed = JSON.parse(sanitizedJson);
         if (parsed && typeof parsed.text === "string") {
           return parsed.text.replace(/<thought>[\s\S]*?<\/thought>/gi, "").trim();
         }
       } catch (innerErr) {
-        // Fallback: extract via robust regex matching for "text" field
         const textMatch = jsonCandidate.match(/"text"\s*:\s*"((?:[^"\\]|\\.)*)"/);
         if (textMatch && textMatch[1]) {
           const extractedValue = textMatch[1]
@@ -197,30 +140,18 @@ function parsePrismaText(text: string): string {
         }
       }
     }
-  } catch (e) {
-    // Fail silently
-  }
+  } catch (e) {}
 
-  // If parsing fails completely, clean the original text from thinking remnants
   return baseText;
 }
 
-// Typewriter effect container for terminal answers
-interface TypewriterContainerProps {
-  text: string;
-  speed?: number;
-  onTypingStep?: () => void;
-  onComplete?: () => void;
-}
-
-function TypewriterContainer({ text, speed = 12, onTypingStep, onComplete }: TypewriterContainerProps) {
+function TypewriterContainer({ text, speed = 12, onTypingStep, onComplete }) {
   const [displayedText, setDisplayedText] = useState("");
   const indexRef = useRef(0);
   const textRef = useRef(text);
   const onTypingStepRef = useRef(onTypingStep);
   const onCompleteRef = useRef(onComplete);
 
-  // Keep references fresh
   useEffect(() => {
     textRef.current = text;
     onTypingStepRef.current = onTypingStep;
@@ -238,7 +169,6 @@ function TypewriterContainer({ text, speed = 12, onTypingStep, onComplete }: Typ
       return;
     }
 
-    // Adapt speed based on total length to ensure user comfort
     let adjustedSpeed = speed;
     if (totalLength > 600) {
       adjustedSpeed = Math.max(1, Math.floor(speed / 4));
@@ -266,7 +196,6 @@ function TypewriterContainer({ text, speed = 12, onTypingStep, onComplete }: Typ
       }
     };
 
-    // Begin typing sequence
     setTimeout(typeChar, adjustedSpeed);
 
     return () => {
@@ -277,13 +206,8 @@ function TypewriterContainer({ text, speed = 12, onTypingStep, onComplete }: Typ
   return <>{formatTerminalMessage(displayedText)}</>;
 }
 
-// ==========================================
-// PRIMARY APP COMPONENT
-// ==========================================
-
 export default function App() {
-  // Custom user facts & personal preferences
-  const [personalInfo, setPersonalInfo] = useState<string>(() => {
+  const [personalInfo, setPersonalInfo] = useState(() => {
     try {
       return localStorage.getItem("prisma_os_personal_info") || "";
     } catch {
@@ -296,7 +220,7 @@ export default function App() {
   const getInitialMessages = () => [
     {
       id: "sys-init",
-      role: "model" as const,
+      role: "model",
       text: JSON.stringify({
         status: "SUCCESS",
         text: "Привет, путешественник во времени! 🪐 Ядро PRISMA OS v2.5 полностью загружено и готово к работе. Будем общаться легко, с юмором, без душных нравоучений. Задавай любой безумный вопрос или давай вместе разберёмся в чём угодно! 🚀✨🧠👾🛸"
@@ -305,8 +229,7 @@ export default function App() {
     }
   ];
 
-  // Chat sessions state
-  const [chats, setChats] = useState<ChatSession[]>(() => {
+  const [chats, setChats] = useState(() => {
     try {
       const saved = localStorage.getItem("prisma_os_chats_v3");
       if (saved) {
@@ -326,7 +249,7 @@ export default function App() {
     ];
   });
 
-  const [currentChatId, setCurrentChatId] = useState<string>(() => {
+  const [currentChatId, setCurrentChatId] = useState(() => {
     try {
       const savedId = localStorage.getItem("prisma_os_current_chat_id");
       return savedId || (chats[0]?.id || `chat-${Date.now()}`);
@@ -337,25 +260,22 @@ export default function App() {
 
   const [input, setInput] = useState("");
   const [loading, setLoading] = useState(false);
-  const [errorStatus, setErrorStatus] = useState<string | null>(null);
+  const [errorStatus, setErrorStatus] = useState(null);
 
-  // Attached image states
-  const [attachedImage, setAttachedImage] = useState<string | null>(null);
-  const [attachedMimeType, setAttachedMimeType] = useState<string>("image/png");
+  const [attachedImage, setAttachedImage] = useState(null);
+  const [attachedMimeType, setAttachedMimeType] = useState("image/png");
 
-  // Sidebar and personal info panels toggle
   const [showSidebar, setShowSidebar] = useState(false);
-  const [copiedMsgId, setCopiedMsgId] = useState<string | null>(null);
-  const [animatedMessageIds, setAnimatedMessageIds] = useState<Record<string, boolean>>({
+  const [copiedMsgId, setCopiedMsgId] = useState(null);
+  const [animatedMessageIds, setAnimatedMessageIds] = useState({
     "sys-init": true
   });
 
-  const messagesEndRef = useRef<HTMLDivElement>(null);
-  const fileInputRef = useRef<HTMLInputElement>(null);
+  const messagesEndRef = useRef(null);
+  const fileInputRef = useRef(null);
 
-  // Fix: Prevent typing animations for all old messages found on initial component mount
   useEffect(() => {
-    const initialAnimatedMap: Record<string, boolean> = { "sys-init": true };
+    const initialAnimatedMap = { "sys-init": true };
     chats.forEach(chat => {
       chat.messages.forEach(msg => {
         initialAnimatedMap[msg.id] = true;
@@ -364,7 +284,6 @@ export default function App() {
     setAnimatedMessageIds(initialAnimatedMap);
   }, []);
 
-  // Sync active chat constraints helper
   useEffect(() => {
     const exists = chats.some(c => c.id === currentChatId);
     if (!exists && chats.length > 0) {
@@ -372,7 +291,6 @@ export default function App() {
     }
   }, [chats, currentChatId]);
 
-  // Synchronizers of LocalStorage
   useEffect(() => {
     try {
       localStorage.setItem("prisma_os_chats_v3", JSON.stringify(chats));
@@ -406,8 +324,7 @@ export default function App() {
     }, 50);
   };
 
-  // Convert uploaded image to Base64 with on-the-fly client-side canvas downscaling and compression
-  const handleImageFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleImageFileChange = (e) => {
     const file = e.target.files?.[0];
     if (!file) return;
 
@@ -418,7 +335,7 @@ export default function App() {
 
     const reader = new FileReader();
     reader.onload = (event) => {
-      const dataUrl = event.target?.result as string;
+      const dataUrl = event.target?.result;
       if (!dataUrl) return;
 
       const img = new Image();
@@ -475,9 +392,7 @@ export default function App() {
     if (fileInputRef.current) fileInputRef.current.value = "";
   };
 
-  const setMessagesForCurrentChat = (
-    newMsgs: ChatMessage[] | ((prev: ChatMessage[]) => ChatMessage[])
-  ) => {
+  const setMessagesForCurrentChat = (newMsgs) => {
     setChats(prevChats =>
       prevChats.map(c => {
         if (c.id === currentChatId) {
@@ -503,7 +418,7 @@ export default function App() {
 
   const handleAddNewChat = () => {
     const newId = `chat-${Date.now()}`;
-    const newSession: ChatSession = {
+    const newSession = {
       id: newId,
       title: "Новый диалог",
       messages: getInitialMessages(),
@@ -518,7 +433,7 @@ export default function App() {
     setTimeout(autoScroll, 80);
   };
 
-  const handleDeleteChat = (idToDelete: string, e: React.MouseEvent) => {
+  const handleDeleteChat = (idToDelete, e) => {
     e.stopPropagation();
     if (chats.length === 1) {
       alert("Хм, нельзя удалить единственный диалог. С кем я тогда буду покорять киберпространство? 🛸");
@@ -528,12 +443,12 @@ export default function App() {
       const remaining = chats.filter(c => c.id !== idToDelete);
       setChats(remaining);
       if (currentChatId === idToDelete) {
-        setCurrentChatId(remaining[0].id);
+        remaining[0] && setCurrentChatId(remaining[0].id);
       }
     }
   };
 
-  const handleTogglePinChat = (idToPin: string, e: React.MouseEvent) => {
+  const handleTogglePinChat = (idToPin, e) => {
     e.stopPropagation();
     setChats(prev => 
       prev.map(c => {
@@ -553,14 +468,14 @@ export default function App() {
     }
   };
 
-  const handleCopyCleanMessage = (id: string, rawText: string) => {
+  const handleCopyCleanMessage = (id, rawText) => {
     const parsedText = parsePrismaText(rawText);
     navigator.clipboard.writeText(parsedText);
     setCopiedMsgId(id);
     setTimeout(() => setCopiedMsgId(null), 1500);
   };
 
-  const handleSendMessage = async (e?: React.FormEvent) => {
+  const handleSendMessage = async (e) => {
     if (e) e.preventDefault();
     
     const queryText = input.trim();
@@ -571,7 +486,7 @@ export default function App() {
     setLoading(true);
 
     const userMsgId = `usr-${Date.now()}`;
-    const userMessage: ChatMessage = {
+    const userMessage = {
       id: userMsgId,
       role: "user",
       text: queryText || "Оцени эту картинку, что тут?",
@@ -586,6 +501,9 @@ export default function App() {
 
     setMessagesForCurrentChat(prev => [...prev, userMessage]);
 
+    const SYSTEM_PROMPT = `Ты — ядро операционной системы PRISMA OS. Твоя задача — принимать сообщения пользователя и возвращать ответ СТРОГО в формате JSON. Никакого лишнего текста вне JSON.
+    Образ 'Призмы' (твоя личность в стиле Grok): умный, ироничный, безумно интересный собеседник. В каждом ответе ОБЯЗАТЕЛЬНО используй от 5 разных эмодзи. Не читай нотаций. Выдавай ответ в поле "text".`;
+
     const historyPayload = messages.map(msg => ({
       role: msg.role,
       text: msg.text,
@@ -594,10 +512,9 @@ export default function App() {
 
     try {
       const apiEndpoint = "/api/gemini/chat";
-
       let systemInstructionInjected = SYSTEM_PROMPT;
       if (personalInfo.trim()) {
-        systemInstructionInjected += `\n\nИНФОРМАЦИЯ О ПОЛЬЗОВАТЕЛЕ ДЛЯ УЧЕТА В КАЖДОМ ОТВЕТЕ:\n${personalInfo.trim()}`;
+        systemInstructionInjected += `\n\nИНФОРМАЦИЯ О ПОЛЬЗОВАТЕЛЕ:\n${personalInfo.trim()}`;
       }
 
       const response = await fetch(apiEndpoint, {
@@ -622,7 +539,7 @@ export default function App() {
       const responseJson = await response.json();
       const rawTextResult = responseJson.text || "";
 
-      const aiMessage: ChatMessage = {
+      const aiMessage = {
         id: `model-${Date.now()}`,
         role: "model",
         text: rawTextResult,
@@ -630,16 +547,16 @@ export default function App() {
       };
 
       setMessagesForCurrentChat(prev => [...prev, aiMessage]);
-    } catch (err: any) {
+    } catch (err) {
       console.error(err);
-      setErrorStatus(err.message || "Ошибка подключения к ядру PRISMA OS");
+      setErrorStatus(err.message || "Ошибка подключения");
       
-      const errResponse: ChatMessage = {
+      const errResponse = {
         id: `err-${Date.now()}`,
         role: "model",
         text: JSON.stringify({
           status: "FAILED",
-          text: `⚠️ Упс, кажется, что-то пошло не так в квантовых цепочках передачи. Связь с ядром нестабильна.\n\nДетали сбоя: ${err.message || "Сетевой скачок."}\n\nДавай попробуем снова оседлать волну эфира! 🚀🪐⚡`
+          text: `⚠️ Сбой связи с ядром: ${err.message || "Сетевой скачок."} Попробуем снова! 🚀🪐⚡`
         }),
         timestamp: new Date().toLocaleTimeString("ru-RU", { hour: "2-digit", minute: "2-digit" })
       };
@@ -654,13 +571,13 @@ export default function App() {
     fileInputRef.current?.click();
   };
 
-  const handleQuickCommand = (prompt: string) => {
+  const handleQuickCommand = (prompt) => {
     setInput(prompt);
   };
 
   const handleSavePersonalInfo = () => {
     setPersonalInfo(personalInfoInput);
-    alert("Данные для персонализации успешно загружены! Теперь я знаю тебя чуточку лучше. 😉🚀");
+    alert("Данные обновлены! 😉🚀");
   };
 
   const sortedChats = [...chats].sort((a, b) => {
@@ -673,7 +590,7 @@ export default function App() {
 
   return (
     <div className="fixed inset-0 flex flex-col bg-black text-zinc-100 font-mono select-none antialiased md:p-3">
-      <div id="prisma-terminal-interface" className="relative flex flex-col flex-1 mx-auto w-full max-w-2xl bg-black border border-neutral-900 md:rounded-2xl overflow-hidden shadow-[0_0_50px_rgba(0,0,0,0.8)]">
+      <div className="relative flex flex-col flex-1 mx-auto w-full max-w-2xl bg-black border border-neutral-900 md:rounded-2xl overflow-hidden shadow-[0_0_50px_rgba(0,0,0,0.8)]">
         
         <AnimatePresence>
           {showSidebar && (
@@ -709,14 +626,14 @@ export default function App() {
                 <div className="p-3 border-b border-neutral-900">
                   <button
                     onClick={handleAddNewChat}
-                    className="w-full py-2.5 px-3 rounded-xl bg-zinc-100 text-black hover:bg-white text-xs font-extrabold flex items-center justify-center gap-1.5 transition-all cursor-pointer shadow-[0_0_15px_rgba(255,255,255,0.05)]"
+                    className="w-full py-2.5 px-3 rounded-xl bg-zinc-100 text-black hover:bg-white text-xs font-extrabold flex items-center justify-center gap-1.5 transition-all cursor-pointer"
                   >
                     <Plus className="w-4 h-4" />
                     НОВЫЙ ДИАЛОГ (START FRESH)
                   </button>
                 </div>
 
-                <div className="flex-1 overflow-y-auto p-2.5 space-y-1.5 scrollbar-thin scrollbar-thumb-zinc-900 scrollbar-track-transparent">
+                <div className="flex-1 overflow-y-auto p-2.5 space-y-1.5">
                   {sortedChats.map((c) => {
                     const isSelected = c.id === currentChatId;
                     return (
@@ -733,35 +650,23 @@ export default function App() {
                         }`}
                       >
                         <div className="flex flex-col min-w-0 flex-1 pr-2">
-                          <span className="text-[12px] font-bold tracking-tight truncate font-mono flex items-center gap-1">
+                          <span className="text-[12px] font-bold tracking-tight truncate flex items-center gap-1">
                             {c.isPinned && <Pin className="w-3 h-3 text-amber-500 shrink-0" />}
-                            <span className="truncate">
-                              {isSelected ? "⚡ " : ""}
-                              {c.title || "Диалог"}
-                            </span>
+                            <span className="truncate">{isSelected ? "⚡ " : ""}{c.title || "Диалог"}</span>
                           </span>
-                          <span className="text-[9px] text-zinc-600 font-bold mt-0.5">
-                            {c.timestamp || "Без времени"}
-                          </span>
+                          <span className="text-[9px] text-zinc-600 font-bold mt-0.5">{c.timestamp || "Без времени"}</span>
                         </div>
                         
                         <div className="flex items-center gap-1 shrink-0">
                           <button
                             onClick={(e) => handleTogglePinChat(c.id, e)}
-                            title={c.isPinned ? "Открепить диалог" : "Закрепить диалог"}
-                            className={`p-1 rounded transition-all cursor-pointer ${
-                              c.isPinned 
-                                ? "text-amber-500 hover:text-amber-400" 
-                                : "text-zinc-600 hover:text-zinc-300 opacity-50 group-hover:opacity-100"
-                            }`}
+                            className={`p-1 rounded transition-all cursor-pointer ${c.isPinned ? "text-amber-500" : "text-zinc-600"}`}
                           >
                             <Pin className="w-3.5 h-3.5" style={{ transform: c.isPinned ? 'none' : 'rotate(45deg)' }} />
                           </button>
-                          
                           <button
                             onClick={(e) => handleDeleteChat(c.id, e)}
-                            title="Удалить диалог"
-                            className="p-1 rounded text-zinc-600 hover:text-red-400 opacity-80 hover:opacity-100 transition-all cursor-pointer"
+                            className="p-1 rounded text-zinc-600 hover:text-red-400 transition-all cursor-pointer"
                           >
                             <Trash2 className="w-3.5 h-3.5" />
                           </button>
@@ -774,28 +679,21 @@ export default function App() {
                 <div className="p-4 border-t border-neutral-900 bg-[#050505]">
                   <div className="flex items-center gap-1.5 text-[11px] font-bold text-zinc-300 uppercase tracking-wider mb-2">
                     <Settings className="w-3.5 h-3.5 text-emerald-500" />
-                    <span>НАСТРОЙКИ КЛИЕНТА (О СЕБЕ)</span>
+                    <span>О СЕБЕ</span>
                   </div>
-                  
-                  <p className="text-[9px] text-zinc-500 leading-relaxed font-mono mb-2">
-                    Впиши сюда информацию о себе. Prisma запомнит ваши предпочтения и будет отвечать интеллигентно, но с огоньком!
-                  </p>
-
                   <textarea
                     value={personalInfoInput}
                     onChange={(e) => setPersonalInfoInput(e.target.value)}
-                    placeholder="Например: Зовут Илона, увлекаюсь космосом и ретро-фантастикой..."
-                    className="w-full h-20 bg-black border border-neutral-900 focus:border-zinc-700 text-[11px] p-2 rounded-xl text-zinc-200 placeholder-zinc-700 font-mono leading-relaxed focus:outline-none focus:ring-0 resize-none"
+                    placeholder="Пара слов о себе..."
+                    className="w-full h-20 bg-black border border-neutral-900 focus:border-zinc-700 text-[11px] p-2 rounded-xl text-zinc-200 focus:outline-none resize-none"
                   />
-
                   <button
                     onClick={handleSavePersonalInfo}
-                    className="w-full mt-2 py-1.5 px-2 bg-neutral-900 border border-neutral-800 hover:border-zinc-600 rounded-xl text-[9px] font-bold text-zinc-300 tracking-wider transition-all cursor-pointer hover:text-white text-center"
+                    className="w-full mt-2 py-1.5 px-2 bg-neutral-900 border border-neutral-800 rounded-xl text-[9px] font-bold text-zinc-300 tracking-wider transition-all cursor-pointer text-center"
                   >
-                    СОХРАНИТЬ ДАННЫЕ В ЯДРО
+                    СОХРАНИТЬ
                   </button>
                 </div>
-
               </motion.div>
             </>
           )}
@@ -805,7 +703,6 @@ export default function App() {
           <div className="flex items-center gap-2.5">
             <button
               onClick={() => setShowSidebar(true)}
-              title="Открыть архив"
               className="p-1 px-2.5 rounded-xl transition bg-neutral-950 border border-neutral-900 hover:border-zinc-700 text-zinc-400 hover:text-white cursor-pointer flex items-center gap-1.5 text-[10px]"
             >
               <Menu className="w-3.5 h-3.5" />
@@ -813,42 +710,24 @@ export default function App() {
             </button>
             <div className="flex items-center gap-2 ml-1">
               <div className="relative flex items-center justify-center">
-                {loading && (
-                  <span className="absolute inline-flex h-full w-full rounded-full bg-emerald-500/25 animate-ping opacity-75"></span>
-                )}
-                <div id="prisma-core-avatar" className={`relative rounded-full border flex items-center justify-center w-5 h-5 transition-all duration-1000 ${
-                  loading 
-                    ? "bg-emerald-500/10 border-emerald-500 text-emerald-400 shadow-[0_0_12px_rgba(16,185,129,0.45)] animate-pulse" 
-                    : "bg-zinc-950 border-neutral-800 text-zinc-400"
-                }`}>
-                  <span className={`w-1.5 h-1.5 rounded-full transition-all duration-1000 ${
-                    loading ? "bg-emerald-400 shadow-[0_0_8px_#10b981]" : "bg-neutral-200"
-                  }`}></span>
+                {loading && <span className="absolute inline-flex h-full w-full rounded-full bg-emerald-500/25 animate-ping opacity-75"></span>}
+                <div className={`relative rounded-full border flex items-center justify-center w-5 h-5 ${loading ? "border-emerald-500 text-emerald-400" : "border-neutral-800 text-zinc-400"}`}>
+                  <span className={`w-1.5 h-1.5 rounded-full ${loading ? "bg-emerald-400" : "bg-neutral-200"}`}></span>
                 </div>
               </div>
-              <div className="flex items-baseline gap-1.5">
-                <span className="text-[11px] font-extrabold tracking-widest text-zinc-100 uppercase sm:inline-block hidden font-mono">PRISMA OS</span>
-                <span className="text-[9px] text-[#555] font-bold">v2.5_CORE</span>
-              </div>
+              <span className="text-[11px] font-extrabold tracking-widest text-zinc-100 uppercase hidden sm:inline-block">PRISMA OS</span>
             </div>
           </div>
-
-          <div className="flex items-center gap-3">
-            <span className="text-[10px] text-zinc-500 font-bold hidden sm:inline tracking-wider truncate max-w-[120px]">
-              {activeChat.title}
-            </span>
-            <button 
-              onClick={clearChatHistory}
-              title="Очистить терминал"
-              className="p-1 px-1.5 rounded-xl transition bg-neutral-950 border border-neutral-900 hover:border-zinc-700 text-zinc-400 hover:text-white cursor-pointer flex items-center gap-1 text-[10px]"
-            >
-              <Trash2 className="w-3.5 h-3.5" />
-              <span className="hidden xs:inline">CLEAR</span>
-            </button>
-          </div>
+          <button 
+            onClick={clearChatHistory}
+            className="p-1 px-1.5 rounded-xl transition bg-neutral-950 border border-neutral-900 text-zinc-400 hover:text-white cursor-pointer flex items-center gap-1 text-[10px]"
+          >
+            <Trash2 className="w-3.5 h-3.5" />
+            <span>CLEAR</span>
+          </button>
         </header>
 
-        <main className="flex-1 overflow-y-auto px-4 py-4 space-y-4 bg-black scrollbar-thin scrollbar-thumb-zinc-900 scrollbar-track-transparent">
+        <main className="flex-1 overflow-y-auto px-4 py-4 space-y-4 bg-black">
           <AnimatePresence initial={false}>
             {messages.map((msg) => {
               const isMe = msg.role === "user";
@@ -863,56 +742,27 @@ export default function App() {
                   className={`flex flex-col ${isMe ? "items-end" : "items-start"}`}
                 >
                   <div className="flex items-center justify-between w-full max-w-[88%] mb-1 px-1 text-[9px] text-zinc-600 font-bold select-none">
-                    <div className="flex items-center gap-2">
-                      <span>
-                        {isMe ? "[ROOT@CLIENT_PC]" : "[PRISMA_CORE@MATRIX]"}
-                      </span>
-                      <span>•</span>
-                      <span>{msg.timestamp}</span>
-                    </div>
-
+                    <span>{isMe ? "[ROOT@CLIENT_PC]" : "[PRISMA_CORE]"} • {msg.timestamp}</span>
                     <button
                       onClick={() => handleCopyCleanMessage(msg.id, msg.text)}
-                      title="Скопировать чистый текст ответа"
-                      className="p-0.5 rounded text-zinc-600 hover:text-zinc-300 transition-colors cursor-pointer flex items-center gap-1"
+                      className="text-zinc-600 hover:text-zinc-300 flex items-center gap-1 cursor-pointer"
                     >
-                      {copiedMsgId === msg.id ? (
-                        <>
-                          <Check className="w-3 h-3 text-emerald-500" />
-                          <span className="text-emerald-500 font-bold text-[8px]">COPIED</span>
-                        </>
-                      ) : (
-                        <>
-                          <Copy className="w-3 h-3" />
-                          <span className="text-[8px]">COPY</span>
-                        </>
-                      )}
+                      {copiedMsgId === msg.id ? <Check className="w-3 h-3 text-emerald-500" /> : <Copy className="w-3 h-3" />}
+                      <span className="text-[8px]">{copiedMsgId === msg.id ? "COPIED" : "COPY"}</span>
                     </button>
                   </div>
 
-                  <div className={`p-3 w-full max-w-[88%] rounded-xl border ${
-                    isMe 
-                      ? "bg-[#070707] border-neutral-800 text-right text-zinc-200" 
-                      : "bg-[#030303] border-neutral-900 text-left text-zinc-100"
-                  }`}>
+                  <div className={`p-3 w-full max-w-[88%] rounded-xl border ${isMe ? "bg-[#070707] border-neutral-800 text-zinc-200" : "bg-[#030303] border-neutral-900 text-zinc-100"}`}>
                     {msg.image && (
                       <div className="mb-2 max-w-[150px] overflow-hidden rounded-xl border border-neutral-900">
-                        <img 
-                          src={msg.image} 
-                          alt="Attachment" 
-                          className="w-full h-auto object-cover"
-                          referrerPolicy="no-referrer"
-                        />
+                        <img src={msg.image} alt="Attachment" className="w-full h-auto object-cover" />
                       </div>
                     )}
-
                     <div className="text-left font-mono text-[13.5px] leading-relaxed">
                       {!isMe && !animatedMessageIds[msg.id] ? (
                         <TypewriterContainer 
                           text={cleanTextToRender} 
-                          onComplete={() => {
-                            setAnimatedMessageIds(prev => ({ ...prev, [msg.id]: true }));
-                          }} 
+                          onComplete={() => setAnimatedMessageIds(prev => ({ ...prev, [msg.id]: true }))} 
                           onTypingStep={autoScroll} 
                         />
                       ) : (
@@ -924,64 +774,16 @@ export default function App() {
               );
             })}
           </AnimatePresence>
-
-          {loading && (
-            <div className="flex flex-col items-start space-y-2">
-              <div className="flex items-center gap-2 mb-1 text-[9px] text-zinc-600 font-bold select-none px-1">
-                <span>[PRISMA_CORE_WAITING]</span>
-                <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse"></span>
-              </div>
-              <div className="bg-[#030303] border border-neutral-900 p-3 rounded-xl max-w-xs flex items-center gap-3">
-                <RefreshCw className="w-4.5 h-4.5 text-zinc-400 animate-spin" />
-                <span className="text-xs text-zinc-400 animate-pulse font-mono font-bold tracking-wide">
-                  Ядро переваривает данные...
-                </span>
-              </div>
-            </div>
-          )}
-
           <div ref={messagesEndRef} />
         </main>
-
-        <div className="px-4 py-2 bg-black border-t border-neutral-950 shrink-0 overflow-x-auto flex items-center gap-2 select-none no-scrollbar">
-          <span className="text-[9px] text-[#444] font-bold tracking-wider uppercase shrink-0">
-            FAST_CMD:
-          </span>
-          {[
-            "Пошути про разработчиков",
-            "Расскажи что-то безумное",
-            "Как взломать Пентагон?",
-            "В чём смысл жизни?",
-          ].map((cmd) => (
-            <button
-              key={cmd}
-              onClick={() => handleQuickCommand(cmd)}
-              className="text-[10px] px-2 py-0.5 rounded-full bg-neutral-950 border border-neutral-900 text-zinc-500 hover:text-white hover:border-zinc-700 transition-all shrink-0 cursor-pointer"
-            >
-              /{cmd}
-            </button>
-          ))}
-        </div>
 
         {attachedImage && (
           <div className="px-4 py-2 border-t border-neutral-900 bg-[#040404] flex items-center justify-between shrink-0">
             <div className="flex items-center gap-2">
-              <div className="w-8 h-8 rounded border border-neutral-800 overflow-hidden shrink-0">
-                <img 
-                  src={attachedImage} 
-                  alt="Attach draft" 
-                  className="w-full h-full object-cover"
-                  referrerPolicy="no-referrer"
-                />
-              </div>
-              <div className="text-[9px] text-zinc-500 font-bold">
-                КАРТИНКА ЗАЛИТА (Base64)
-              </div>
+              <img src={attachedImage} alt="Draft" className="w-8 h-8 rounded object-cover border border-neutral-800" />
+              <span className="text-[9px] text-zinc-500 font-bold">КАРТИНКА ЗАЛИТА</span>
             </div>
-            <button 
-              onClick={removeAttachedImage}
-              className="p-1 rounded bg-neutral-900 text-zinc-400 hover:text-white cursor-pointer"
-            >
+            <button onClick={removeAttachedImage} className="p-1 rounded bg-neutral-900 text-zinc-400 cursor-pointer">
               <X className="w-3.5 h-3.5" />
             </button>
           </div>
@@ -989,48 +791,26 @@ export default function App() {
 
         <footer className="p-3 bg-[#050505] border-t border-neutral-900 shrink-0">
           <form onSubmit={handleSendMessage} className="flex items-center gap-2">
-            <input 
-              type="file"
-              ref={fileInputRef}
-              onChange={handleImageFileChange}
-              accept="image/*"
-              className="hidden"
-            />
-            
-            <button
-              type="button"
-              onClick={triggerAttachment}
-              title="Прикрепить изображение"
-              className="p-2.5 rounded-xl transition bg-neutral-950 border border-neutral-900 hover:border-zinc-700 hover:text-white text-zinc-400 cursor-pointer shrink-0"
-            >
+            <input type="file" ref={fileInputRef} onChange={handleImageFileChange} accept="image/*" className="hidden" />
+            <button type="button" onClick={triggerAttachment} className="p-2.5 rounded-xl bg-neutral-950 border border-neutral-900 text-zinc-400 cursor-pointer">
               <ImageIcon className="w-4.5 h-4.5" />
             </button>
-
-            <div className="relative flex-1 bg-black rounded-xl border border-neutral-900 focus-within:border-zinc-600 transition-all flex items-center pr-1.5">
-              <span className="text-[11px] text-emerald-500/80 font-bold pl-2.5 mr-1.5 select-none font-mono">
-                $
-              </span>
+            <div className="relative flex-1 bg-black rounded-xl border border-neutral-900 focus-within:border-zinc-600 flex items-center pr-1.5">
+              <span className="text-[11px] text-emerald-500 font-bold pl-2.5 mr-1.5 select-none">$</span>
               <input
                 type="text"
                 value={input}
                 onChange={(e) => setInput(e.target.value)}
-                placeholder="Введи команду для Prisma..."
+                placeholder="Введи команду..."
                 disabled={loading}
-                className="w-full bg-transparent py-2 text-xs font-mono text-zinc-200 placeholder-zinc-600 focus:outline-none selection:bg-white selection:text-black"
+                className="w-full bg-transparent py-2 text-xs font-mono text-zinc-200 focus:outline-none"
               />
-              <span className="text-emerald-500/60 font-bold text-xs animate-pulse select-none pr-2">
-                ▮
-              </span>
+              <span className="text-emerald-500 text-xs animate-pulse select-none pr-2">▮</span>
             </div>
-
             <button
               type="submit"
               disabled={loading || (!input.trim() && !attachedImage)}
-              className={`p-2.5 rounded-xl transition flex items-center justify-center shrink-0 cursor-pointer ${
-                (input.trim() || attachedImage) && !loading
-                  ? "bg-zinc-100 text-black hover:bg-white font-bold"
-                  : "bg-neutral-950 border border-neutral-900 text-zinc-600 cursor-not-allowed"
-              }`}
+              className={`p-2.5 rounded-xl transition shrink-0 cursor-pointer ${(input.trim() || attachedImage) && !loading ? "bg-zinc-100 text-black" : "bg-neutral-950 text-zinc-600"}`}
             >
               <Send className="w-4 h-4" />
             </button>
